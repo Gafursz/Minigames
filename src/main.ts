@@ -1,7 +1,10 @@
 import './styles/main.scss';
 
-const app = document.querySelector<HTMLDivElement>('#app');
+import { App } from './app/App';
 
-if (app) {
-  app.textContent = 'MiniGames';
+const root = document.querySelector<HTMLDivElement>('#app');
+
+if (root) {
+  const app = new App(root);
+  app.render();
 }
