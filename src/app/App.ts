@@ -1,3 +1,5 @@
+import { HomePage } from '../pages/HomePage';
+
 export class App {
   private readonly root: HTMLElement;
 
@@ -6,10 +8,7 @@ export class App {
   }
 
   public render(): void {
-    this.root.innerHTML = `
-      <main>
-        <h1>MiniGames</h1>
-      </main>
-    `;
+    const homePage = new HomePage();
+    this.root.innerHTML = homePage.render();
   }
 }
