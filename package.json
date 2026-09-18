@@ -1,0 +1,27 @@
+{
+  "name": "minigames",
+  "version": "1.0.0",
+  "description": "MiniGames — a responsive single-page web application built with TypeScript, Sass, and modern frontend development tools.",
+  "main": "index.js",
+  "scripts": {
+  "dev": "vite",
+  "build": "tsc && vite build",
+  "preview": "vite preview"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gafursz/Minigames.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Gafursz/Minigames/issues"
+  },
+  "homepage": "https://github.com/Gafursz/Minigames#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  }
+}
