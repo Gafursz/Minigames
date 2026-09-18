@@ -1,5 +1,5 @@
-const app=document.querySelector<HTMLDivElement>('#app');
+const app = document.querySelector<HTMLDivElement>('#app');
 
 if (app) {
-    app.textContent = `MiniGames`;
+  app.textContent = `MiniGames`;
 }
