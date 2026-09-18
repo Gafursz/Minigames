@@ -1,0 +1,20 @@
+@use './tokens';
+@use './breakpoints';
+@use './utilities';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: tokens.$font-family-base;
+  color: tokens.$color-text;
+  background-color: tokens.$color-background;
+}
