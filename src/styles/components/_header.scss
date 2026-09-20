@@ -41,6 +41,12 @@
   width: 100%;
 }
 
+.header__nav-actions {
+  display: flex;
+  align-items: center;
+  gap: tokens.$size-4;
+}
+
 .header__logo {
   display: flex;
   align-items: center;
@@ -71,7 +77,7 @@
 .header__menu {
   display: flex;
   align-items: center;
-  gap: 1.75rem;
+  gap: tokens.$size-4;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -79,8 +85,9 @@
 
 .header__link {
   color: tokens.$color-text;
-  font-size: tokens.$font-size-sm;
+  font-size: tokens.$font-size-title-xx-small;
   font-weight: 500;
+  line-height: 100%;
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -90,8 +97,8 @@
   font-weight: 700;
 }
 
-Z .header__link:hover {
-  color: tokens.$color-text;
+.header__link:hover {
+  color: tokens.$color-on-primary;
 }
 
 .header__actions {
@@ -102,16 +109,18 @@ Z .header__link:hover {
 
 .header__login,
 .header__signup {
-  padding: 0.5rem 1rem;
-  border: 0;
-  border-radius: 999px;
+  padding: tokens.$btn-small-y tokens.$btn-small-x;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-md;
   font: inherit;
-  font-weight: 600;
+  font-size: tokens.$font-size-label-large;
+  font-weight: 700;
+  line-height: 100%;
   cursor: pointer;
 }
 
 .header__login {
-  color: tokens.$color-text;
+  color: tokens.$color-on-primary;
   background-color: transparent;
 }
 

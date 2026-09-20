@@ -1,0 +1,92 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.hero {
+  position: relative;
+  padding: tokens.$size-14 tokens.$size-15;
+  background-color: tokens.$color-footer;
+  border-bottom: tokens.$border-width-medium solid tokens.$color-on-primary;
+  isolation: isolate;
+}
+
+.hero::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image: url('../../assets/images/hero/hero-background.png');
+  background-position: center;
+  background-size: cover;
+  opacity: 20%;
+  content: '';
+}
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$size-3;
+  width: 40rem;
+  padding: tokens.$size-6;
+  background-color: tokens.$color-background;
+  border: 3px solid tokens.$color-on-primary;
+  border-radius: 24px;
+  box-shadow: 8px 8px 0 tokens.$color-on-primary;
+}
+
+.hero__title {
+  margin: 0;
+  color: tokens.$color-on-primary;
+  font-size: tokens.$font-size-display-large;
+  font-weight: 700;
+  line-height: 110%;
+}
+
+.hero__description {
+  margin: 0;
+  color: tokens.$color-text;
+  font-size: tokens.$font-size-body-large;
+  font-weight: 500;
+  line-height: 150%;
+}
+
+.hero__button {
+  align-self: flex-start;
+  padding: tokens.$btn-large-y tokens.$btn-large-x;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-primary;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-md;
+  font-size: tokens.$font-size-body-large;
+  font-weight: 700;
+  line-height: 100%;
+  text-decoration: none;
+}
+
+@media (max-width: breakpoints.$breakpoint-tablet) {
+  .hero {
+    padding: tokens.$size-9 tokens.$size-5;
+  }
+
+  .hero__content {
+    width: 30rem;
+    gap: tokens.$size-2;
+    padding: tokens.$size-3;
+    border-width: 2.5px;
+    border-radius: 16px;
+    box-shadow: 6px 6px 0 tokens.$color-on-primary;
+  }
+
+  .hero__title {
+    font-size: tokens.$font-size-display-medium;
+    line-height: 115%;
+  }
+
+  .hero__description {
+    font-size: tokens.$font-size-body-small;
+    line-height: 140%;
+  }
+
+  .hero__button {
+    padding: tokens.$btn-medium-y tokens.$btn-medium-x;
+    font-size: tokens.$font-size-body-small;
+  }
+}

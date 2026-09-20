@@ -10,10 +10,10 @@ export class Header {
           <img class="header__logo-icon" src="${logoIcon}" alt=""/>
           </span>
           <span class="header__logo-text">
-            Mini Games
+            MiniGames
           </span>
           </a>
-          
+          <div class="header__nav-actions">
             <ul class="header__menu">
             <li class="header__menu-item">
               <a class="header__link header__link--active" href="/">Home</a>
@@ -48,6 +48,7 @@ export class Header {
   <span class="header__burger-line"></span>
   <span class="header__burger-line"></span>
 </button>
+</div>
 </div>
         </nav>
         <div
