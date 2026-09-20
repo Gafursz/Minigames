@@ -10,5 +10,6 @@ export class App {
   public render(): void {
     const homePage = new HomePage();
     this.root.innerHTML = homePage.render();
+    homePage.bindEvents();
   }
 }

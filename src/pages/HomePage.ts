@@ -1,9 +1,18 @@
+import { Header } from '../components/Header';
+
 export class HomePage {
+  private readonly header = new Header();
+
   public render(): string {
     return `
-    <main>
+      ${this.header.render()}
+
+      <main>
         <h1>MiniGames</h1>
-    </main>
+      </main>
     `;
+  }
+  public bindEvents(): void {
+    this.header.bindEvents();
   }
 }

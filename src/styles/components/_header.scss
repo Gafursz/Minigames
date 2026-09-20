@@ -1,0 +1,148 @@
+@use '../tokens';
+
+.header {
+  padding: 1.5rem 2rem;
+}
+
+.header__burger {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background-color: tokens.$color-primary;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.header__burger-line {
+  width: 1.25rem;
+  height: 0.125rem;
+  background-color: tokens.$color-on-primary;
+  border-radius: 999px;
+}
+
+.header__nav {
+  width: min(100%, 70rem);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem 0.625rem 1.125rem;
+  background-color: tokens.$color-background;
+  border: 0.125rem solid tokens.$color-outline;
+  border-radius: 999px;
+}
+
+.header__logo {
+  color: tokens.$color-text;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.header__link {
+  color: tokens.$color-text-muted;
+  font-size: tokens.$font-size-sm;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.header__link--active {
+  color: tokens.$color-text;
+}
+
+Z .header__link:hover {
+  color: tokens.$color-text;
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header__login,
+.header__signup {
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.header__login {
+  color: tokens.$color-text;
+  background-color: transparent;
+}
+
+.header__signup {
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-primary;
+}
+
+.header__mobile-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  color: tokens.$color-on-footer;
+  background-color: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.header__mobile-menu {
+  padding: 1.5rem;
+  background-color: tokens.$color-footer;
+  border-radius: tokens.$radius-lg;
+}
+
+.header__mobile-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header__mobile-logo {
+  color: tokens.$color-on-footer;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.header__mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header__mobile-link {
+  color: tokens.$color-on-footer;
+  font-size: tokens.$font-size-md;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.header__mobile-link--active {
+  color: tokens.$color-primary;
+}
+
+@media (max-width: 48rem) {
+  .header__menu {
+    display: none;
+  }
+
+  .header__burger {
+    display: flex;
+  }
+}
