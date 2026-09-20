@@ -1,3 +1,5 @@
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/700.css';
 import './styles/main.scss';
 
 import { App } from './app/App';

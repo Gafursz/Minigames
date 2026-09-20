@@ -1,3 +1,4 @@
+import logoIcon from '../assets/icons/logo-icon.svg';
 export class Header {
   public render(): string {
     return `
@@ -5,19 +6,14 @@ export class Header {
       <header class="header">
         <nav class="header__nav" aria-label="Main navigation">
           <a class="header__logo" href="/" aria-label="MiniGames home">
-            MiniGames
+          <span class="header__logo-icon-wrapper">
+          <img class="header__logo-icon" src="${logoIcon}" alt=""/>
+          </span>
+          <span class="header__logo-text">
+            Mini Games
+          </span>
           </a>
-          <button
-  class="header__burger"
-  type="button"
-  aria-label="Open navigation menu"
-  aria-expanded="false"
-  aria-controls="mobile-navigation"
->
-  <span class="header__burger-line"></span>
-  <span class="header__burger-line"></span>
-  <span class="header__burger-line"></span>
-</button>
+          
             <ul class="header__menu">
             <li class="header__menu-item">
               <a class="header__link header__link--active" href="/">Home</a>
@@ -40,6 +36,18 @@ export class Header {
   <button class="header__signup" type="button">
     Sign Up
   </button>
+
+<button
+  class="header__burger"
+  type="button"
+  aria-label="Open navigation menu"
+  aria-expanded="false"
+  aria-controls="mobile-navigation"
+>
+  <span class="header__burger-line"></span>
+  <span class="header__burger-line"></span>
+  <span class="header__burger-line"></span>
+</button>
 </div>
         </nav>
         <div
@@ -73,6 +81,15 @@ export class Header {
     <a class="header__mobile-link" href="/">Community</a>
   </li>
 </ul>
+<div class="header__mobile-actions">
+  <button class="header__mobile-login" type="button">
+    Log in
+  </button>
+
+  <button class="header__mobile-signup" type="button">
+    Sign Up
+  </button>
+</div>
 </div>
       </header>
     `;
@@ -83,8 +100,10 @@ export class Header {
     const closeButton = document.querySelector<HTMLButtonElement>('.header__mobile-close');
     if (burgerButton && mobileMenu && closeButton) {
       burgerButton.addEventListener('click', () => {
-        mobileMenu.hidden = false;
-        burgerButton.setAttribute('aria-expanded', 'true');
+        const isMenuOpen = !mobileMenu.hidden;
+
+        mobileMenu.hidden = isMenuOpen;
+        burgerButton.setAttribute('aria-expanded', String(!isMenuOpen));
       });
       closeButton.addEventListener('click', () => {
         mobileMenu.hidden = true;

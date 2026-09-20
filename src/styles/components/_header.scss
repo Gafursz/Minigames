@@ -1,7 +1,11 @@
 @use '../tokens';
+@use '../breakpoints';
 
 .header {
-  padding: 1.5rem 2rem;
+  position: relative;
+  padding: tokens.$size-3 tokens.$size-10;
+  background-color: tokens.$color-background;
+  border-bottom: tokens.$border-width-medium solid tokens.$color-on-primary;
 }
 
 .header__burger {
@@ -9,12 +13,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
+  width: tokens.$size-4;
+  height: tokens.$size-4;
+  gap: tokens.$size-05;
   padding: 0.5rem;
   background-color: tokens.$color-primary;
   border: 0;
   border-radius: 999px;
   cursor: pointer;
+}
+
+.header__burger:hover {
+  background-color: tokens.$color-primary-high;
 }
 
 .header__burger-line {
@@ -25,34 +35,59 @@
 }
 
 .header__nav {
-  width: min(100%, 70rem);
-  margin-inline: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.625rem 0.875rem 0.625rem 1.125rem;
-  background-color: tokens.$color-background;
-  border: 0.125rem solid tokens.$color-outline;
-  border-radius: 999px;
+  width: 100%;
 }
 
 .header__logo {
-  color: tokens.$color-text;
-  font-size: 1.125rem;
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: tokens.$size-1;
   text-decoration: none;
 }
 
+.header__logo-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: tokens.$size-4;
+  height: tokens.$size-4;
+}
+
+.header__logo-icon {
+  width: tokens.$logo-icon-size;
+  height: tokens.$logo-icon-size;
+}
+
+.header__logo-text {
+  color: tokens.$color-on-primary;
+  font-size: tokens.$font-size-headline-small;
+  font-weight: 700;
+  line-height: 100%;
+}
+
+.header__menu {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .header__link {
-  color: tokens.$color-text-muted;
+  color: tokens.$color-text;
   font-size: tokens.$font-size-sm;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .header__link--active {
-  color: tokens.$color-text;
+  color: tokens.$color-on-primary;
+  font-weight: 700;
 }
 
 Z .header__link:hover {
@@ -62,7 +97,7 @@ Z .header__link:hover {
 .header__actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: tokens.$size-2;
 }
 
 .header__login,
@@ -89,19 +124,36 @@ Z .header__link:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0.25rem 0.375rem;
   color: tokens.$color-on-footer;
-  background-color: transparent;
+  background-color: tokens.$color-footer-low;
   border: 0;
+  border-radius: tokens.$radius-md;
   font: inherit;
   font-size: 1.5rem;
   cursor: pointer;
 }
 
 .header__mobile-menu {
-  padding: 1.5rem;
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  width: 20rem;
+  z-index: 10;
+  height: 36.6875rem;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$size-4;
+  padding: tokens.$size-3;
   background-color: tokens.$color-footer;
-  border-radius: tokens.$radius-lg;
+  border-left: 0.125rem solid tokens.$color-on-primary;
+  border-radius: 0;
+}
+
+.header__mobile-menu[hidden] {
+  display: none;
 }
 
 .header__mobile-top {
@@ -111,38 +163,125 @@ Z .header__link:hover {
 }
 
 .header__mobile-logo {
-  color: tokens.$color-on-footer;
-  font-size: 1.125rem;
+  color: tokens.$color-white;
+  font-size: tokens.$font-size-headline-small;
   font-weight: 700;
+  line-height: 100%;
+  letter-spacing: -0.05em;
   text-decoration: none;
 }
 
 .header__mobile-links {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin: 2rem 0 0;
+  gap: tokens.$size-3;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .header__mobile-link {
   color: tokens.$color-on-footer;
-  font-size: tokens.$font-size-md;
-  font-weight: 600;
+  font-size: tokens.$font-size-title-xxx-small;
+  font-weight: 500;
+  line-height: 100%;
   text-decoration: none;
 }
 
 .header__mobile-link--active {
   color: tokens.$color-primary;
+  font-weight: 700;
 }
 
-@media (max-width: 48rem) {
+.header__mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$size-2;
+  margin-top: auto;
+}
+
+.header__mobile-login,
+.header__mobile-signup {
+  padding: tokens.$btn-medium-y tokens.$btn-medium-x;
+  border-width: 0.125rem;
+  border-style: solid;
+  border-radius: tokens.$radius-md;
+  font: inherit;
+  font-size: tokens.$font-size-body-small;
+  font-weight: 700;
+  line-height: 100%;
+  cursor: pointer;
+}
+
+.header__mobile-login {
+  color: tokens.$color-white;
+  background-color: transparent;
+  border-color: tokens.$color-white;
+}
+
+.header__mobile-signup {
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-primary;
+  border-color: tokens.$color-on-primary;
+}
+
+@media (max-width: breakpoints.$breakpoint-tablet) {
+  .header {
+    height: tokens.$size-9;
+    padding: tokens.$size-2 tokens.$size-5;
+    background-color: tokens.$color-background;
+    border-bottom: tokens.$border-width-medium solid tokens.$color-on-primary;
+  }
+
+  .header__nav {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: tokens.$color-background;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .header__actions {
+    gap: tokens.$size-2;
+  }
+
+  .header__signup {
+    padding: tokens.$btn-small-y tokens.$btn-small-x;
+    color: tokens.$color-on-primary;
+    background-color: tokens.$color-primary;
+    border: tokens.$border-width-medium solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-md;
+    font-size: tokens.$font-size-label-large;
+    font-weight: 700;
+    line-height: 100%;
+  }
+
+  .header__login {
+    display: none;
+  }
+
   .header__menu {
     display: none;
   }
 
   .header__burger {
     display: flex;
+    width: tokens.$size-4;
+    height: tokens.$size-4;
+    padding: tokens.$btn-icon;
+    background-color: tokens.$color-white;
+    border: tokens.$border-width-medium solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-md;
+  }
+
+  .header__mobile-menu {
+    left: 0;
+  }
+}
+
+@media (max-width: breakpoints.$breakpoint-mobile) {
+  .header__signup {
+    display: none;
   }
 }
