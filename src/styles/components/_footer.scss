@@ -1,0 +1,56 @@
+@use '../tokens';
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-xxl;
+  width: 100%;
+  min-height: 343px;
+  padding: tokens.$size-5 tokens.$size-15;
+  background-color: tokens.$color-footer;
+}
+
+.footer__top {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 151px;
+}
+
+.footer__brand {
+  display: flex;
+  flex: 0 0 400px;
+  flex-direction: column;
+  gap: tokens.$size-3;
+}
+
+.footer__description {
+  width: 100%;
+  margin: 0;
+  color: tokens.$color-on-footer;
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-body-small;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.footer__logo {
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: tokens.$size-1;
+  text-decoration: none;
+}
+
+.footer__logo-icon {
+  width: tokens.$logo-icon-size;
+  height: tokens.$logo-icon-size;
+}
+
+.footer__logo-text {
+  color: tokens.$color-white;
+  font-size: tokens.$font-size-headline-small;
+  font-weight: 700;
+  line-height: 100%;
+}

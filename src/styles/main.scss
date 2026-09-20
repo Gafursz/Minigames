@@ -3,6 +3,10 @@
 @use './utilities';
 @use './components/header';
 @use './components/hero';
+@use '../features/slider/slider';
+@use './components/leaderboard';
+@use './components/developer-section';
+@use './components/footer';
 *,
 *::before,
 *::after {

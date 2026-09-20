@@ -90,3 +90,29 @@
     font-size: tokens.$font-size-body-small;
   }
 }
+
+@media (max-width: breakpoints.$breakpoint-mobile) {
+  .hero__content {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: tokens.$size-8 tokens.$size-2;
+  }
+
+  .hero__content {
+    width: 100%;
+    gap: tokens.$size-2;
+    padding: tokens.$size-3;
+    border-width: 2px;
+    border-radius: tokens.$radius-md;
+    box-shadow: 4px 4px 0 tokens.$color-on-primary;
+  }
+
+  .hero__title {
+    font-size: tokens.$font-size-display-small;
+    line-height: 120%;
+  }
+}
