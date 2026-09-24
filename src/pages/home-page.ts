@@ -1,8 +1,8 @@
-import { Footer } from '../components/Footer';
-import { DeveloperSection } from '../components/DeveloperSection';
-import { Header } from '../components/Header';
-import { Hero } from '../components/Hero';
-import { Leaderboard } from '../components/Leaderboard';
+import { Footer } from '../components/footer';
+import { DeveloperSection } from '../components/developer-section';
+import { Header } from '../components/header';
+import { Hero } from '../components/hero';
+import { Leaderboard } from '../components/leaderboard';
 import { Slider } from '../features/slider/slider';
 
 export class HomePage {

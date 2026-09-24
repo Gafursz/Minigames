@@ -1,5 +1,5 @@
 import leaderboardData from '../data/leaderboard.json';
-import type { LeaderboardData, LeaderboardPlayer } from '../types/LeaderboardPlayer';
+import type { LeaderboardData, LeaderboardPlayer } from '../types/leaderboard-player';
 
 export class Leaderboard {
   private readonly leaderboard: LeaderboardData = leaderboardData as LeaderboardData;
@@ -10,7 +10,7 @@ export class Leaderboard {
 
   private getInitials(playerName: string): string {
     const words = playerName
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replaceAll(/([a-z])([A-Z])/g, '$1 $2')
       .split(/[_\s]+/)
       .filter(Boolean);
 

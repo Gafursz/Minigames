@@ -1,6 +1,6 @@
 import gamesData from '../../data/all-games-seed.json';
-import { GameCard } from '../../components/GameCard';
-import type { Game } from '../../types/Game';
+import { GameCard } from '../../components/game-card';
+import type { Game } from '../../types/game';
 
 export class Slider {
   private readonly games: Game[] = gamesData.data;
@@ -19,12 +19,12 @@ export class Slider {
 
     const gameCards = visibleGames
       .map((game, index) => {
-        const variant =
-          index === 1 || index === 3
-            ? 'responsive-narrow'
-            : index === 2
-              ? 'featured'
-              : 'desktop-narrow';
+        let variant = 'desktop-narrow';
+        if (index === 1 || index === 3) {
+          variant = 'responsive-narrow';
+        } else if (index === 2) {
+          variant = 'featured';
+        }
 
         return `
       <div class="slider__item slider__item--${variant}">

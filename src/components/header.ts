@@ -99,17 +99,19 @@ export class Header {
     const burgerButton = document.querySelector<HTMLButtonElement>('.header__burger');
     const mobileMenu = document.querySelector<HTMLElement>('.header__mobile-menu');
     const closeButton = document.querySelector<HTMLButtonElement>('.header__mobile-close');
-    if (burgerButton && mobileMenu && closeButton) {
-      burgerButton.addEventListener('click', () => {
-        const isMenuOpen = !mobileMenu.hidden;
-
-        mobileMenu.hidden = isMenuOpen;
-        burgerButton.setAttribute('aria-expanded', String(!isMenuOpen));
-      });
-      closeButton.addEventListener('click', () => {
-        mobileMenu.hidden = true;
-        burgerButton.setAttribute('aria-expanded', 'false');
-      });
+    if (!(burgerButton && mobileMenu && closeButton)) {
+      return;
     }
+
+    burgerButton.addEventListener('click', () => {
+      const isMenuOpen = !mobileMenu.hidden;
+
+      mobileMenu.hidden = isMenuOpen;
+      burgerButton.setAttribute('aria-expanded', String(!isMenuOpen));
+    });
+    closeButton.addEventListener('click', () => {
+      mobileMenu.hidden = true;
+      burgerButton.setAttribute('aria-expanded', 'false');
+    });
   }
 }

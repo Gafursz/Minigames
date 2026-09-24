@@ -4,15 +4,11 @@ const gameImages = import.meta.glob('../assets/images/games/*-card.jpg', {
   query: '?url',
 }) as Record<string, string>;
 
-import type { Game } from '../types/Game';
+import type { Game } from '../types/game';
 export class GameCard {
   constructor(private readonly game: Game) {}
   private formatLikesCount(count: number): string {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`;
-    }
-
-    return count.toString();
+    return count >= 1000 ? `${(count / 1000).toFixed(1)}K` : count.toString();
   }
 
   public render(): string {

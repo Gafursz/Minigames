@@ -1,4 +1,4 @@
-import { HomePage } from '../pages/HomePage';
+import { HomePage } from '../pages/home-page';
 
 export class App {
   private readonly root: HTMLElement;
