@@ -1,4 +1,5 @@
 @use '../../styles/tokens';
+@use '../../styles/breakpoints';
 
 .slider {
   display: flex;
@@ -178,7 +179,7 @@
   color: tokens.$color-primary;
 }
 
-@media (max-width: 768px) {
+@media (max-width: breakpoints.$breakpoint-tablet) {
   .slider {
     gap: 32px;
     padding: 32px 40px;
@@ -213,7 +214,7 @@
   }
 }
 
-@media (min-width: 769px) and (max-width: 1919px) {
+@media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and (max-width: calc(breakpoints.$breakpoint-figma-desktop - 1px)) {
   .slider {
     gap: 32px;
     padding: 32px 40px;
@@ -242,7 +243,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: breakpoints.$breakpoint-mobile) {
   .slider {
     gap: 24px;
     padding: 24px 16px;

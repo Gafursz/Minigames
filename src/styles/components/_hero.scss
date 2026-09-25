@@ -97,7 +97,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: breakpoints.$breakpoint-mobile) {
   .hero {
     padding: tokens.$size-8 tokens.$size-2;
   }
