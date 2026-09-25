@@ -16,7 +16,7 @@ export class Leaderboard {
 
     return words
       .slice(0, 2)
-      .map((word) => word.charAt(0))
+      .map((word: string) => word.charAt(0))
       .join('')
       .toUpperCase();
   }
@@ -70,7 +70,9 @@ export class Leaderboard {
   }
 
   public render(): string {
-    const rows = this.leaderboard.data.map((player) => this.renderPlayer(player)).join('');
+    const rows: string = this.leaderboard.data
+      .map((player: LeaderboardPlayer) => this.renderPlayer(player))
+      .join('');
 
     return `
       <section

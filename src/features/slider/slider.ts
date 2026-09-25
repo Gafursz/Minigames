@@ -14,11 +14,11 @@ export class Slider {
     ];
 
     const visibleGames = visibleGameSlugs
-      .map((slug) => this.games.find((game) => game.slug === slug))
-      .filter((game): game is Game => game !== undefined);
+      .map((slug: string) => this.games.find((game: Game) => game.slug === slug))
+      .filter((game: Game | undefined): game is Game => game !== undefined);
 
     const gameCards = visibleGames
-      .map((game, index) => {
+      .map((game: Game, index: number) => {
         let variant = 'desktop-narrow';
         if (index === 1 || index === 3) {
           variant = 'responsive-narrow';
