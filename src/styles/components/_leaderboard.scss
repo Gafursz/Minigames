@@ -1,12 +1,29 @@
 @use '../tokens';
 @use '../breakpoints';
 
+/* ======================================================
+   Leaderboard Section — Desktop
+   ====================================================== */
+
 .leaderboard-section {
   display: flex;
+  width: 100%;
+  height: tokens.$home-leaderboard-height-desktop;
   flex-direction: column;
   gap: tokens.$size-5;
-  padding: tokens.$size-5 tokens.$size-15;
+  padding: tokens.$size-5 0;
   background-color: tokens.$color-background;
+}
+
+.leaderboard-section__container {
+  display: flex;
+  width: 100%;
+  max-width: 1760px;
+  height: 100%;
+  flex-direction: column;
+  gap: tokens.$size-5;
+  margin-inline: auto;
+  padding-inline: tokens.$size-5;
 }
 
 .leaderboard-section__header {
@@ -17,9 +34,9 @@
 }
 
 .leaderboard-section__accent {
-  flex-shrink: 0;
   width: tokens.$size-1;
   height: tokens.$size-4;
+  flex-shrink: 0;
   background-color: tokens.$color-primary;
   border: 1.5px solid tokens.$color-on-primary;
   border-radius: tokens.$radius-sm;
@@ -34,43 +51,81 @@
   line-height: 100%;
 }
 
+.leaderboard-section__title-mobile {
+  display: none;
+}
+
+/* ======================================================
+   Leaderboard Table — Desktop
+   ====================================================== */
+
 .leaderboard {
   width: 100%;
   overflow: hidden;
   background-color: tokens.$color-white;
   border: 2.5px solid tokens.$color-on-primary;
+  border-spacing: 0;
   border-radius: tokens.$radius-lg;
   box-shadow: 6px 6px 0 tokens.$color-on-primary;
-}
-
-.leaderboard__header,
-.leaderboard__row {
-  display: grid;
-  grid-template-columns: 80px repeat(5, minmax(0, 1fr));
-  column-gap: tokens.$size-2;
-  align-items: center;
+  table-layout: fixed;
 }
 
 .leaderboard__header {
-  min-height: 67px;
-  padding: tokens.$size-3;
+  height: 43px;
   color: tokens.$color-white;
   background-color: tokens.$color-tertiary;
-  border-bottom: 1.5px solid tokens.$color-on-primary;
   font-size: tokens.$font-size-body-small;
   font-weight: 800;
   line-height: 100%;
   text-transform: uppercase;
 }
 
+.leaderboard__header th {
+  padding: 0 tokens.$size-3;
+  font-weight: 800;
+  text-align: left;
+}
+
+.leaderboard__header th:first-child {
+  width: 7%;
+}
+
+.leaderboard__header th:nth-child(2) {
+  width: 18%;
+}
+
+.leaderboard__header th:nth-child(3) {
+  width: 18%;
+}
+
+.leaderboard__header th:nth-child(4) {
+  width: 18%;
+}
+
+.leaderboard__header th:nth-child(5) {
+  width: 17%;
+}
+
+.leaderboard__header th:nth-child(6) {
+  width: 22%;
+}
+
+/* ======================================================
+   Leaderboard Rows
+   ====================================================== */
+
 .leaderboard__row {
-  min-height: tokens.$size-9;
-  padding: tokens.$size-2 tokens.$size-3;
+  height: tokens.$size-9;
   color: tokens.$color-on-primary;
-  border-bottom: 1px solid tokens.$color-outline;
   font-size: tokens.$font-size-body-small;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 100%;
+}
+
+.leaderboard__row td {
+  padding: tokens.$size-2 tokens.$size-3;
+  border-bottom: 1px solid tokens.$color-outline;
+  vertical-align: middle;
 }
 
 .leaderboard__row:nth-child(odd) {
@@ -81,118 +136,360 @@
   background-color: tokens.$color-white;
 }
 
-.leaderboard__row:last-child {
+.leaderboard__row:last-child td {
   border-bottom: 0;
 }
 
+/* ======================================================
+   Rank
+   ====================================================== */
+
 .leaderboard__rank {
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-label-large;
   font-weight: 700;
+  line-height: 100%;
+  white-space: nowrap;
 }
 
-.leaderboard__row:first-child .leaderboard__rank {
-  color: tokens.$color-primary-high;
+.leaderboard__rank--first {
+  color: tokens.$color-primary;
 }
+
+/* ======================================================
+   Player
+   ====================================================== */
 
 .leaderboard__player {
-  display: flex;
-  align-items: center;
-  gap: tokens.$size-1;
   min-width: 0;
+  white-space: nowrap;
 }
+
+// .leaderboard__avatar {
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   width: tokens.$size-5;
+//   height: tokens.$size-5;
+//   margin-right: 12px;
+//   color: tokens.$color-on-primary;
+//   background-color: tokens.$color-secondary;
+//   border: 1.5px solid tokens.$color-on-primary;
+//   border-radius: 50%;
+//   font-size: tokens.$font-size-label-large;
+//   font-weight: 700;
+//   line-height: 100%;
+//   vertical-align: middle;
+// }
 
 .leaderboard__avatar {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: tokens.$size-5;
-  height: tokens.$size-5;
-  color: tokens.$color-on-primary;
-  background-color: tokens.$color-secondary;
+
+  width: 24px;
+  height: 24px;
+
   border: 1px solid tokens.$color-on-primary;
   border-radius: 50%;
-  font-size: tokens.$font-size-label-large;
-  font-weight: 700;
-  line-height: 100%;
-}
 
-.leaderboard__player-name {
-  overflow: hidden;
+  font-size: 12px;
   font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.leaderboard__cell {
-  font-weight: 700;
-}
-
-.leaderboard__streak {
-  display: flex;
-  align-items: center;
-  gap: tokens.$size-05;
-  font-weight: 700;
-}
-
-.leaderboard__fire {
   line-height: 1;
 }
 
-.leaderboard__favorite {
+.leaderboard__avatar--rank-1 {
+  background-color: tokens.$yellow;
+}
+
+.leaderboard__avatar--rank-2 {
+  background-color: tokens.$mint;
+}
+
+.leaderboard__avatar--rank-3 {
+  background-color: tokens.$light-blue;
+}
+
+.leaderboard__avatar--rank-4 {
+  background-color: tokens.$pink;
+}
+
+.leaderboard__avatar--rank-5 {
+  background-color: tokens.$lavender;
+}
+
+.leaderboard__player-name {
+  display: inline-block;
+  max-width: calc(100% - 56px);
   overflow: hidden;
   font-weight: 700;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* ======================================================
+   Score / Games
+   ====================================================== */
+
+.leaderboard__cell {
+  font-weight: 600;
+}
+
+/* ======================================================
+   Streak
+   ====================================================== */
+
+.leaderboard__streak {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.leaderboard__fire {
+  margin-right: tokens.$size-05;
+  line-height: 1;
+}
+
+/* ======================================================
+   Favorite Game
+   ====================================================== */
+
+.leaderboard__favorite {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.leaderboard__favorite-badge {
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 8px;
+  overflow: hidden;
+  color: tokens.$color-on-primary;
+  border: 1px solid tokens.$color-on-primary;
+  border-radius: 999px;
+  font-size: tokens.$font-size-body-small;
+  font-weight: 700;
+  line-height: 100%;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Tablet */
-@media (max-width: breakpoints.$breakpoint-tablet) {
+/* ======================================================
+   Intermediate — 769px to 1440px
+
+   Five useful columns remain visible while Favorite Game
+   is removed. The table itself remains fluid instead of
+   being scaled down.
+   ====================================================== */
+
+@media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and (max-width: breakpoints.$breakpoint-wide) {
+  .leaderboard-section__container {
+    max-width: none;
+    gap: tokens.$size-3;
+    padding-inline: tokens.$size-5;
+  }
+
   .leaderboard-section {
-    gap: tokens.$size-4;
-    padding: tokens.$size-4 tokens.$size-5;
-  }
-
-  .leaderboard-section__title {
-    font-size: tokens.$font-size-lg;
-  }
-
-  .leaderboard-section__accent {
-    height: tokens.$size-3;
+    height: auto;
+    min-height: tokens.$home-leaderboard-height-tablet;
+    gap: tokens.$size-5;
+    padding: tokens.$size-5 clamp(40px, 5.21vw, 80px);
   }
 
   .leaderboard {
-    overflow-x: auto;
-  }
-
-  .leaderboard__header,
-  .leaderboard__row {
-    grid-template-columns: 56px 160px 120px 120px 110px 180px;
-    min-width: 794px;
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    box-shadow: 4px 4px 0 tokens.$color-on-primary;
   }
 
   .leaderboard__header {
-    min-height: 56px;
-    padding: tokens.$size-2;
+    height: tokens.$size-6;
+  }
+
+  .leaderboard__header th {
+    padding: 0 tokens.$size-2;
   }
 
   .leaderboard__row {
-    padding: tokens.$size-2;
+    height: 60px;
+  }
+
+  .leaderboard__row td {
+    padding: tokens.$size-1 tokens.$size-2;
+  }
+
+  .leaderboard__avatar {
+    width: tokens.$size-3;
+    height: tokens.$size-3;
+    margin-right: tokens.$size-1;
+  }
+
+  .leaderboard__player-name {
+    max-width: calc(100% - tokens.$size-4);
+  }
+
+  /*
+   * Favorite Game is the least important column at
+   * intermediate widths, so remove it first.
+   */
+
+  .leaderboard__header th:nth-child(6),
+  .leaderboard__row td:nth-child(6) {
+    display: none;
+  }
+
+  .leaderboard__header th:first-child {
+    width: 10%;
+  }
+
+  .leaderboard__header th:nth-child(2) {
+    width: 25%;
+  }
+
+  .leaderboard__header th:nth-child(3) {
+    width: 20%;
+  }
+
+  .leaderboard__header th:nth-child(4) {
+    width: 23%;
+  }
+
+  .leaderboard__header th:nth-child(5) {
+    width: 22%;
   }
 }
 
-/* Mobile */
-@media (max-width: breakpoints.$breakpoint-mobile) {
+/* ======================================================
+   Tablet — 768px and below
+   ====================================================== */
+
+@media (max-width: breakpoints.$breakpoint-tablet) {
+  .leaderboard-section__container {
+    max-width: none;
+    gap: clamp(tokens.$size-2, calc(8.37px + 2.04vw), tokens.$size-3);
+    padding-inline: clamp(tokens.$size-2, calc(-6.9px + 6.11vw), tokens.$size-5);
+  }
+
   .leaderboard-section {
+    height: tokens.$home-leaderboard-height-tablet;
+    gap: tokens.$size-3;
+    padding-block: tokens.$size-3;
+  }
+}
+
+.leaderboard-section__title {
+  font-size: tokens.$font-size-lg;
+}
+
+.leaderboard-section__accent {
+  height: tokens.$size-3;
+}
+
+.leaderboard {
+  width: 100%;
+  height: 228px;
+  min-width: 0;
+  table-layout: fixed;
+  box-shadow: 4px 4px 0 tokens.$color-on-primary;
+}
+
+.leaderboard__header {
+  height: tokens.$size-6;
+}
+
+.leaderboard__header th {
+  padding: 0 tokens.$size-2;
+}
+
+.leaderboard__row {
+  height: 60px;
+}
+
+.leaderboard__row td {
+  padding: tokens.$size-1 tokens.$size-2;
+}
+
+.leaderboard__avatar {
+  width: tokens.$size-3;
+  height: tokens.$size-3;
+  margin-right: tokens.$size-1;
+}
+
+.leaderboard__player-name {
+  max-width: calc(100% - tokens.$size-4);
+}
+
+/*
+   * The tablet Figma layout displays three players.
+   */
+
+.leaderboard__row:nth-child(n + 4) {
+  display: none;
+}
+
+/*
+   * Favorite Game is hidden on tablet.
+   */
+
+.leaderboard__header th:nth-child(6),
+.leaderboard__row td:nth-child(6) {
+  display: none;
+}
+
+.leaderboard__header th:first-child {
+  width: 12%;
+}
+
+.leaderboard__header th:nth-child(2) {
+  width: 28%;
+}
+
+.leaderboard__header th:nth-child(3) {
+  width: 20%;
+}
+
+.leaderboard__header th:nth-child(4) {
+  width: 22%;
+}
+
+.leaderboard__header th:nth-child(5) {
+  width: 18%;
+}
+
+/* ======================================================
+   Mobile — 480px and below
+   ====================================================== */
+
+@media (max-width: breakpoints.$breakpoint-tablet) {
+  .leaderboard-section__container {
     gap: tokens.$size-2;
-    padding: tokens.$size-3 tokens.$size-2;
+    padding-inline: tokens.$size-2;
+  }
+
+  .leaderboard-section {
+    height: tokens.$home-leaderboard-height-mobile;
+    gap: tokens.$size-2;
+    padding-block: tokens.$size-2;
   }
 
   .leaderboard-section__header {
+    width: 100%;
+    height: 29px;
     gap: tokens.$size-1;
   }
 
   .leaderboard-section__title {
     font-size: tokens.$font-size-lg;
+  }
+
+  .leaderboard-section__title-desktop {
+    display: none;
+  }
+
+  .leaderboard-section__title-mobile {
+    display: inline;
   }
 
   .leaderboard-section__accent {
@@ -201,33 +498,86 @@
   }
 
   .leaderboard {
+    width: 100%;
+    height: 216px;
+    min-width: 0;
     border-width: 2.5px;
     border-radius: tokens.$radius-lg;
+    table-layout: fixed;
     box-shadow: 4px 4px 0 tokens.$color-on-primary;
   }
 
-  .leaderboard__header,
-  .leaderboard__row {
-    grid-template-columns: 40px 97px 70px 80px 70px 80px;
-    column-gap: tokens.$size-2;
-    min-width: 517px;
-  }
-
   .leaderboard__header {
-    min-height: tokens.$size-6;
-    padding: tokens.$size-2;
+    height: tokens.$size-6;
     font-size: tokens.$font-size-body-small;
   }
 
   .leaderboard__row {
-    min-height: tokens.$size-6;
-    padding: tokens.$size-1 tokens.$size-2;
+    height: 56px;
     font-size: tokens.$font-size-body-small;
+  }
+
+  .leaderboard__header th,
+  .leaderboard__row td {
+    padding: tokens.$size-1;
+  }
+
+  /*
+   * Mobile layout:
+   *
+   * Rank | Player | Score | Streak
+   *
+   * Games Played and Favorite Game are hidden.
+   */
+
+  .leaderboard__header th:nth-child(3),
+  .leaderboard__row td:nth-child(3),
+  .leaderboard__header th:nth-child(6),
+  .leaderboard__row td:nth-child(6) {
+    display: none;
+  }
+
+  .leaderboard__header th:first-child {
+    width: 16%;
+  }
+
+  .leaderboard__header th:nth-child(2) {
+    width: 35%;
+  }
+
+  .leaderboard__header th:nth-child(4) {
+    width: 23%;
+  }
+
+  .leaderboard__header th:nth-child(5) {
+    width: 26%;
   }
 
   .leaderboard__avatar {
     width: tokens.$size-3;
     height: tokens.$size-3;
-    font-size: 8px;
+    margin-right: tokens.$size-1;
+    font-size: tokens.$font-size-body-small;
+  }
+
+  .leaderboard__player-name {
+    max-width: calc(100% - tokens.$size-4);
+  }
+
+  .leaderboard__row:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+/* ==========================================
+   Compact leaderboard: up to 1440px
+
+   Show only the first 3 players.
+   At 1441px and above, all 5 players appear.
+   ========================================== */
+
+@media (max-width: breakpoints.$breakpoint-wide) {
+  .leaderboard__body .leaderboard__row:nth-child(n + 4) {
+    display: none;
   }
 }

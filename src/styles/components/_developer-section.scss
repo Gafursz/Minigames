@@ -1,10 +1,17 @@
 @use '../tokens';
+@use '../breakpoints';
+
+/* =========================
+   Desktop
+   Figma frame: 1920px
+   ========================= */
 
 .developer-section {
   display: flex;
   align-items: center;
-  gap: tokens.$size-5;
   width: 100%;
+  height: tokens.$home-developer-height-desktop;
+  gap: tokens.$size-5;
   padding: tokens.$size-5 tokens.$size-15;
   background-color: tokens.$color-background;
   border-bottom: 1px solid tokens.$color-outline;
@@ -13,6 +20,7 @@
 .developer-section__illustration {
   flex: 0 0 680px;
   height: 480px;
+  overflow: hidden;
   border-radius: tokens.$size-3;
 }
 
@@ -20,7 +28,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: inherit;
 }
 
@@ -79,6 +87,13 @@
   box-shadow: 0 10px 20px -10px rgb(0 0 0 / 10%);
 }
 
+.developer-section__button-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 .developer-section__contact {
   margin: 0;
   color: tokens.$color-text;
@@ -92,4 +107,185 @@
   color: tokens.$color-tertiary;
   font-weight: 700;
   text-decoration: underline;
+}
+
+/* ==========================================
+   Intermediate layout: 769px–1535px
+
+   Keeps the Developer section stacked between
+   the tablet and full desktop layouts.
+   ========================================== */
+
+@media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and (max-width: calc(breakpoints.$breakpoint-developer-desktop - 1px)) {
+  .developer-section {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    gap: tokens.$size-5;
+    padding: tokens.$size-5 clamp(40px, 5.21vw, 80px);
+  }
+
+  .developer-section__illustration {
+    flex: none;
+    width: 100%;
+    height: clamp(300px, 37.5vw, 480px);
+  }
+
+  .developer-section__card {
+    flex: none;
+    width: 100%;
+  }
+}
+
+/* ==========================================
+   Desktop container spacing: 1441px–1535px
+
+   Developer remains stacked, but horizontal
+   padding matches New Games and Top Players.
+   ========================================== */
+
+@media (min-width: calc(breakpoints.$breakpoint-wide + 1px)) and (max-width: calc(breakpoints.$breakpoint-developer-desktop - 1px)) {
+  .developer-section {
+    padding: tokens.$size-5 tokens.$size-15;
+  }
+}
+
+/* ==========================================
+   Fluid mobile → tablet: 481px–768px
+
+   Starts close to the mobile composition and
+   grows smoothly toward the 768px Figma frame.
+   ========================================== */
+
+@media (min-width: calc(breakpoints.$breakpoint-mobile + 1px)) and (max-width: breakpoints.$breakpoint-tablet) {
+  .developer-section {
+    flex-direction: column;
+    align-items: stretch;
+
+    height: auto;
+
+    gap: clamp(tokens.$size-2, calc(2.62px + 2.79vw), tokens.$size-3);
+
+    padding: clamp(tokens.$size-2, calc(2.62px + 2.79vw), tokens.$size-3)
+      clamp(tokens.$size-2, calc(-24.11px + 8.35vw), tokens.$size-5);
+  }
+
+  .developer-section__illustration {
+    flex: none;
+    width: 100%;
+
+    height: clamp(227px, calc(105px + 25.36vw), 300px);
+  }
+
+  .developer-section__card {
+    flex: none;
+    width: 100%;
+    height: auto;
+
+    gap: clamp(tokens.$size-2, calc(2.62px + 2.79vw), tokens.$size-3);
+
+    padding: clamp(tokens.$size-3, calc(10.62px + 2.79vw), tokens.$size-4);
+  }
+
+  .developer-section__title {
+    font-size: clamp(tokens.$font-size-display-small, calc(10.62px + 2.79vw), tokens.$font-size-xl);
+  }
+
+  .developer-section__description {
+    font-size: clamp(
+      tokens.$font-size-label-large,
+      calc(7.31px + 1.39vw),
+      tokens.$font-size-body-large
+    );
+  }
+}
+// /* =========================
+//    Tablet: 768px and below
+//    Figma frame: 768px
+//    ========================= */
+
+// @media (max-width: breakpoints.$breakpoint-tablet) {
+//   .developer-section {
+//     flex-direction: column;
+//     align-items: stretch;
+//     height: tokens.$home-developer-height-tablet;
+//     gap: tokens.$size-3;
+//     padding: tokens.$size-3 tokens.$size-5;
+//   }
+
+//   .developer-section__illustration {
+//     flex: none;
+//     width: 100%;
+//     height: 300px;
+//   }
+
+//   .developer-section__card {
+//     flex: none;
+//     width: 100%;
+//     height: 256px;
+//     gap: tokens.$size-2;
+//     padding: tokens.$size-4;
+//   }
+// }
+
+/* =========================
+   Mobile: 480px and below
+   Figma frame: 375px
+   ========================= */
+
+@media (max-width: breakpoints.$breakpoint-mobile) {
+  .developer-section {
+    flex-direction: column;
+    align-items: stretch;
+    height: tokens.$home-developer-height-mobile;
+    gap: tokens.$size-2;
+    padding: tokens.$size-2;
+  }
+
+  .developer-section__illustration {
+    flex: none;
+    width: 100%;
+    height: 227px;
+    overflow: hidden;
+    border-radius: tokens.$size-3;
+  }
+
+  .developer-section__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .developer-section__card {
+    flex: none;
+    width: 100%;
+    height: 291px;
+    gap: tokens.$size-2;
+    padding: tokens.$size-3;
+    border-width: tokens.$border-width-medium;
+    border-radius: tokens.$size-3;
+  }
+
+  .developer-section__title {
+    font-size: tokens.$font-size-display-small;
+    line-height: 120%;
+  }
+
+  .developer-section__description {
+    font-size: tokens.$font-size-label-large;
+    line-height: 150%;
+  }
+
+  .developer-section__button {
+    min-width: 0;
+    min-height: 0;
+    padding: tokens.$size-1 tokens.$size-2;
+    font-size: tokens.$font-size-label-large;
+    line-height: 100%;
+  }
+
+  .developer-section__contact {
+    font-size: tokens.$font-size-label-large;
+    line-height: 100%;
+  }
 }

@@ -1,10 +1,16 @@
 @use '../tokens';
 @use '../breakpoints';
 
+// ======================================================
+// DESKTOP
+// ======================================================
+
 .hero {
   position: relative;
-  padding: tokens.$size-14 tokens.$size-15;
-  background-color: tokens.$color-footer;
+  width: 100%;
+  height: tokens.$home-hero-height-desktop;
+  overflow: hidden;
+  background-color: tokens.$color-hero;
   border-bottom: tokens.$border-width-medium solid tokens.$color-on-primary;
   isolation: isolate;
 }
@@ -20,12 +26,30 @@
   content: '';
 }
 
+.hero__container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  max-width: 1760px;
+  height: 100%;
+  margin-inline: auto;
+  padding-inline: tokens.$size-5;
+}
+
 .hero__content {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+
+  width: 100%;
+  max-width: 40rem;
+
   gap: tokens.$size-3;
-  width: 40rem;
   padding: tokens.$size-6;
+
   background-color: tokens.$color-background;
   border: 3px solid tokens.$color-on-primary;
   border-radius: 24px;
@@ -48,28 +72,45 @@
   line-height: 150%;
 }
 
+.hero__description--mobile {
+  display: none;
+}
+
 .hero__button {
   align-self: flex-start;
+
   padding: tokens.$btn-large-y tokens.$btn-large-x;
+
   color: tokens.$color-on-primary;
   background-color: tokens.$color-primary;
   border: tokens.$border-width-medium solid tokens.$color-on-primary;
   border-radius: tokens.$radius-md;
+
   font-size: tokens.$font-size-body-large;
   font-weight: 700;
   line-height: 100%;
   text-decoration: none;
+  cursor: pointer;
 }
 
-@media (max-width: breakpoints.$breakpoint-tablet) {
+// ======================================================
+// TABLET
+// ======================================================
+
+@media (max-width: breakpoints.$breakpoint-wide) {
   .hero {
-    padding: tokens.$size-9 tokens.$size-5;
+    height: tokens.$home-hero-height-tablet;
+  }
+
+  .hero__container {
+    padding-inline: tokens.$size-5;
   }
 
   .hero__content {
-    width: 30rem;
+    max-width: 30rem;
     gap: tokens.$size-2;
     padding: tokens.$size-3;
+
     border-width: 2.5px;
     border-radius: 16px;
     box-shadow: 6px 6px 0 tokens.$color-on-primary;
@@ -91,21 +132,22 @@
   }
 }
 
-@media (max-width: breakpoints.$breakpoint-mobile) {
-  .hero__content {
-    width: 100%;
-  }
-}
+// ======================================================
+// MOBILE
+// ======================================================
 
-@media (max-width: breakpoints.$breakpoint-mobile) {
+@media (max-width: breakpoints.$breakpoint-tablet) {
   .hero {
-    padding: tokens.$size-8 tokens.$size-2;
+    height: tokens.$home-hero-height-mobile;
+  }
+
+  .hero__container {
+    padding-inline: tokens.$size-2;
   }
 
   .hero__content {
-    width: 100%;
-    gap: tokens.$size-2;
-    padding: tokens.$size-3;
+    max-width: 30rem;
+
     border-width: 2px;
     border-radius: tokens.$radius-md;
     box-shadow: 4px 4px 0 tokens.$color-on-primary;
@@ -115,4 +157,90 @@
     font-size: tokens.$font-size-display-small;
     line-height: 120%;
   }
+
+  .hero__description {
+    font-size: tokens.$font-size-body-small;
+  }
+
+  .hero__description--desktop {
+    display: none;
+  }
+
+  .hero__description--mobile {
+    display: block;
+  }
+
+  .hero__button {
+    padding: tokens.$btn-medium-y tokens.$btn-medium-x;
+    font-size: tokens.$font-size-body-small;
+  }
 }
+
+// ======================================================
+// MOBILE → TABLET
+// Same visual design as 769px, only responsively scaled
+// ======================================================
+
+// // ======================================================
+// // MOBILE → LAPTOP
+// // 375px–1440px
+// // Same Hero design at every width
+// // ======================================================
+
+// @media (max-width: breakpoints.$breakpoint-wide) {
+//   .hero {
+//     height: tokens.$home-hero-height-mobile;
+//     padding: 0;
+//   }
+
+//   .hero__container {
+//     width: 100%;
+//     height: 100%;
+//     max-width: none;
+//     margin-inline: 0;
+
+//     padding-inline: tokens.$size-2;
+
+//     display: flex;
+//     align-items: center;
+//     justify-content: flex-start;
+//   }
+
+//   .hero__content {
+//     width: 100%;
+//     max-width: 30rem;
+
+//     gap: tokens.$size-2;
+//     padding: tokens.$size-3;
+
+//     border-width: 2px;
+//     border-radius: tokens.$radius-md;
+//     box-shadow: 4px 4px 0 tokens.$color-on-primary;
+//   }
+
+//   .hero__title {
+//     margin: 0;
+//     font-size: tokens.$font-size-display-small;
+//     line-height: 120%;
+//   }
+
+//   .hero__description {
+//     margin: 0;
+//     font-size: tokens.$font-size-body-small;
+//     line-height: 140%;
+//   }
+
+//   .hero__description--desktop {
+//     display: block;
+//   }
+
+//   .hero__description--mobile {
+//     display: none;
+//   }
+
+//   .hero__button {
+//     padding: tokens.$btn-medium-y tokens.$btn-medium-x;
+//     font-size: tokens.$font-size-body-small;
+//     line-height: 100%;
+//   }
+// }

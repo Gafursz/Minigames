@@ -7,10 +7,11 @@ $color-background: #f9f8f3;
 $color-text: #5f5d75;
 $color-text-muted: #737380;
 
-$color-footer: #1e1b3a;
+$color-hero: #1e1b3aa6;
 $color-footer-low: #2a264f;
 $color-footer-lowest: #3c376e;
 $color-on-footer: #b9b5c9;
+$color-footer: #1e1b3a;
 
 $color-surface: #fff9e5;
 $color-surface-low: #fffcf5;
@@ -37,7 +38,34 @@ $border-width-medium: 2px;
 
 $logo-icon-size: 1.875rem;
 
+// Home page section heights
+
+$home-header-height-desktop: 85px;
+$home-header-height-tablet: 72px;
+$home-header-height-mobile: 64px;
+
+$home-hero-height-desktop: 627px;
+$home-hero-height-tablet: 383px;
+$home-hero-height-mobile: 331px;
+
+$home-games-height-desktop: 556px;
+$home-games-height-tablet: 400px;
+$home-games-height-mobile: 283px;
+
+$home-leaderboard-height-desktop: 586px;
+$home-leaderboard-height-tablet: 329px;
+$home-leaderboard-height-mobile: 293px;
+
+$home-developer-height-desktop: 562.79px;
+$home-developer-height-tablet: 628px;
+$home-developer-height-mobile: 566px;
+
+$home-footer-height-desktop: 443px;
+$home-footer-height-tablet: 429px;
+$home-footer-height-mobile: 524px;
+
 // Font
+
 $font-family-base: 'Inter', sans-serif;
 $font-size-title-xx-small: 1rem;
 $font-size-title-xxx-small: 1.125rem;
@@ -87,3 +115,11 @@ $size-05: 0.25rem;
 $radius-sm: 0.25rem;
 $radius-md: 0.5rem;
 $radius-lg: 1rem;
+
+// Avatar colors
+
+$yellow: #ffd02b;
+$mint: #9edfd1;
+$light-blue: #bce3ff;
+$pink: #ffc6ff;
+$lavender: #e8dff5;

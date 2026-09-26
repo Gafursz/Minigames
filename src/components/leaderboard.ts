@@ -23,33 +23,36 @@ export class Leaderboard {
 
   private renderPlayer(player: LeaderboardPlayer): string {
     return `
-      <div class="leaderboard__row">
-        <div class="leaderboard__rank">
-          #${player.rank}
-        </div>
+      <tr class="leaderboard__row">
 
-        <div class="leaderboard__player">
+        <td
+  class="leaderboard__rank ${player.rank === 1 ? 'leaderboard__rank--first' : ''}"
+>
+  #${player.rank}
+</td>
+
+        <td class="leaderboard__player">
           <span
-            class="leaderboard__avatar"
-            aria-hidden="true"
-          >
-            ${this.getInitials(player.playerName)}
-          </span>
+  class="leaderboard__avatar leaderboard__avatar--rank-${player.rank}"
+  aria-hidden="true"
+>
+  ${this.getInitials(player.playerName)}
+</span>
 
           <span class="leaderboard__player-name">
             ${player.playerName}
           </span>
-        </div>
+        </td>
 
-        <div class="leaderboard__cell">
+        <td class="leaderboard__cell">
           ${player.gamesPlayed}
-        </div>
+        </td>
 
-        <div class="leaderboard__cell">
+        <td class="leaderboard__cell">
           ${this.formatScore(player.totalScore)}
-        </div>
+        </td>
 
-        <div class="leaderboard__streak">
+        <td class="leaderboard__streak">
           <span
             class="leaderboard__fire"
             aria-hidden="true"
@@ -60,12 +63,46 @@ export class Leaderboard {
           <span>
             ${player.streakDays} days
           </span>
-        </div>
+        </td>
 
-        <div class="leaderboard__favorite">
-          ${player.favoriteGameName}
-        </div>
-      </div>
+        <td class="leaderboard__favorite">
+  <span class="leaderboard__favorite-badge">
+    ${player.favoriteGameName}
+  </span>
+</td>
+      </tr>
+    `;
+  }
+
+  private renderTableHeader(): string {
+    return `
+      <thead>
+        <tr class="leaderboard__header">
+          <th scope="col">
+            Rank
+          </th>
+
+          <th scope="col">
+            Player
+          </th>
+
+          <th scope="col">
+            Games Played
+          </th>
+
+          <th scope="col">
+            Total Score
+          </th>
+
+          <th scope="col">
+            Streak
+          </th>
+
+          <th scope="col">
+            Favorite Game
+          </th>
+        </tr>
+      </thead>
     `;
   }
 
@@ -79,36 +116,31 @@ export class Leaderboard {
         class="leaderboard-section"
         aria-labelledby="leaderboard-title"
       >
+        <div class="leaderboard-section__container">
         <div class="leaderboard-section__header">
           <span
             class="leaderboard-section__accent"
             aria-hidden="true"
           ></span>
 
-          <h2
-            class="leaderboard-section__title"
-            id="leaderboard-title"
-          >
-            ${this.leaderboard.meta.description}
-          </h2>
+          <h2 class="leaderboard-section__title" id="leaderboard-title">
+  <span class="leaderboard-section__title-desktop">
+    ${this.leaderboard.meta.description}
+  </span>
+
+  <span class="leaderboard-section__title-mobile">
+    Top Players
+  </span>
+</h2>
         </div>
 
-        <div class="leaderboard">
-          <div
-            class="leaderboard__header"
-            role="row"
-          >
-            <div>Rank</div>
-            <div>Player</div>
-            <div>Games Played</div>
-            <div>Total Score</div>
-            <div>Streak</div>
-            <div>Favorite Game</div>
-          </div>
+        <table class="leaderboard">
+          ${this.renderTableHeader()}
 
-          <div class="leaderboard__body">
+          <tbody class="leaderboard__body">
             ${rows}
-          </div>
+          </tbody>
+        </table>
         </div>
       </section>
     `;

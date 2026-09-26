@@ -1,5 +1,7 @@
 import developerIllustration from '../assets/images/developer/developer-illustration.png';
 
+import uploadIcon from '../assets/icons/upload-icon.svg';
+
 export class DeveloperSection {
   public render(): string {
     return `
@@ -33,7 +35,13 @@ export class DeveloperSection {
   class="developer-section__button"
   href="#submit-game"
 >
-  Submit Here
+  <img
+    class="developer-section__button-icon"
+    src="${uploadIcon}"
+    alt=""
+    aria-hidden="true"
+  />
+  Submit Form
 </a>
 
 <p class="developer-section__contact">
