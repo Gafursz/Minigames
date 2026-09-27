@@ -6,6 +6,7 @@ import gamesData from '../data/all-games-seed.json';
 export class LibraryPage {
   private readonly header = new Header('library');
   private readonly footer = new Footer();
+  private readonly controller = new AbortController();
 
   public render(): string {
     return `
@@ -30,5 +31,9 @@ export class LibraryPage {
 
   public bindEvents(): void {
     this.header.bindEvents();
+  }
+
+  public destroy(): void {
+    this.controller.abort();
   }
 }
