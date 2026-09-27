@@ -15,6 +15,7 @@
 @use './components/pagination';
 @use '../features/game-details/game-details';
 @use './components/game-records';
+@use './components/game-comments';
 *,
 *::before,
 *::after {

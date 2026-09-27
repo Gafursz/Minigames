@@ -2,10 +2,12 @@ import closeIcon from '../../assets/icons/close.svg';
 import heroImage from '../../assets/images/games/tukoni-forest-keepers-hero.jpg';
 import { GameInfo } from '../../components/game-info';
 import { GameRecords } from '../../components/game-records';
+import { GameComments } from '../../components/game-comments';
 
 export class GameDetails {
   private readonly info = new GameInfo();
   private readonly records = new GameRecords();
+  private readonly comments = new GameComments();
   private element: HTMLDialogElement | undefined;
   private returnFocus: HTMLElement | undefined;
 
@@ -21,6 +23,7 @@ export class GameDetails {
         <div class="game-details__body">
           ${this.info.render()}
           ${this.records.render()}
+          ${this.comments.render()}
         </div>
       </dialog>
     `;
@@ -30,6 +33,7 @@ export class GameDetails {
     const dialog = document.querySelector<HTMLDialogElement>('#game-details');
     if (!dialog) return;
     this.element = dialog;
+    this.comments.bindEvents(dialog);
 
     dialog
       .querySelector<HTMLButtonElement>('.game-details__close')
