@@ -27,6 +27,10 @@ export class HomePage {
     `;
   }
 
+  public setDialogOpen(isOpen: boolean): void {
+    this.slider.setDialogOpen(isOpen);
+  }
+
   public destroy(): void {
     this.slider.destroy();
   }

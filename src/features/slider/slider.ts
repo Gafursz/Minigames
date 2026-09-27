@@ -135,6 +135,11 @@ export class Slider {
     this.autoplay.start();
   }
 
+  public setDialogOpen(isOpen: boolean): void {
+    if (isOpen) this.autoplay.pause('dialog');
+    else this.autoplay.resume('dialog');
+  }
+
   public destroy(): void {
     this.autoplay.destroy();
     this.controller.abort();
