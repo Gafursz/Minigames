@@ -1,5 +1,6 @@
 import commentsData from '../data/game-comments.json';
 import sendIcon from '../assets/icons/send-comment.svg';
+import activeHeartIcon from '../assets/icons/comment-heart-active.svg';
 import heartIcon from '../assets/icons/comment-heart.svg';
 import { escapeHtml } from '../utils/game';
 
@@ -44,7 +45,37 @@ export class GameComments {
     `;
   }
 
+  public reset(dialog: HTMLDialogElement): void {
+    dialog.querySelector<HTMLFormElement>('.game-comments__form')?.reset();
+    const input = dialog.querySelector<HTMLTextAreaElement>('.game-comments__input');
+    input?.style.removeProperty('height');
+    if (input) input.scrollTop = 0;
+    for (const button of dialog.querySelectorAll<HTMLButtonElement>('.game-comment__like')) {
+      button.setAttribute('aria-pressed', 'false');
+      const icon = button.querySelector('img');
+      if (icon) icon.src = heartIcon;
+    }
+  }
+
   public bindEvents(dialog: HTMLDialogElement): void {
+    const input = dialog.querySelector<HTMLTextAreaElement>('.game-comments__input');
+    input?.addEventListener('input', () => {
+      // Let CSS clamp the measured content between the 48px and 88px tokens.
+      input.style.height = 'auto';
+      const styles = getComputedStyle(input);
+      const borderHeight =
+        Number(styles.borderTopWidth.replace('px', '')) +
+        Number(styles.borderBottomWidth.replace('px', ''));
+      input.style.height = `${input.scrollHeight + borderHeight}px`;
+    });
+    for (const button of dialog.querySelectorAll<HTMLButtonElement>('.game-comment__like')) {
+      button.addEventListener('click', () => {
+        const isLiked = button.getAttribute('aria-pressed') !== 'true';
+        button.setAttribute('aria-pressed', String(isLiked));
+        const icon = button.querySelector('img');
+        if (icon) icon.src = isLiked ? activeHeartIcon : heartIcon;
+      });
+    }
     dialog
       .querySelector<HTMLFormElement>('.game-comments__form')
       ?.addEventListener('submit', (event) => event.preventDefault());
