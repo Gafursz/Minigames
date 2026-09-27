@@ -135,6 +135,7 @@ export function createApp(hash = '#/library') {
     close() {
       app.page?.destroy?.();
       app.gameDetails?.destroy();
+      app.authDialog?.destroy();
       dom.window.close();
     },
   };
