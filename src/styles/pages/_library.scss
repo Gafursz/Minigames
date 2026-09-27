@@ -1,6 +1,12 @@
 @use '../tokens';
 @use '../breakpoints';
 
+.library__cards {
+  display: grid;
+  gap: tokens.$size-2;
+  padding-inline: tokens.$size-2;
+}
+
 .library {
   &__intro {
     display: flex;

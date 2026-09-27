@@ -8,6 +8,8 @@
 @use './components/developer-section';
 @use './components/footer';
 @use './pages/library';
+@use './components/game-stats';
+@use './components/library-card';
 *,
 *::before,
 *::after {

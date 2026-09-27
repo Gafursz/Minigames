@@ -1,0 +1,101 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.library-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-card solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-card;
+}
+
+.library-card__image {
+  display: block;
+  width: 100%;
+  height: tokens.$library-image-height-mobile;
+  object-fit: cover;
+}
+
+.library-card__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: tokens.$size-2;
+  min-width: 0;
+  padding: tokens.$size-2;
+}
+
+.library-card__heading {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: tokens.$size-1;
+  min-width: 0;
+}
+
+.library-card__title {
+  margin: 0;
+  font-size: tokens.$font-size-headline-small;
+  font-weight: tokens.$font-weight-bold;
+}
+
+.library-card__category {
+  flex-shrink: 0;
+  padding: tokens.$border-width-medium tokens.$size-1;
+  font-size: tokens.$font-size-label-medium;
+  font-weight: tokens.$font-weight-bold;
+  background-color: tokens.$color-secondary;
+  border: tokens.$border-width-thin solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-pill;
+}
+
+.library-card__description {
+  display: -webkit-box;
+  grid-column: 1 / -1;
+  margin: 0;
+  overflow: hidden;
+  color: tokens.$color-text;
+  font-size: tokens.$font-size-body-small;
+  font-weight: tokens.$font-weight-medium;
+  line-height: 1.4;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.library-card__price {
+  justify-self: end;
+  font-size: tokens.$font-size-headline-small;
+  font-weight: tokens.$font-weight-bold;
+}
+
+.library-card__price--free {
+  color: tokens.$color-price-free;
+}
+
+.library-card__details {
+  grid-column: 1 / -1;
+  padding: tokens.$btn-medium-y tokens.$btn-medium-x;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-primary;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-md;
+  font: inherit;
+  font-size: tokens.$font-size-label-large;
+  font-weight: tokens.$font-weight-bold;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .library-card__details:hover {
+    background-color: tokens.$color-primary-low;
+  }
+}
+
+.library-card__details:active {
+  background-color: tokens.$color-primary-high;
+}
