@@ -1,8 +1,10 @@
 import { HomePage } from '../pages/home-page';
 import { LibraryPage } from '../pages/library-page';
+import type { Page } from '../types/page';
 
 export class App {
   private readonly root: HTMLElement;
+  private page: Page | undefined;
 
   public constructor(root: HTMLElement) {
     this.root = root;
@@ -14,9 +16,10 @@ export class App {
   }
 
   public render(): void {
-    const page = globalThis.location.hash === '#/library' ? new LibraryPage() : new HomePage();
+    this.page?.destroy?.();
+    this.page = globalThis.location.hash === '#/library' ? new LibraryPage() : new HomePage();
 
-    this.root.innerHTML = page.render();
-    page.bindEvents();
+    this.root.innerHTML = this.page.render();
+    this.page.bindEvents();
   }
 }
