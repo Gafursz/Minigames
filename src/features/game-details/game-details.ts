@@ -46,6 +46,7 @@ export class GameDetails {
     const dialog = document.querySelector<HTMLDialogElement>('#game-details');
     if (!dialog) return;
     this.element = dialog;
+    this.info.bindEvents(dialog);
     this.comments.bindEvents(dialog);
     dialog.addEventListener('animationend', (event) => {
       if (event.animationName === 'game-details-exit' && this.isClosing) this.finishClose();

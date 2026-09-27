@@ -260,3 +260,8 @@
     display: none;
   }
 }
+
+.game-details__favorite[aria-pressed='true'] {
+  background-color: tokens.$color-primary;
+  border-color: tokens.$color-on-primary;
+}

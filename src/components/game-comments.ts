@@ -1,5 +1,6 @@
 import commentsData from '../data/game-comments.json';
 import sendIcon from '../assets/icons/send-comment.svg';
+import activeHeartIcon from '../assets/icons/comment-heart-active.svg';
 import heartIcon from '../assets/icons/comment-heart.svg';
 import { escapeHtml } from '../utils/game';
 
@@ -45,6 +46,14 @@ export class GameComments {
   }
 
   public bindEvents(dialog: HTMLDialogElement): void {
+    for (const button of dialog.querySelectorAll<HTMLButtonElement>('.game-comment__like')) {
+      button.addEventListener('click', () => {
+        const isLiked = button.getAttribute('aria-pressed') !== 'true';
+        button.setAttribute('aria-pressed', String(isLiked));
+        const icon = button.querySelector('img');
+        if (icon) icon.src = isLiked ? activeHeartIcon : heartIcon;
+      });
+    }
     dialog
       .querySelector<HTMLFormElement>('.game-comments__form')
       ?.addEventListener('submit', (event) => event.preventDefault());
