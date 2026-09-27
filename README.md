@@ -1,139 +1,85 @@
-# 🎮 MiniGames — Story 1
+# 🎮 MiniGames — Story 2
 
-A responsive single-page application developed as part of the **RS School Qualifying Stage**.
+MiniGames is a responsive single-page gaming application developed as part of the **RS School Qualifying Stage**.
 
-MiniGames is a browser-based gaming platform interface featuring a responsive home page, game carousel, leaderboard, developer section, and adaptive navigation.
-
-The project is built with **TypeScript, Vite, and Sass** without JavaScript or CSS UI frameworks.
+The application is built with **TypeScript, Sass, and Vite** without JavaScript or CSS frameworks.
 
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/Gafursz/Minigames)
-- [RS School Story 1 Assignment](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/minigames/story-1.md)
+- [RS School MiniGames Assignment](https://github.com/rolling-scopes-school/qualifying-stage/tree/main/tasks/minigames)
 - [Figma Design](https://www.figma.com/design/4MnLizE59gZI2DDxaSgZqi/MiniGames)
-- [Figma Prototype](https://www.figma.com/proto/4MnLizE59gZI2DDxaSgZqi/MiniGames)
 
-## ✨ Implemented Features
+## ✨ Features
 
-### Home Page
+### Home
 
-- Responsive header and navigation
-- Mobile burger menu
+- Responsive navigation and mobile menu
 - Hero section
-- Game carousel
-- Reusable game cards
-- Weekly player leaderboard
-- Game developer CTA section
-- Footer navigation
-- Responsive layouts for different screen sizes
+- Interactive game carousel with autoplay and swipe support
+- Weekly leaderboard
+- Developer section
+- Responsive footer
 
-### Development
+### Games Library
 
-- Component-based TypeScript architecture
-- Sass design tokens
-- Responsive breakpoints
-- Local Inter font integration
-- JSON-based game and leaderboard data
-- Semantic HTML structure
-- ESLint code quality checks
-- Prettier code formatting
-- Husky pre-commit validation
-- Production build with Vite
+- SPA navigation
+- Responsive game cards
+- Game filtering and sorting
+- Pagination
+- Game Details dialog
+- Game statistics, records, and comments
+
+### Authentication
+
+- Login and registration dialogs
+- Login/Register switching
+- Password visibility controls
+- Backdrop and Escape-key dismissal
+- Responsive desktop and mobile layouts
 
 ## 🛠️ Tech Stack
 
-- **HTML5**
-- **TypeScript**
-- **Sass / SCSS**
-- **Vite**
-- **npm**
-- **ESLint**
-- **Prettier**
-- **Husky**
-- **Git & GitHub**
+- TypeScript
+- Sass / SCSS
+- Vite
+- HTML5
+- JSON
+- ESLint
+- Prettier
+- Husky
+- Commitlint
+- Git & GitHub
 
-No JavaScript or CSS UI frameworks are used.
+No JavaScript or CSS frameworks, or pre-built slider libraries are used.
 
 ## 📁 Project Structure
 
 ```text
-Minigames/
-├── .github/
-│   └── pull_request_template.md
-│
-├── public/
-│
-├── src/
-│   ├── app/
-│   │   └── App.ts
-│   │
-│   ├── assets/
-│   │   ├── icons/
-│   │   └── images/
-│   │
-│   ├── components/
-│   │   ├── DeveloperSection.ts
-│   │   ├── Footer.ts
-│   │   ├── GameCard.ts
-│   │   ├── Header.ts
-│   │   ├── Hero.ts
-│   │   └── Leaderboard.ts
-│   │
-│   ├── data/
-│   │   ├── all-games-seed.json
-│   │   └── leaderboard.json
-│   │
-│   ├── features/
-│   │   └── slider/
-│   │       ├── slider.scss
-│   │       └── slider.ts
-│   │
-│   ├── pages/
-│   │   └── HomePage.ts
-│   │
-│   ├── styles/
-│   │   ├── components/
-│   │   ├── _breakpoints.scss
-│   │   ├── _tokens.scss
-│   │   ├── _utilities.scss
-│   │   └── main.scss
-│   │
-│   ├── types/
-│   │   ├── Game.ts
-│   │   └── LeaderboardPlayer.ts
-│   │
-│   ├── main.ts
-│   └── vite-env.d.ts
-│
-├── eslint.config.js
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── README.md
+src/
+├── app/
+├── assets/
+├── components/
+├── data/
+├── features/
+│   ├── auth-dialog/
+│   ├── game-details/
+│   └── slider/
+├── pages/
+│   ├── home-page.ts
+│   └── library-page.ts
+├── styles/
+├── types/
+├── utils/
+└── main.ts
 ```
 
 ## 🚀 Getting Started
 
-### Prerequisites
-
-Make sure **Node.js** and **npm** are installed.
-
-The project is currently developed with:
-
-```text
-Node.js v24
-npm
-```
-
-### Clone the repository
+Clone the repository:
 
 ```bash
 git clone https://github.com/Gafursz/Minigames.git
-```
-
-Move into the project:
-
-```bash
 cd Minigames
 ```
 
@@ -149,199 +95,60 @@ Start the development server:
 npm run dev
 ```
 
-Vite will provide a local development URL, typically:
-
-```text
-http://localhost:5173/
-```
-
-## 📜 Available Scripts
-
-### Development
-
-```bash
-npm run dev
-```
-
-Starts the Vite development server.
-
-### Production Build
+Create a production build:
 
 ```bash
 npm run build
 ```
 
-Runs TypeScript compilation and creates the production build.
-
-### Preview Production Build
+## 📜 Scripts
 
 ```bash
+npm run dev
+npm run build
 npm run preview
-```
-
-Locally previews the production build.
-
-### ESLint
-
-```bash
 npm run lint
-```
-
-Checks the project for linting problems.
-
-### Format Code
-
-```bash
 npm run format
-```
-
-Formats the project using Prettier.
-
-### Check Formatting
-
-```bash
 npm run format:check
 ```
 
-Checks whether files follow the configured Prettier formatting rules without modifying them.
+## 📱 Responsive Design
 
-## 🧩 Architecture
+The application follows the provided Figma design and supports the required responsive layouts at:
 
-The application follows a lightweight component-based architecture.
+- **375px** — mobile
+- **768px** — tablet
+- **1920px** — desktop
 
-Individual UI sections are implemented as TypeScript components:
-
-```text
-App
-└── HomePage
-    ├── Header
-    ├── Hero
-    ├── Slider
-    │   └── GameCard
-    ├── Leaderboard
-    ├── DeveloperSection
-    └── Footer
-```
-
-Each component is responsible for rendering a specific part of the interface.
-
-Shared design values such as colors, typography, spacing, sizes, and border radii are stored as Sass design tokens.
-
-## 🎨 Styling
-
-The project uses **Sass/SCSS** for styling.
-
-Shared design tokens are defined in:
-
-```text
-src/styles/_tokens.scss
-```
-
-These include:
-
-- colors
-- typography
-- spacing
-- component sizes
-- button spacing
-- border radii
-
-Responsive breakpoints are maintained separately in:
-
-```text
-src/styles/_breakpoints.scss
-```
-
-This approach reduces duplicated values and helps keep the implementation consistent with the Figma design.
-
-## 📊 Data
-
-Game and leaderboard information is stored separately from UI components.
-
-```text
-src/data/all-games-seed.json
-src/data/leaderboard.json
-```
-
-TypeScript interfaces provide typed representations of this data:
-
-```text
-src/types/Game.ts
-src/types/LeaderboardPlayer.ts
-```
-
-This keeps data, presentation, and types separated.
-
-## ✅ Code Quality
-
-The project uses several development tools to maintain consistent code quality.
-
-**ESLint** checks TypeScript and JavaScript code.
-
-**Prettier** maintains consistent formatting.
-
-**Husky** runs checks before commits are accepted.
-
-For example, the pre-commit workflow verifies:
-
-```text
-ESLint
-   ↓
-Prettier format check
-   ↓
-Git commit
-```
-
-A commit is prevented if the configured checks fail.
+The interface also adapts fluidly between these breakpoints.
 
 ## 🌿 Git Workflow
 
-Development follows the RS School Story workflow.
+Development follows the RS School story-based workflow:
 
 ```text
 main
 └── story-1
-    └── feature branches
+    └── story-2
+        └── feature branches
 ```
 
-Development work is performed in feature branches and integrated into the Story branch through pull requests.
+Story 2 functionality was developed through separate feature branches and integrated into `story-2`.
 
-The final:
+The final Cross-Check pull request follows:
 
 ```text
-story-1 → main
+story-2 → story-1
 ```
 
-pull request should remain **unmerged** for RS School Cross-Check according to the task requirements.
-
-## 📱 Responsive Design
-
-The interface is being implemented according to the provided Figma layouts and adapts across desktop, tablet, and mobile viewport sizes.
-
-The layout uses flexible containers, Sass breakpoints, reusable spacing tokens, and responsive component behavior instead of relying on a single fixed screen size.
-
-## 🎯 Story 1
-
-Story 1 focuses on establishing the frontend foundation of MiniGames, including:
-
-- project configuration
-- development tooling
-- TypeScript architecture
-- Sass design system
-- responsive Home page
-- reusable UI components
-- development quality checks
-
-Additional functionality will be implemented as the project progresses through the RS School stories.
+and remains unmerged for review.
 
 ## 👨‍💻 Author
 
 **Gafur Sharipov**
 
-- GitHub: [@Gafursz](https://github.com/Gafursz)
+GitHub: [@Gafursz](https://github.com/Gafursz)
 
 ## 📄 Assignment
 
-This project is developed for the **RS School Qualifying Stage — MiniGames** assignment.
-
-[View Story 1 requirements](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/minigames/story-1.md)
+Developed for the **RS School Qualifying Stage — MiniGames Story 2**.
