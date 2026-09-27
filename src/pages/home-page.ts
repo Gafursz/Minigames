@@ -27,7 +27,12 @@ export class HomePage {
     `;
   }
 
+  public destroy(): void {
+    this.slider.destroy();
+  }
+
   public bindEvents(): void {
     this.header.bindEvents();
+    this.slider.bindEvents();
   }
 }

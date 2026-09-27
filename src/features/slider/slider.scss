@@ -118,36 +118,63 @@
    ====================================================== */
 
 .slider__track {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  --visible-slides: 5;
+  --slide-inset: #{tokens.$size-1};
+  --slide-gap: #{tokens.$size-1};
+  --slide-space: calc(100% - 2 * var(--slide-inset) - 4 * var(--slide-gap));
+  --slide-center: calc(var(--slide-space) * 0.5);
+  --slide-neighbor: calc(var(--slide-space) * 0.1764705882);
+  --slide-edge: calc(var(--slide-space) * 0.0735294118);
+  --slide-start: calc((100% - var(--slide-center)) / 2);
+  position: relative;
   width: 100%;
   height: 388px;
-  padding: 0 tokens.$size-1;
   overflow: hidden;
 }
 
 .slider__item {
-  min-width: 0;
+  position: absolute;
+  top: 0;
+  left: var(--slide-start);
+  width: var(--slide-center);
   height: 384px;
-  flex-shrink: 0;
+  min-width: 0;
 }
 
-.slider__item--far-prev,
-.slider__item--far-next {
-  flex: 0 0 120px;
-  width: 120px;
+.slider__item[data-slot='-1'] {
+  left: calc(var(--slide-start) - var(--slide-gap) - var(--slide-neighbor));
+  width: var(--slide-neighbor);
 }
 
-.slider__item--prev,
-.slider__item--next {
-  flex: 0 0 288px;
-  width: 288px;
+.slider__item[data-slot='1'] {
+  left: calc(var(--slide-start) + var(--slide-center) + var(--slide-gap));
+  width: var(--slide-neighbor);
 }
 
-.slider__item--active {
-  flex: 0 0 816px;
-  width: 816px;
+.slider__item[data-slot='-2'] {
+  left: calc(var(--slide-start) - 2 * var(--slide-gap) - var(--slide-neighbor) - var(--slide-edge));
+  width: var(--slide-edge);
+}
+
+.slider__item[data-slot='2'] {
+  left: calc(
+    var(--slide-start) + var(--slide-center) + 2 * var(--slide-gap) + var(--slide-neighbor)
+  );
+  width: var(--slide-edge);
+}
+
+.slider__item[data-slot='-3'],
+.slider__item[data-slot='-4'] {
+  left: calc(-1 * var(--slide-edge) - var(--slide-gap));
+  width: var(--slide-edge);
+  visibility: hidden;
+}
+
+.slider__item[data-slot='3'],
+.slider__item[data-slot='4'] {
+  left: calc(100% + var(--slide-gap));
+  width: var(--slide-edge);
+  visibility: hidden;
 }
 
 /* ======================================================
@@ -286,76 +313,10 @@
     height: clamp(200px, calc(123.66px + 20.36vw), 280px);
   }
 
-  .slider__item--far-prev,
-  .slider__item--far-next {
-    display: none;
-  }
-
-  .slider__item--prev,
-  .slider__item--next {
-    flex: 0 0 clamp(56px, calc(9.24px + 12.47vw), 105px);
-
-    width: clamp(56px, calc(9.24px + 12.47vw), 105px);
-  }
-
-  .slider__item--active {
-    flex: 0 0 clamp(218px, calc(-1.47px + 58.52vw), 448px);
-
-    width: clamp(218px, calc(-1.47px + 58.52vw), 448px);
-  }
-
   .game-card {
     border-radius: 16px;
   }
 }
-
-// // ======================================================
-// // TABLET → LAPTOP
-// // 769px–1440px
-// //
-// // Continue smoothly from the 768px layout.
-// // Keep 3 visible cards.
-// // At 1441px the desktop 5-card layout takes over.
-// // ======================================================
-
-// @media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and
-//   (max-width: breakpoints.$breakpoint-wide) {
-//   .slider {
-//     height: tokens.$home-games-height-tablet;
-//     padding-block: tokens.$size-3;
-//   }
-
-//   .slider__container {
-//     max-width: none;
-//     gap: tokens.$size-3;
-//     padding-inline: tokens.$size-5;
-//   }
-
-//   .slider__track {
-//     height: 288px;
-//     padding-inline: tokens.$size-1;
-//   }
-
-//   .slider__item {
-//     height: 280px;
-//   }
-
-//   .slider__item--far-prev,
-//   .slider__item--far-next {
-//     display: none;
-//   }
-
-//   .slider__item--prev,
-//   .slider__item--next {
-//     flex: 1 1 0;
-//     width: auto;
-//   }
-
-//   .slider__item--active {
-//     flex: 4.48 1 0;
-//     width: auto;
-//   }
-// }
 
 // ======================================================
 // TABLET → LAPTOP
@@ -382,45 +343,21 @@
   .slider__item {
     height: 280px;
   }
-
-  .slider__item--far-prev,
-  .slider__item--far-next {
-    display: none;
-  }
-
-  .slider__item--prev,
-  .slider__item--next {
-    flex: 100 1 0;
-    width: auto;
-  }
-
-  .slider__item--active {
-    flex: 443 1 0;
-    width: auto;
-  }
 }
 
-// ======================================================
-// SMALL DESKTOP
-// 1441px–1729px
-// 5 visible cards, fitted to available width
-// ======================================================
-
-@media (min-width: calc(breakpoints.$breakpoint-wide + 1px)) and (max-width: 1729px) {
-  .slider__item--far-prev,
-  .slider__item--far-next {
-    flex: 120 1 0;
-    width: auto;
+@media (max-width: breakpoints.$breakpoint-wide) {
+  .slider__track {
+    --visible-slides: 3;
+    --slide-inset: clamp(#{tokens.$size-05}, calc(0.18px + 1.02vw), #{tokens.$size-1});
+    --slide-gap: clamp(2.5px, calc(-2.74px + 1.4vw), #{tokens.$size-1});
+    --slide-space: calc(100% - 2 * var(--slide-inset) - 2 * var(--slide-gap));
+    --slide-center: calc(var(--slide-space) * 0.68);
+    --slide-neighbor: calc(var(--slide-space) * 0.16);
+    --slide-edge: var(--slide-neighbor);
   }
 
-  .slider__item--prev,
-  .slider__item--next {
-    flex: 288 1 0;
-    width: auto;
-  }
-
-  .slider__item--active {
-    flex: 816 1 0;
-    width: auto;
+  .slider__item[data-slot='-2'],
+  .slider__item[data-slot='2'] {
+    visibility: hidden;
   }
 }

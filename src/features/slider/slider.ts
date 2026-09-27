@@ -2,48 +2,44 @@ import gamesData from '../../data/all-games-seed.json';
 import { GameCard } from '../../components/game-card';
 import type { Game } from '../../types/game';
 
-type SlidePosition = 'far-prev' | 'prev' | 'active' | 'next' | 'far-next';
+import { getSlideOffset, wrapIndex } from './slider-model';
+
+const featuredGames: Game[] = gamesData.data.filter((game) => game.featured);
 
 export class Slider {
-  private readonly games: Game[] = gamesData.data;
+  private readonly games = featuredGames;
+  private activeIndex = 0;
+  private readonly controller = new AbortController();
+  private track: HTMLElement | undefined;
 
-  private readonly visibleGameSlugs: string[] = [
-    'shelve-the-potions',
-    'islanders-new-shores',
-    'vacation-cafe-simulator',
-    'winter-burrow',
-    'heartopia',
-  ];
+  private updateSlides(): void {
+    if (!this.track) return;
+    const visibleCount = Number(getComputedStyle(this.track).getPropertyValue('--visible-slides'));
+    const radius = visibleCount === 3 ? 1 : 2;
+    for (const [index, item] of [...this.track.children].entries()) {
+      if (!(item instanceof HTMLElement)) continue;
+      const offset = getSlideOffset(index, this.activeIndex, this.games.length);
+      const isVisible = Math.abs(offset) <= radius;
+      item.dataset.slot = String(offset);
+      item.inert = !isVisible;
+      item.setAttribute('aria-hidden', String(!isVisible));
+    }
+  }
 
-  private readonly slidePositions: SlidePosition[] = [
-    'far-prev',
-    'prev',
-    'active',
-    'next',
-    'far-next',
-  ];
-
-  private getVisibleGames(): Game[] {
-    return this.visibleGameSlugs
-      .map((slug: string) => this.games.find((game: Game) => game.slug === slug))
-      .filter((game: Game | undefined): game is Game => game !== undefined);
+  private step(direction: number): void {
+    this.activeIndex = wrapIndex(this.activeIndex + direction, this.games.length);
+    this.updateSlides();
   }
 
   private renderGameCards(): string {
-    return this.getVisibleGames()
-      .map((game: Game, index: number) => {
-        const position: SlidePosition | undefined = this.slidePositions[index];
-
-        if (position === undefined) {
-          return '';
-        }
-
-        return `
-          <div class="slider__item slider__item--${position}">
-            ${new GameCard(game).render()}
-          </div>
-        `;
-      })
+    return this.games
+      .map(
+        (game, index) => `
+      <div class="slider__item" data-slot="${getSlideOffset(index, this.activeIndex, this.games.length)}">
+        ${new GameCard(game).render()}
+      </div>
+    `,
+      )
       .join('');
   }
 
@@ -93,6 +89,28 @@ export class Slider {
         </button>
       </div>
     `;
+  }
+
+  public bindEvents(): void {
+    const track = document.querySelector<HTMLElement>('.slider__track');
+    if (!track) return;
+    this.track = track;
+    const { signal } = this.controller;
+    document
+      .querySelector('.slider__control--previous')
+      ?.addEventListener('click', () => this.step(-1), { signal });
+    document
+      .querySelector('.slider__control--next')
+      ?.addEventListener('click', () => this.step(1), { signal });
+    const observer = new ResizeObserver(() => this.updateSlides());
+    observer.observe(track);
+    signal.addEventListener('abort', () => observer.disconnect(), { once: true });
+    this.updateSlides();
+  }
+
+  public destroy(): void {
+    this.controller.abort();
+    this.track = undefined;
   }
 
   public render(): string {
