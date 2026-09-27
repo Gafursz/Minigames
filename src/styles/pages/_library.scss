@@ -1,0 +1,91 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.library__cards {
+  display: grid;
+  gap: tokens.$size-2;
+  padding-inline: tokens.$size-2;
+}
+
+// Figma uses a different reading order for the single-column layout.
+@each $index, $order in (1: 1, 2: 3, 3: 2, 4: 4, 5: 6, 6: 5) {
+  .library__cards > :nth-child(#{$index}) {
+    order: $order;
+  }
+}
+
+// @include inserts the media query defined in _breakpoints.scss.
+@include breakpoints.tablet {
+  .library__cards {
+    gap: tokens.$size-3;
+    padding-inline: tokens.$size-5;
+  }
+}
+
+@include breakpoints.desktop {
+  .library__cards {
+    padding-inline: tokens.$size-15;
+  }
+}
+
+@include breakpoints.wide {
+  .library__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library__cards > .library-card {
+    order: 0;
+  }
+}
+
+.library {
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$size-1;
+    padding: tokens.$size-2;
+    line-height: normal;
+  }
+
+  &__title {
+    margin: 0;
+    color: tokens.$color-on-primary;
+    font-size: tokens.$font-size-display-small;
+    font-weight: tokens.$font-weight-bold;
+  }
+
+  &__description {
+    margin: 0;
+    color: tokens.$color-text;
+    font-size: tokens.$font-size-body-small;
+    font-weight: tokens.$font-weight-medium;
+  }
+
+  @include breakpoints.tablet {
+    &__intro {
+      padding: tokens.$size-3 tokens.$size-5;
+    }
+
+    &__title {
+      font-size: tokens.$font-size-display-medium;
+    }
+
+    &__description {
+      font-size: tokens.$font-size-md;
+    }
+  }
+
+  @include breakpoints.desktop {
+    &__intro {
+      padding: tokens.$size-5 tokens.$size-15;
+    }
+
+    &__title {
+      font-size: tokens.$font-size-display-large;
+    }
+
+    &__description {
+      font-size: tokens.$font-size-body-large;
+    }
+  }
+}

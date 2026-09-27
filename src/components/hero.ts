@@ -18,7 +18,7 @@ export class Hero {
               Discover hundreds of curated casual mini-games right in your browser.
             </p>
 
-            <a class="hero__button" href="/">
+            <a class="hero__button" href="#/library">
               Browse Library
             </a>
           </div>

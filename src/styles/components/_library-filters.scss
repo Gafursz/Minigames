@@ -1,0 +1,86 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.library-filters {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: tokens.$size-2;
+  padding: tokens.$size-2;
+}
+
+.library-filters__categories {
+  display: flex;
+  gap: tokens.$size-1;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.library-filters__categories.is-dragging,
+.library-filters__categories.is-dragging .library-filters__chip {
+  cursor: grabbing;
+}
+
+.library-filters__categories::-webkit-scrollbar {
+  display: none;
+}
+
+.library-filters__chip {
+  flex-shrink: 0;
+  padding: tokens.$btn-small-y tokens.$btn-small-x;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-pill;
+  font: inherit;
+  font-size: tokens.$font-size-label-medium;
+  font-weight: tokens.$font-weight-bold;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.library-filters__chip--active {
+  background-color: tokens.$color-primary;
+}
+
+@media (hover: hover) {
+  .library-filters__chip:hover {
+    background-color: tokens.$color-primary-low;
+  }
+}
+
+.library-filters__chip:active {
+  background-color: tokens.$color-primary-high;
+}
+
+@include breakpoints.tablet {
+  .library-filters__chip {
+    font-size: tokens.$font-size-label-large;
+  }
+
+  .library-filters {
+    padding-inline: tokens.$size-5;
+  }
+
+  .library-filters__categories {
+    gap: tokens.$size-2;
+  }
+}
+
+@include breakpoints.desktop {
+  .library-filters {
+    padding-inline: tokens.$size-15;
+  }
+}
+
+@include breakpoints.wide {
+  .library-filters {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

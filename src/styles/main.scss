@@ -7,6 +7,16 @@
 @use './components/leaderboard';
 @use './components/developer-section';
 @use './components/footer';
+@use './pages/library';
+@use './components/game-stats';
+@use './components/library-card';
+@use './components/library-filters';
+@use './components/library-sort';
+@use './components/pagination';
+@use '../features/game-details/game-details';
+@use '../features/auth-dialog/auth-dialog';
+@use './components/game-records';
+@use './components/game-comments';
 *,
 *::before,
 *::after {
@@ -15,6 +25,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -22,4 +33,20 @@ body {
   font-family: tokens.$font-family-base;
   color: tokens.$color-text;
   background-color: tokens.$color-background;
+}
+
+:where(a, button, textarea, [tabindex]):focus-visible {
+  outline: tokens.$border-width-medium solid tokens.$color-tertiary;
+  outline-offset: tokens.$size-05;
+}
+
+#app {
+  max-width: breakpoints.$breakpoint-figma-desktop;
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
