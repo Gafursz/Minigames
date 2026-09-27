@@ -13,6 +13,8 @@ export class GameDetails {
   private closeTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
   private isClosing = false;
 
+  constructor(private readonly onOpenChange: (isOpen: boolean) => void) {}
+
   private finishClose(): void {
     globalThis.clearTimeout(this.closeTimer);
     this.closeTimer = undefined;
@@ -20,6 +22,7 @@ export class GameDetails {
     this.element?.classList.remove('is-closing');
     this.isClosing = false;
     document.body.classList.remove('has-open-dialog');
+    this.onOpenChange(false);
     if (this.returnFocus?.isConnected) this.returnFocus.focus({ preventScroll: true });
     this.returnFocus = undefined;
   }
@@ -80,6 +83,7 @@ export class GameDetails {
     this.element.showModal();
     this.element.scrollTop = 0;
     document.body.classList.add('has-open-dialog');
+    this.onOpenChange(true);
   }
 
   public close(): void {
@@ -100,6 +104,7 @@ export class GameDetails {
     this.isClosing = false;
     this.element?.close();
     document.body.classList.remove('has-open-dialog');
+    this.onOpenChange(false);
     this.element = undefined;
     this.returnFocus = undefined;
   }

@@ -13,12 +13,14 @@ export class GameCard {
         class="game-card__image"
         src="${imageUrl}"
         alt="${escapeHtml(this.game.name)}"
+        draggable="false"
       />
       <div class="game-card__info">
   <h3 class="game-card__title">${escapeHtml(this.game.name)}</h3>
 
   ${renderGameStats(this.game)}
 </div>
+      <button class="game-card__trigger" type="button" data-game-details aria-label="Details for ${escapeHtml(this.game.name)}"></button>
     </article>
   `;
   }

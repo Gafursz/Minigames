@@ -6,7 +6,9 @@ import { GameDetails } from '../features/game-details/game-details';
 export class App {
   private readonly root: HTMLElement;
   private page: Page | undefined;
-  private readonly gameDetails = new GameDetails();
+  private readonly gameDetails = new GameDetails((isOpen) => {
+    this.page?.setDialogOpen?.(isOpen);
+  });
 
   public constructor(root: HTMLElement) {
     this.root = root;
