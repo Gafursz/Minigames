@@ -3,12 +3,14 @@ import { Header } from '../components/header';
 import { LibraryCard } from '../components/library-card';
 import gamesData from '../data/all-games-seed.json';
 import { LibraryFilters } from '../components/library-filters';
+import { Pagination } from '../components/pagination';
 
 export class LibraryPage {
   private readonly header = new Header('library');
   private readonly footer = new Footer();
   private readonly controller = new AbortController();
   private readonly filters = new LibraryFilters();
+  private readonly pagination = new Pagination();
 
   public render(): string {
     return `
@@ -26,6 +28,7 @@ export class LibraryPage {
             .map((game) => new LibraryCard(game).render())
             .join('')}
         </section>
+        ${this.pagination.render()}
       </main>
 
       ${this.footer.render()}
@@ -35,6 +38,7 @@ export class LibraryPage {
   public bindEvents(): void {
     this.header.bindEvents();
     this.filters.bindEvents(this.controller.signal);
+    this.pagination.bindEvents(this.controller.signal);
   }
 
   public destroy(): void {

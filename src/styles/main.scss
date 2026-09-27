@@ -12,6 +12,7 @@
 @use './components/library-card';
 @use './components/library-filters';
 @use './components/library-sort';
+@use './components/pagination';
 *,
 *::before,
 *::after {
