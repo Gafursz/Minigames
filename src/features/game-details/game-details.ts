@@ -10,6 +10,19 @@ export class GameDetails {
   private readonly comments = new GameComments();
   private element: HTMLDialogElement | undefined;
   private returnFocus: HTMLElement | undefined;
+  private closeTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
+  private isClosing = false;
+
+  private finishClose(): void {
+    globalThis.clearTimeout(this.closeTimer);
+    this.closeTimer = undefined;
+    this.element?.close();
+    this.element?.classList.remove('is-closing');
+    this.isClosing = false;
+    document.body.classList.remove('has-open-dialog');
+    if (this.returnFocus?.isConnected) this.returnFocus.focus({ preventScroll: true });
+    this.returnFocus = undefined;
+  }
 
   public render(): string {
     return `
@@ -34,6 +47,9 @@ export class GameDetails {
     if (!dialog) return;
     this.element = dialog;
     this.comments.bindEvents(dialog);
+    dialog.addEventListener('animationend', (event) => {
+      if (event.animationName === 'game-details-exit' && this.isClosing) this.finishClose();
+    });
 
     dialog
       .querySelector<HTMLButtonElement>('.game-details__close')
@@ -57,17 +73,28 @@ export class GameDetails {
   public open(trigger: HTMLElement): void {
     if (!this.element || this.element.open) return;
     this.returnFocus = trigger;
+    this.element.classList.remove('is-closing');
     this.element.showModal();
+    this.element.scrollTop = 0;
     document.body.classList.add('has-open-dialog');
   }
 
   public close(): void {
-    this.element?.close();
-    document.body.classList.remove('has-open-dialog');
-    if (this.returnFocus?.isConnected) this.returnFocus.focus({ preventScroll: true });
+    if (!this.element?.open || this.isClosing) return;
+    this.isClosing = true;
+    this.element.classList.add('is-closing');
+    const duration =
+      Number(getComputedStyle(this.element).animationDuration.replace('s', '')) * 1000;
+    this.closeTimer = globalThis.setTimeout(
+      () => this.finishClose(),
+      Number.isFinite(duration) ? duration : 0,
+    );
   }
 
   public destroy(): void {
+    globalThis.clearTimeout(this.closeTimer);
+    this.closeTimer = undefined;
+    this.isClosing = false;
     this.element?.close();
     document.body.classList.remove('has-open-dialog');
     this.element = undefined;

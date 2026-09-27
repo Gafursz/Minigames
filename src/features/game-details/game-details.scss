@@ -19,6 +19,66 @@
 
 .game-details::backdrop {
   background-color: tokens.$color-backdrop;
+  animation: game-backdrop-enter tokens.$duration-dialog ease both;
+}
+
+.game-details[open] {
+  animation: game-details-enter tokens.$duration-dialog ease both;
+}
+
+.game-details.is-closing {
+  animation: game-details-exit tokens.$duration-dialog ease both;
+}
+
+.game-details.is-closing::backdrop {
+  animation: game-backdrop-exit tokens.$duration-dialog ease both;
+}
+
+@keyframes game-details-enter {
+  from {
+    opacity: 0;
+    transform: translateY(tokens.$size-2) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes game-details-exit {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(tokens.$size-2) scale(0.98);
+  }
+}
+
+@keyframes game-backdrop-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes game-backdrop-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-details[open],
+  .game-details::backdrop {
+    animation-duration: 0s;
+  }
 }
 
 .has-open-dialog {
