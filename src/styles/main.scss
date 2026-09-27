@@ -14,6 +14,7 @@
 @use './components/library-sort';
 @use './components/pagination';
 @use '../features/game-details/game-details';
+@use '../features/auth-dialog/auth-dialog';
 @use './components/game-records';
 @use './components/game-comments';
 *,
