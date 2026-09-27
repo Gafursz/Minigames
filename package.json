@@ -1,7 +1,7 @@
 {
   "name": "minigames",
   "version": "1.0.0",
-  "description": "MiniGames — a responsive single-page web application built with TypeScript, Sass, and modern frontend development tools.",
+  "description": "MiniGames \u2014 a responsive single-page web application built with TypeScript, Sass, and modern frontend development tools.",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "node --test tests/*.test.mjs"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "eslint": "^10.10.0",
     "eslint-plugin-unicorn": "^76.0.0",
     "husky": "^9.1.7",
+    "jsdom": "^30.1.1",
     "prettier": "^3.9.8",
     "sass": "^1.104.1",
     "typescript": "^5.9.3",
@@ -39,5 +41,8 @@
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0"
+  },
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   }
 }
