@@ -7,6 +7,37 @@
   padding-inline: tokens.$size-2;
 }
 
+// Figma uses a different reading order for the single-column layout.
+@each $index, $order in (1: 1, 2: 3, 3: 2, 4: 4, 5: 6, 6: 5) {
+  .library__cards > :nth-child(#{$index}) {
+    order: $order;
+  }
+}
+
+// @include inserts the media query defined in _breakpoints.scss.
+@include breakpoints.tablet {
+  .library__cards {
+    gap: tokens.$size-3;
+    padding-inline: tokens.$size-5;
+  }
+}
+
+@include breakpoints.desktop {
+  .library__cards {
+    padding-inline: tokens.$size-15;
+  }
+}
+
+@include breakpoints.wide {
+  .library__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library__cards > .library-card {
+    order: 0;
+  }
+}
+
 .library {
   &__intro {
     display: flex;
