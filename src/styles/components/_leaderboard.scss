@@ -1,9 +1,7 @@
 @use '../tokens';
 @use '../breakpoints';
 
-/* ======================================================
-   Leaderboard Section — Desktop
-   ====================================================== */
+//  Leaderboard Section — Desktop
 
 .leaderboard-section {
   display: flex;
@@ -55,9 +53,7 @@
   display: none;
 }
 
-/* ======================================================
-   Leaderboard Table — Desktop
-   ====================================================== */
+//  Leaderboard Table — Desktop
 
 .leaderboard {
   width: 100%;
@@ -86,7 +82,7 @@
   text-align: left;
 }
 
-/* Desktop column proportions */
+//  Desktop column proportions
 
 .leaderboard__header th:first-child {
   width: 7%;
@@ -112,9 +108,7 @@
   width: 22%;
 }
 
-/* ======================================================
-   Leaderboard Rows
-   ====================================================== */
+//  Leaderboard Rows
 
 .leaderboard__row {
   height: tokens.$size-9;
@@ -142,9 +136,7 @@
   border-bottom: 0;
 }
 
-/* ======================================================
-   Rank
-   ====================================================== */
+//  Rank
 
 .leaderboard__rank {
   font-family: tokens.$font-family-base;
@@ -158,9 +150,7 @@
   color: tokens.$color-primary;
 }
 
-/* ======================================================
-   Player
-   ====================================================== */
+//  Player
 
 .leaderboard__player {
   min-width: 0;
@@ -212,17 +202,13 @@
   white-space: nowrap;
 }
 
-/* ======================================================
-   Games / Score
-   ====================================================== */
+//  Games / Score
 
 .leaderboard__cell {
   font-weight: 600;
 }
 
-/* ======================================================
-   Streak
-   ====================================================== */
+//  Streak
 
 .leaderboard__streak {
   font-weight: 600;
@@ -234,9 +220,7 @@
   line-height: 1;
 }
 
-/* ======================================================
-   Favorite Game
-   ====================================================== */
+//  Favorite Game
 
 .leaderboard__favorite {
   overflow: hidden;
@@ -258,12 +242,11 @@
   white-space: nowrap;
 }
 
-/* ======================================================
-   Intermediate — 769px to 1440px
-
-   Three players remain visible.
-   Favorite Game is removed.
-   ====================================================== */
+/* 
+  Intermediate — 769px to 1440px
+  Three players remain visible.
+  Favorite Game is removed.
+    */
 
 @media (min-width: breakpoints.$breakpoint-tablet) and (max-width: breakpoints.$breakpoint-wide) {
   .leaderboard-section {
@@ -332,9 +315,7 @@
   }
 }
 
-/* ======================================================
-   Tablet / Mobile — 768px and below
-   ====================================================== */
+//  Tablet / Mobile — 768px and below
 
 @media (max-width: breakpoints.$breakpoint-tablet) {
   .leaderboard-section {
@@ -396,13 +377,9 @@
     padding: tokens.$size-1;
   }
 
-  /*
-   * Mobile/tablet layout:
-   *
-   * Rank | Player | Score | Streak
-   *
-   * Games Played and Favorite Game are hidden.
-   */
+  // Mobile/tablet layout:
+  // Rank | Player | Score | Streak
+  // Games Played and Favorite Game are hidden.
 
   .leaderboard__header th:nth-child(3),
   .leaderboard__row td:nth-child(3),

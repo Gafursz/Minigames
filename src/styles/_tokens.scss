@@ -1,6 +1,8 @@
 // Base
 $color-white: #ffffff;
 $color-black: #000000;
+$color-shadow: #111111;
+$color-backdrop: rgb(0 0 0 / 60%);
 
 // General
 $color-background: #f9f8f3;
@@ -31,6 +33,9 @@ $color-price-free: #008a8f;
 // Borders
 $color-outline: #e5e7eb;
 $color-outline-variant: #d2d2d2;
+$border-width-thin: 1.5px;
+$border-width-card: 2.5px;
+$border-width-small: 1px;
 
 $border-width-medium: 2px;
 
@@ -68,12 +73,15 @@ $home-footer-height-mobile: 524px;
 
 $font-family-base: 'Inter', sans-serif;
 $font-weight-medium: 500;
+$font-weight-regular: 400;
 $font-weight-bold: 700;
+$font-weight-extra-bold: 800;
 $font-size-title-xx-small: 1rem;
 $font-size-title-xxx-small: 1.125rem;
 $font-size-headline-small: 1.25rem;
 $font-size-body-small: 0.875rem;
 $font-size-label-large: 0.875rem;
+$font-size-label-medium: 0.75rem;
 $font-size-display-large: 3.5rem;
 $font-size-body-large: 1.125rem;
 $font-size-display-medium: 2.25rem;
@@ -114,6 +122,9 @@ $size-2: 1rem;
 $size-1: 0.5rem;
 $size-05: 0.25rem;
 
+$radius-pill: 9999px;
+$radius-extra-large: 1.5rem;
+$radius-medium: 0.75rem;
 $radius-sm: 0.25rem;
 $radius-md: 0.5rem;
 $radius-lg: 1rem;
@@ -126,37 +137,32 @@ $light-blue: #bce3ff;
 $pink: #ffc6ff;
 $lavender: #e8dff5;
 
-// Story 2: values shared by the Library and game dialog.
-$font-size-label-medium: 0.75rem;
-$font-weight-regular: 400;
-$border-width-thin: 1.5px;
-$border-width-card: 2.5px;
-$radius-pill: 9999px;
-$radius-extra-large: 1.5rem;
-$radius-medium: 0.75rem;
+$shadow-dropdown: 4px 4px 0 $color-black;
+$shadow-dialog: 8px 8px 0 $color-shadow;
+$shadow-icon: 2px 2px 0 $color-shadow;
+$shadow-widget: 3px 3px 0 $color-on-primary;
 $shadow-card: 4px 4px 0 $color-on-primary;
+
 $library-image-height-mobile: 10rem;
 $library-card-height-tablet: 9.5rem;
 $library-card-height-desktop: 12.5rem;
 $library-image-width-tablet: 16.875rem;
 $library-image-width-desktop: 20rem;
+
 $sort-menu-width: 12.5rem;
-$shadow-dropdown: 4px 4px 0 $color-black;
-$font-weight-extra-bold: 800;
-$border-width-small: 1px;
+
 $dialog-width: 37.5rem;
 $dialog-hero-height: 13.75rem;
-$color-shadow: #111111;
-$color-backdrop: rgb(0 0 0 / 60%);
-$shadow-dialog: 8px 8px 0 $color-shadow;
-$shadow-icon: 2px 2px 0 $color-shadow;
-$shadow-widget: 3px 3px 0 $color-on-primary;
 $dialog-description-line-height: 1.25rem;
+
 $comment-input-max-height: 5.5rem;
 $comment-avatar-size: 1.75rem;
 $comment-line-height: 1.125rem;
+
 $color-placeholder: #969696;
 $color-avatar-neutral: #e9eef6;
+
 $duration-dialog: 200ms;
 $duration-slider: 450ms;
+
 $slider-info-min-width: 288px;
