@@ -2,6 +2,7 @@ import gamesData from '../../data/all-games-seed.json';
 import { GameCard } from '../../components/game-card';
 import type { Game } from '../../types/game';
 
+import { AutoplayTimer } from './autoplay-timer';
 import { getSlideOffset, wrapIndex } from './slider-model';
 
 const featuredGames: Game[] = gamesData.data.filter((game) => game.featured);
@@ -9,6 +10,7 @@ const featuredGames: Game[] = gamesData.data.filter((game) => game.featured);
 export class Slider {
   private readonly games = featuredGames;
   private activeIndex = 0;
+  private readonly autoplay = new AutoplayTimer(() => this.step(1));
   private readonly controller = new AbortController();
   private track: HTMLElement | undefined;
 
@@ -29,6 +31,11 @@ export class Slider {
   private step(direction: number): void {
     this.activeIndex = wrapIndex(this.activeIndex + direction, this.games.length);
     this.updateSlides();
+  }
+
+  private manualStep(direction: number): void {
+    this.step(direction);
+    this.autoplay.reset();
   }
 
   private renderGameCards(): string {
@@ -98,17 +105,28 @@ export class Slider {
     const { signal } = this.controller;
     document
       .querySelector('.slider__control--previous')
-      ?.addEventListener('click', () => this.step(-1), { signal });
+      ?.addEventListener('click', () => this.manualStep(-1), { signal });
     document
       .querySelector('.slider__control--next')
-      ?.addEventListener('click', () => this.step(1), { signal });
+      ?.addEventListener('click', () => this.manualStep(1), { signal });
     const observer = new ResizeObserver(() => this.updateSlides());
     observer.observe(track);
     signal.addEventListener('abort', () => observer.disconnect(), { once: true });
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.hidden) this.autoplay.pause('hidden');
+        else this.autoplay.resume('hidden');
+      },
+      { signal },
+    );
+    if (document.hidden) this.autoplay.pause('hidden');
     this.updateSlides();
+    this.autoplay.start();
   }
 
   public destroy(): void {
+    this.autoplay.destroy();
     this.controller.abort();
     this.track = undefined;
   }
