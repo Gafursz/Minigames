@@ -34,11 +34,11 @@ export class Header {
             </li>
           </ul>
           <div class="header__actions">
-  <button class="header__login" type="button">
+  <button class="header__login" type="button" data-auth-open="login">
     Login
   </button>
 
-  <button class="header__signup" type="button">
+  <button class="header__signup" type="button" data-auth-open="register">
     Sign Up
   </button>
 
@@ -88,11 +88,11 @@ export class Header {
   </li>
 </ul>
 <div class="header__mobile-actions">
-  <button class="header__mobile-login" type="button">
+  <button class="header__mobile-login" type="button" data-auth-open="login">
     Log in
   </button>
 
-  <button class="header__mobile-signup" type="button">
+  <button class="header__mobile-signup" type="button" data-auth-open="register">
     Sign Up
   </button>
 </div>
@@ -128,6 +128,9 @@ export class Header {
     burgerButton.addEventListener('click', openMenu);
 
     closeButton.addEventListener('click', closeMenu);
+    for (const button of mobileMenu.querySelectorAll<HTMLButtonElement>('[data-auth-open]')) {
+      button.addEventListener('click', closeMenu);
+    }
 
     mobileMenu.addEventListener('transitionend', (event) => {
       if (
