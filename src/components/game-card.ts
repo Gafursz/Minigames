@@ -1,28 +1,20 @@
-const gameImages = import.meta.glob('../assets/images/games/*-card.jpg', {
-  eager: true,
-  import: 'default',
-  query: '?url',
-}) as Record<string, string>;
-
 import type { Game } from '../types/game';
+import { escapeHtml, formatLikesCount, getGameCardImage } from '../utils/game';
+
 export class GameCard {
   constructor(private readonly game: Game) {}
-  private formatLikesCount(count: number): string {
-    return count >= 1000 ? `${(count / 1000).toFixed(1)}K` : count.toString();
-  }
 
   public render(): string {
-    const imagePath = `../assets/images/games/${this.game.slug}-card.jpg`;
-    const imageUrl = gameImages[imagePath];
+    const imageUrl = getGameCardImage(this.game.slug);
     return `
     <article class="game-card">
       <img
         class="game-card__image"
         src="${imageUrl}"
-        alt="${this.game.name}"
+        alt="${escapeHtml(this.game.name)}"
       />
       <div class="game-card__info">
-  <h3 class="game-card__title">${this.game.name}</h3>
+  <h3 class="game-card__title">${escapeHtml(this.game.name)}</h3>
 
   <div class="game-card__meta">
   <span class="game-card__rating">
@@ -53,7 +45,7 @@ export class GameCard {
       stroke-linejoin="round"
     />
   </svg>
-  ${this.formatLikesCount(this.game.likesCount)}
+  ${formatLikesCount(this.game.likesCount)}
 </span>
 </div>
 </div>
