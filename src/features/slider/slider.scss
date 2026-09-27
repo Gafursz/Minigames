@@ -199,35 +199,9 @@
   white-space: nowrap;
 }
 
-.game-card__meta {
-  display: flex;
-  align-items: center;
+.game-card .game-stats {
   justify-content: space-between;
-  min-height: tokens.$size-3;
   font-size: tokens.$font-size-md;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.game-card__likes,
-.game-card__rating {
-  display: inline-flex;
-  align-items: center;
-  gap: tokens.$size-1;
-}
-
-.game-card__meta-icon {
-  width: tokens.$size-3;
-  height: tokens.$size-3;
-  flex-shrink: 0;
-}
-
-.game-card__likes .game-card__meta-icon {
-  color: tokens.$color-like;
-}
-
-.game-card__rating .game-card__meta-icon {
-  color: tokens.$color-primary;
 }
 
 /* ======================================================
@@ -239,7 +213,7 @@
     font-size: tokens.$font-size-body-small;
   }
 
-  .game-card__meta {
+  .game-card .game-stats {
     font-size: 12px;
   }
 }
