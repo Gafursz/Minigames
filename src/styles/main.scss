@@ -13,6 +13,7 @@
 @use './components/library-filters';
 @use './components/library-sort';
 @use './components/pagination';
+@use '../features/game-details/game-details';
 *,
 *::before,
 *::after {
@@ -21,6 +22,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
