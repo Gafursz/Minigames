@@ -34,11 +34,11 @@ export class Header {
             </li>
           </ul>
           <div class="header__actions">
-  <button class="header__login" type="button">
+  <button class="header__login" type="button" data-auth-open="login">
     Login
   </button>
 
-  <button class="header__signup" type="button">
+  <button class="header__signup" type="button" data-auth-open="register">
     Sign Up
   </button>
 
@@ -88,11 +88,11 @@ export class Header {
   </li>
 </ul>
 <div class="header__mobile-actions">
-  <button class="header__mobile-login" type="button">
+  <button class="header__mobile-login" type="button" data-auth-open="login">
     Log in
   </button>
 
-  <button class="header__mobile-signup" type="button">
+  <button class="header__mobile-signup" type="button" data-auth-open="register">
     Sign Up
   </button>
 </div>
@@ -100,26 +100,57 @@ export class Header {
       </header>
     `;
   }
+
   public bindEvents(): void {
     const burgerButton = document.querySelector<HTMLButtonElement>('.header__burger');
     const mobileMenu = document.querySelector<HTMLElement>('.header__mobile-menu');
     const closeButton = document.querySelector<HTMLButtonElement>('.header__mobile-close');
+
     if (!(burgerButton && mobileMenu && closeButton)) {
       return;
     }
 
-    burgerButton.addEventListener('click', () => {
-      const isMenuOpen = !mobileMenu.hidden;
+    const openMenu = (): void => {
+      mobileMenu.hidden = false;
 
-      mobileMenu.hidden = isMenuOpen;
-      burgerButton.setAttribute('aria-expanded', String(!isMenuOpen));
-    });
+      requestAnimationFrame(() => {
+        mobileMenu.classList.add('header__mobile-menu--open');
+      });
+
+      burgerButton.setAttribute('aria-expanded', 'true');
+    };
+
     const closeMenu = (): void => {
-      mobileMenu.hidden = true;
+      mobileMenu.classList.remove('header__mobile-menu--open');
       burgerButton.setAttribute('aria-expanded', 'false');
     };
 
+    burgerButton.addEventListener('click', openMenu);
+
     closeButton.addEventListener('click', closeMenu);
+    for (const button of mobileMenu.querySelectorAll<HTMLButtonElement>('[data-auth-open]')) {
+      button.addEventListener('click', closeMenu);
+    }
+
+    mobileMenu.addEventListener('transitionend', (event) => {
+      if (
+        event.propertyName !== 'transform' ||
+        mobileMenu.classList.contains('header__mobile-menu--open')
+      ) {
+        return;
+      }
+
+      mobileMenu.hidden = true;
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || mobileMenu.hidden) {
+        return;
+      }
+
+      closeMenu();
+      burgerButton.focus();
+    });
 
     for (const link of mobileMenu.querySelectorAll<HTMLAnchorElement>('a')) {
       link.addEventListener('click', closeMenu);
