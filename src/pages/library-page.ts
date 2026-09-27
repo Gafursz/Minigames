@@ -2,11 +2,13 @@ import { Footer } from '../components/footer';
 import { Header } from '../components/header';
 import { LibraryCard } from '../components/library-card';
 import gamesData from '../data/all-games-seed.json';
+import { LibraryFilters } from '../components/library-filters';
 
 export class LibraryPage {
   private readonly header = new Header('library');
   private readonly footer = new Footer();
   private readonly controller = new AbortController();
+  private readonly filters = new LibraryFilters();
 
   public render(): string {
     return `
@@ -17,6 +19,7 @@ export class LibraryPage {
           <h1 class="library__title" id="library-title">Game Library</h1>
           <p class="library__description">Browse our collection of casual mini-games</p>
         </section>
+        ${this.filters.render()}
         <section class="library__cards" aria-label="Games">
           ${gamesData.data
             .slice(0, 6)
@@ -31,6 +34,7 @@ export class LibraryPage {
 
   public bindEvents(): void {
     this.header.bindEvents();
+    this.filters.bindEvents(this.controller.signal);
   }
 
   public destroy(): void {

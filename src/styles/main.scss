@@ -10,6 +10,7 @@
 @use './pages/library';
 @use './components/game-stats';
 @use './components/library-card';
+@use './components/library-filters';
 *,
 *::before,
 *::after {
