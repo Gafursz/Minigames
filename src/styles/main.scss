@@ -11,6 +11,7 @@
 @use './components/game-stats';
 @use './components/library-card';
 @use './components/library-filters';
+@use './components/library-sort';
 *,
 *::before,
 *::after {

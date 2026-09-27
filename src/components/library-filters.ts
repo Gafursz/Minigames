@@ -1,6 +1,10 @@
+import { enableHorizontalDrag } from '../utils/horizontal-drag';
+import { LibrarySort } from './library-sort';
+
 const categories = ['All Games', 'Puzzle', 'Card', 'Match', 'Farm', 'Strategy', 'Arcade'];
 
 export class LibraryFilters {
+  private readonly sort = new LibrarySort();
   public render(): string {
     return `
       <div class="library-filters">
@@ -14,13 +18,17 @@ export class LibraryFilters {
             )
             .join('')}
         </div>
+        ${this.sort.render()}
       </div>
     `;
   }
 
   public bindEvents(signal: AbortSignal): void {
+    this.sort.bindEvents(signal);
     const group = document.querySelector<HTMLElement>('.library-filters__categories');
     if (!group) return;
+
+    enableHorizontalDrag(group, signal);
 
     group.addEventListener(
       'click',

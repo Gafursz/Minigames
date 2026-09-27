@@ -16,6 +16,13 @@
   min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.library-filters__categories.is-dragging,
+.library-filters__categories.is-dragging .library-filters__chip {
+  cursor: grabbing;
 }
 
 .library-filters__categories::-webkit-scrollbar {
