@@ -46,6 +46,16 @@ export class GameComments {
   }
 
   public bindEvents(dialog: HTMLDialogElement): void {
+    const input = dialog.querySelector<HTMLTextAreaElement>('.game-comments__input');
+    input?.addEventListener('input', () => {
+      // Let CSS clamp the measured content between the 48px and 88px tokens.
+      input.style.height = 'auto';
+      const styles = getComputedStyle(input);
+      const borderHeight =
+        Number(styles.borderTopWidth.replace('px', '')) +
+        Number(styles.borderBottomWidth.replace('px', ''));
+      input.style.height = `${input.scrollHeight + borderHeight}px`;
+    });
     for (const button of dialog.querySelectorAll<HTMLButtonElement>('.game-comment__like')) {
       button.addEventListener('click', () => {
         const isLiked = button.getAttribute('aria-pressed') !== 'true';
