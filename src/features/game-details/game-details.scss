@@ -66,6 +66,7 @@
   font-size: tokens.$font-size-display-medium;
   font-weight: tokens.$font-weight-bold;
   line-height: normal;
+  white-space: nowrap;
 }
 
 @media (hover: hover) {
@@ -173,4 +174,29 @@
 .game-details__play:active,
 .game-details__favorite:active {
   background-color: tokens.$color-primary-high;
+}
+
+// A dialog narrower than its desktop width uses the mobile arrangement.
+@media (max-width: breakpoints.$breakpoint-dialog) {
+  .game-details__heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .game-details__title {
+    white-space: normal;
+  }
+
+  .game-details__specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .game-details__favorite {
+    flex: 0 0 tokens.$size-6;
+    padding: 0;
+  }
+
+  .game-details__favorite-label {
+    display: none;
+  }
 }
