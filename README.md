@@ -7,6 +7,7 @@ The application is built with **TypeScript, Sass, and Vite** without JavaScript 
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/Gafursz/Minigames)
+- [Live Demo](https://gafursz.github.io/Minigames/)
 - [RS School MiniGames Assignment](https://github.com/rolling-scopes-school/qualifying-stage/tree/main/tasks/minigames)
 - [Figma Design](https://www.figma.com/design/4MnLizE59gZI2DDxaSgZqi/MiniGames)
 
@@ -43,8 +44,6 @@ The application is built with **TypeScript, Sass, and Vite** without JavaScript 
 - TypeScript
 - Sass / SCSS
 - Vite
-- HTML5
-- JSON
 - ESLint
 - Prettier
 - Husky
