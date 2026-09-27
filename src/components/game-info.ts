@@ -4,6 +4,12 @@ import { escapeHtml } from '../utils/game';
 import { renderGameStats } from './game-stats';
 
 export class GameInfo {
+  public reset(dialog: HTMLDialogElement): void {
+    const button = dialog.querySelector<HTMLButtonElement>('.game-details__favorite');
+    button?.setAttribute('aria-pressed', 'false');
+    button?.setAttribute('aria-label', 'Add to Favorites');
+  }
+
   public bindEvents(dialog: HTMLDialogElement): void {
     const button = dialog.querySelector<HTMLButtonElement>('.game-details__favorite');
     button?.addEventListener('click', () => {

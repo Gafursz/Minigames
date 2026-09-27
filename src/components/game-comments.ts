@@ -45,6 +45,18 @@ export class GameComments {
     `;
   }
 
+  public reset(dialog: HTMLDialogElement): void {
+    dialog.querySelector<HTMLFormElement>('.game-comments__form')?.reset();
+    const input = dialog.querySelector<HTMLTextAreaElement>('.game-comments__input');
+    input?.style.removeProperty('height');
+    if (input) input.scrollTop = 0;
+    for (const button of dialog.querySelectorAll<HTMLButtonElement>('.game-comment__like')) {
+      button.setAttribute('aria-pressed', 'false');
+      const icon = button.querySelector('img');
+      if (icon) icon.src = heartIcon;
+    }
+  }
+
   public bindEvents(dialog: HTMLDialogElement): void {
     const input = dialog.querySelector<HTMLTextAreaElement>('.game-comments__input');
     input?.addEventListener('input', () => {

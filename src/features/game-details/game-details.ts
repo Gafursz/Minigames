@@ -73,6 +73,8 @@ export class GameDetails {
 
   public open(trigger: HTMLElement): void {
     if (!this.element || this.element.open) return;
+    this.info.reset(this.element);
+    this.comments.reset(this.element);
     this.returnFocus = trigger;
     this.element.classList.remove('is-closing');
     this.element.showModal();
