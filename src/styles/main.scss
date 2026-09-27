@@ -38,3 +38,14 @@ body {
   outline: tokens.$border-width-medium solid tokens.$color-tertiary;
   outline-offset: tokens.$size-05;
 }
+
+#app {
+  max-width: breakpoints.$breakpoint-figma-desktop;
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

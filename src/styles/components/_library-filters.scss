@@ -37,7 +37,7 @@
   border: tokens.$border-width-medium solid tokens.$color-on-primary;
   border-radius: tokens.$radius-pill;
   font: inherit;
-  font-size: tokens.$font-size-label-large;
+  font-size: tokens.$font-size-label-medium;
   font-weight: tokens.$font-weight-bold;
   white-space: nowrap;
   cursor: pointer;
@@ -58,6 +58,10 @@
 }
 
 @include breakpoints.tablet {
+  .library-filters__chip {
+    font-size: tokens.$font-size-label-large;
+  }
+
   .library-filters {
     padding-inline: tokens.$size-5;
   }

@@ -153,6 +153,9 @@
   width: 20rem;
   z-index: 10;
   height: 36.6875rem;
+  max-height: 100dvh;
+  max-width: 100%;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: tokens.$size-4;
@@ -291,6 +294,11 @@
 }
 
 @media (max-width: breakpoints.$breakpoint-mobile) {
+  .header {
+    height: tokens.$home-header-height-mobile;
+    padding-inline: tokens.$size-2;
+  }
+
   .header__signup {
     display: none;
   }
