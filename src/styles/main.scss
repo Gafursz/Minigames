@@ -29,3 +29,8 @@ body {
   color: tokens.$color-text;
   background-color: tokens.$color-background;
 }
+
+:where(a, button, textarea, [tabindex]):focus-visible {
+  outline: tokens.$border-width-medium solid tokens.$color-tertiary;
+  outline-offset: tokens.$size-05;
+}
