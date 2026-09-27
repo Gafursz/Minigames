@@ -1,0 +1,54 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.library {
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$size-1;
+    padding: tokens.$size-2;
+    line-height: normal;
+  }
+
+  &__title {
+    margin: 0;
+    color: tokens.$color-on-primary;
+    font-size: tokens.$font-size-display-small;
+    font-weight: tokens.$font-weight-bold;
+  }
+
+  &__description {
+    margin: 0;
+    color: tokens.$color-text;
+    font-size: tokens.$font-size-body-small;
+    font-weight: tokens.$font-weight-medium;
+  }
+
+  @include breakpoints.tablet {
+    &__intro {
+      padding: tokens.$size-3 tokens.$size-5;
+    }
+
+    &__title {
+      font-size: tokens.$font-size-display-medium;
+    }
+
+    &__description {
+      font-size: tokens.$font-size-md;
+    }
+  }
+
+  @include breakpoints.desktop {
+    &__intro {
+      padding: tokens.$size-5 tokens.$size-15;
+    }
+
+    &__title {
+      font-size: tokens.$font-size-display-large;
+    }
+
+    &__description {
+      font-size: tokens.$font-size-body-large;
+    }
+  }
+}
