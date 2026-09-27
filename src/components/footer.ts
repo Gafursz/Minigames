@@ -120,7 +120,7 @@ export class Footer {
         <div class="footer__brand">
           <a
             class="footer__logo"
-            href="/"
+            href="#/"
             aria-label="MiniGames home"
           >
             <img
@@ -148,10 +148,10 @@ export class Footer {
             <h3 class="footer__nav-title">Explore</h3>
 
             <ul class="footer__nav-list">
-              <li><a class="footer__nav-link" href="/">Home</a></li>
-              <li><a class="footer__nav-link" href="#library">Library</a></li>
-              <li><a class="footer__nav-link" href="#categories">Categories</a></li>
-              <li><a class="footer__nav-link" href="#tournaments">Tournaments</a></li>
+              <li><a class="footer__nav-link" href="#/">Home</a></li>
+              <li><a class="footer__nav-link" href="#/library">Library</a></li>
+              <li><a class="footer__nav-link" href="#/">Categories</a></li>
+              <li><a class="footer__nav-link" href="#/">Tournaments</a></li>
             </ul>
           </div>
 
@@ -159,10 +159,10 @@ export class Footer {
             <h3 class="footer__nav-title">Company</h3>
 
             <ul class="footer__nav-list">
-              <li><a class="footer__nav-link" href="#about">About Us</a></li>
-              <li><a class="footer__nav-link" href="#contact">Contact</a></li>
-              <li><a class="footer__nav-link" href="#privacy">Privacy Policy</a></li>
-              <li><a class="footer__nav-link" href="#terms">Terms of Service</a></li>
+              <li><a class="footer__nav-link" href="#/">About Us</a></li>
+              <li><a class="footer__nav-link" href="#/">Contact</a></li>
+              <li><a class="footer__nav-link" href="#/">Privacy Policy</a></li>
+              <li><a class="footer__nav-link" href="#/">Terms of Service</a></li>
             </ul>
           </div>
         </nav>
@@ -173,7 +173,7 @@ export class Footer {
           <div class="footer__socials">
             <a
               class="footer__social-link"
-              href="#"
+              href="#/"
               aria-label="Share MiniGames"
             >
               <!-- share icon -->
@@ -181,7 +181,7 @@ export class Footer {
 
             <a
               class="footer__social-link"
-              href="#"
+              href="#/"
               aria-label="MiniGames community"
             >
               <!-- message icon -->
@@ -189,7 +189,7 @@ export class Footer {
 
             <a
               class="footer__social-link"
-              href="#"
+              href="#/"
               aria-label="MiniGames RSS feed"
             >
               <!-- RSS icon -->
@@ -203,11 +203,11 @@ export class Footer {
           </p>
 
           <div class="footer__credits">
-            <a class="footer__school-link" href="#">
+            <a class="footer__school-link" href="#/">
               RS School
             </a>
 
-            <a class="footer__student-link" href="#">
+            <a class="footer__student-link" href="#/">
               @student-nickname
             </a>
           </div>

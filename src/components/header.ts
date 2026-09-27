@@ -1,11 +1,16 @@
 import logoIcon from '../assets/icons/logo-icon.svg';
 export class Header {
+  public constructor(private readonly activePage: 'home' | 'library' = 'home') {}
+
   public render(): string {
+    const isHome = this.activePage === 'home';
+    const isLibrary = this.activePage === 'library';
+
     return `
         
       <header class="header">
         <nav class="header__nav" aria-label="Main navigation">
-          <a class="header__logo" href="/" aria-label="MiniGames home">
+          <a class="header__logo" href="#/" aria-label="MiniGames home">
           <span class="header__logo-icon-wrapper">
           <img class="header__logo-icon" src="${logoIcon}" alt=""/>
           </span>
@@ -16,16 +21,16 @@ export class Header {
           <div class="header__nav-actions">
             <ul class="header__menu">
             <li class="header__menu-item">
-              <a class="header__link header__link--active" href="/">Home</a>
+              <a class="header__link${isHome ? ' header__link--active' : ''}" href="#/"${isHome ? ' aria-current="page"' : ''}>Home</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link" href="/">Library</a>
+              <a class="header__link${isLibrary ? ' header__link--active' : ''}" href="#/library"${isLibrary ? ' aria-current="page"' : ''}>Library</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link" href="/">Tournaments</a>
+              <a class="header__link" href="#/">Tournaments</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link" href="/">Community</a>
+              <a class="header__link" href="#/">Community</a>
             </li>
           </ul>
           <div class="header__actions">
@@ -56,7 +61,7 @@ export class Header {
   id="mobile-navigation"
   hidden 
 ><div class="header__mobile-top">
-  <a class="header__mobile-logo" href="/" aria-label="MiniGames home">
+  <a class="header__mobile-logo" href="#/" aria-label="MiniGames home">
     MiniGames
   </a>
 
@@ -70,16 +75,16 @@ export class Header {
 </div>
 <ul class="header__mobile-links">
   <li>
-    <a class="header__mobile-link header__mobile-link--active" href="/">Home</a>
+    <a class="header__mobile-link${isHome ? ' header__mobile-link--active' : ''}" href="#/"${isHome ? ' aria-current="page"' : ''}>Home</a>
   </li>
   <li>
-    <a class="header__mobile-link" href="/">Library</a>
+    <a class="header__mobile-link${isLibrary ? ' header__mobile-link--active' : ''}" href="#/library"${isLibrary ? ' aria-current="page"' : ''}>Library</a>
   </li>
   <li>
-    <a class="header__mobile-link" href="/">Tournaments</a>
+    <a class="header__mobile-link" href="#/">Tournaments</a>
   </li>
   <li>
-    <a class="header__mobile-link" href="/">Community</a>
+    <a class="header__mobile-link" href="#/">Community</a>
   </li>
 </ul>
 <div class="header__mobile-actions">
@@ -109,9 +114,15 @@ export class Header {
       mobileMenu.hidden = isMenuOpen;
       burgerButton.setAttribute('aria-expanded', String(!isMenuOpen));
     });
-    closeButton.addEventListener('click', () => {
+    const closeMenu = (): void => {
       mobileMenu.hidden = true;
       burgerButton.setAttribute('aria-expanded', 'false');
-    });
+    };
+
+    closeButton.addEventListener('click', closeMenu);
+
+    for (const link of mobileMenu.querySelectorAll<HTMLAnchorElement>('a')) {
+      link.addEventListener('click', closeMenu);
+    }
   }
 }
