@@ -77,3 +77,100 @@
 .game-details__close:active {
   background-color: tokens.$color-primary-high;
 }
+
+.game-details__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$size-1;
+}
+
+.game-details .game-stats {
+  flex-shrink: 0;
+  font-size: tokens.$font-size-label-large;
+}
+
+.game-details__description {
+  margin: 0;
+  color: tokens.$color-text;
+  font-size: tokens.$font-size-md;
+  font-weight: tokens.$font-weight-regular;
+  line-height: tokens.$dialog-description-line-height;
+}
+
+.game-details__specs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: tokens.$size-2;
+  margin: 0;
+}
+
+.game-details__spec {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$size-1;
+  padding: tokens.$size-1 tokens.$size-2;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-small solid tokens.$color-outline-variant;
+  border-radius: tokens.$radius-md;
+  box-shadow: tokens.$shadow-widget;
+}
+
+.game-details__spec dt {
+  color: tokens.$color-text;
+  font-size: tokens.$font-size-label-medium;
+}
+
+.game-details__spec dd {
+  margin: 0;
+  font-size: tokens.$font-size-label-large;
+  font-weight: tokens.$font-weight-bold;
+  white-space: nowrap;
+}
+
+.game-details__actions {
+  display: flex;
+  gap: tokens.$size-2;
+}
+
+.game-details__play,
+.game-details__favorite {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: tokens.$size-1;
+  min-width: 0;
+  height: tokens.$size-6;
+  padding: tokens.$size-2 tokens.$size-3;
+  color: tokens.$color-on-primary;
+  border: tokens.$border-width-small solid tokens.$color-outline-variant;
+  border-radius: tokens.$radius-medium;
+  box-shadow: tokens.$shadow-card;
+  font: inherit;
+  font-size: tokens.$font-size-md;
+  font-weight: tokens.$font-weight-bold;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.game-details__play {
+  background-color: tokens.$color-primary;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+}
+
+.game-details__favorite {
+  background-color: tokens.$color-white;
+}
+
+@media (hover: hover) {
+  .game-details__play:hover,
+  .game-details__favorite:hover {
+    background-color: tokens.$color-primary-low;
+  }
+}
+
+.game-details__play:active,
+.game-details__favorite:active {
+  background-color: tokens.$color-primary-high;
+}

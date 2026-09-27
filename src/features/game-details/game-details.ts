@@ -1,7 +1,9 @@
 import closeIcon from '../../assets/icons/close.svg';
 import heroImage from '../../assets/images/games/tukoni-forest-keepers-hero.jpg';
+import { GameInfo } from '../../components/game-info';
 
 export class GameDetails {
+  private readonly info = new GameInfo();
   private element: HTMLDialogElement | undefined;
   private returnFocus: HTMLElement | undefined;
 
@@ -15,7 +17,7 @@ export class GameDetails {
           </button>
         </div>
         <div class="game-details__body">
-          <h2 class="game-details__title" id="game-details-title">Tukoni: Forest Keepers</h2>
+          ${this.info.render()}
         </div>
       </dialog>
     `;
