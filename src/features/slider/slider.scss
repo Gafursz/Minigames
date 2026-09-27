@@ -384,3 +384,12 @@
   outline-offset: calc(-1 * tokens.$size-1);
   outline-color: tokens.$color-primary;
 }
+
+.slider__track {
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.slider__track.is-dragging .game-card__trigger {
+  cursor: grabbing;
+}

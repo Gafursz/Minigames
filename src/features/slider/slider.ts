@@ -2,6 +2,7 @@ import gamesData from '../../data/all-games-seed.json';
 import { GameCard } from '../../components/game-card';
 import type { Game } from '../../types/game';
 
+import { bindSliderGestures } from './slider-gestures';
 import { AutoplayTimer } from './autoplay-timer';
 import { getSlideOffset, wrapIndex } from './slider-model';
 
@@ -103,6 +104,15 @@ export class Slider {
     if (!track) return;
     this.track = track;
     const { signal } = this.controller;
+    bindSliderGestures(
+      track,
+      {
+        onHold: () => this.autoplay.pause('pointer'),
+        onRelease: () => this.autoplay.resume('pointer'),
+        onSwipe: (direction) => this.manualStep(direction),
+      },
+      signal,
+    );
     document
       .querySelector('.slider__control--previous')
       ?.addEventListener('click', () => this.manualStep(-1), { signal });
