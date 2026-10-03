@@ -12,11 +12,4 @@ export function formatLikesCount(count: number): string {
   return count >= 1000 ? `${(count / 1000).toFixed(1)}K` : count.toString();
 }
 
-export function escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
+export { escapeHtml } from './html.ts';

@@ -166,3 +166,17 @@ $duration-dialog: 200ms;
 $duration-slider: 450ms;
 
 $slider-info-min-width: 288px;
+
+// Shared API content feedback
+$duration-skeleton: 1400ms;
+$skeleton-line-height: 0.75rem;
+$skeleton-row-height: 4rem;
+$skeleton-highlight-opacity: 0.7;
+$feedback-symbol-size: 2rem;
+$touch-target: 2.75rem;
+
+// Shared Snackbar feedback
+$color-success: $color-price-free;
+$duration-feedback: 160ms;
+$snackbar-width: 28rem;
+$snackbar-layer: 1000;

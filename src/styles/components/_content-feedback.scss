@@ -1,0 +1,207 @@
+@use 'sass:color';
+@use '../tokens';
+@use '../breakpoints';
+
+[data-feedback-state] {
+  min-width: 0;
+}
+
+.content-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$size-2;
+  padding: tokens.$size-3;
+  color: tokens.$color-on-primary;
+  border: tokens.$border-width-medium solid tokens.$color-outline-variant;
+  border-radius: tokens.$radius-lg;
+
+  &--error {
+    background: color.mix(tokens.$color-white, tokens.$color-error, 94%);
+    border-color: tokens.$color-error;
+  }
+
+  &--empty {
+    background: tokens.$color-surface-low;
+    border-style: dashed;
+  }
+
+  &__symbol {
+    display: grid;
+    flex: 0 0 tokens.$feedback-symbol-size;
+    place-items: center;
+    width: tokens.$feedback-symbol-size;
+    height: tokens.$feedback-symbol-size;
+    border: tokens.$border-width-medium solid currentColor;
+    border-radius: tokens.$radius-pill;
+    font-weight: tokens.$font-weight-bold;
+  }
+
+  &--error &__symbol {
+    color: tokens.$color-error;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  &__title {
+    margin: 0 0 tokens.$size-05;
+    font-size: tokens.$font-size-md;
+    font-weight: tokens.$font-weight-bold;
+  }
+
+  &__message {
+    margin: 0;
+    font-size: tokens.$font-size-body-small;
+    line-height: 1.5;
+  }
+
+  &__retry {
+    min-height: tokens.$touch-target;
+    padding: tokens.$btn-small-y tokens.$btn-small-x;
+    color: tokens.$color-on-primary;
+    background: tokens.$color-primary;
+    border: tokens.$border-width-medium solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-md;
+    font: inherit;
+    font-size: tokens.$font-size-label-large;
+    font-weight: tokens.$font-weight-bold;
+    cursor: pointer;
+
+    &:disabled {
+      color: tokens.$color-text-muted;
+      background: tokens.$color-outline;
+      cursor: wait;
+    }
+  }
+}
+
+@media (hover: hover) {
+  .content-feedback__retry:hover:not(:disabled) {
+    background: tokens.$color-primary-low;
+  }
+}
+
+.feedback-skeleton {
+  display: grid;
+  gap: tokens.$size-2;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$size-2;
+    min-width: 0;
+    overflow: hidden;
+    padding: tokens.$size-2;
+    background: tokens.$color-white;
+    border: tokens.$border-width-small solid tokens.$color-outline;
+    border-radius: tokens.$radius-lg;
+  }
+
+  &__media,
+  &__line {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: tokens.$color-outline;
+    border-radius: tokens.$radius-md;
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(tokens.$color-white, tokens.$skeleton-highlight-opacity),
+        transparent
+      );
+      content: '';
+      animation: feedback-shimmer tokens.$duration-skeleton linear infinite;
+    }
+  }
+
+  &__media {
+    height: tokens.$library-image-height-mobile;
+  }
+
+  &__text {
+    display: grid;
+    flex: 1;
+    align-content: center;
+    gap: tokens.$size-1;
+    min-width: 0;
+  }
+
+  &__line {
+    height: tokens.$skeleton-line-height;
+
+    &--title {
+      width: 65%;
+      height: tokens.$size-2;
+      margin-bottom: tokens.$size-05;
+    }
+
+    &--short {
+      width: 80%;
+    }
+  }
+
+  &--leaderboard &__item,
+  &--comments &__item {
+    flex-direction: row;
+    min-height: tokens.$skeleton-row-height;
+  }
+
+  &--leaderboard &__media,
+  &--comments &__media {
+    flex: 0 0 tokens.$size-5;
+    height: tokens.$size-5;
+    border-radius: tokens.$radius-pill;
+  }
+
+  &--details &__media {
+    height: tokens.$dialog-hero-height;
+  }
+}
+
+@include breakpoints.tablet {
+  .feedback-skeleton--cards .feedback-skeleton__item {
+    flex-direction: row;
+    min-height: tokens.$library-card-height-tablet;
+  }
+
+  .feedback-skeleton--cards .feedback-skeleton__media {
+    flex: 0 0 35%;
+    height: auto;
+  }
+
+  .feedback-skeleton--slider {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@include breakpoints.wide {
+  .feedback-skeleton--cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@keyframes feedback-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-skeleton__media::after,
+  .feedback-skeleton__line::after {
+    animation: none;
+  }
+}
