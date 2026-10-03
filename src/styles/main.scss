@@ -17,6 +17,7 @@
 @use '../features/auth-dialog/auth-dialog';
 @use './components/game-records';
 @use './components/game-comments';
+@use './components/content-feedback';
 *,
 *::before,
 *::after {
