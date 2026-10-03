@@ -7,7 +7,7 @@ import type {
   LibraryQuery,
 } from '../types/api';
 import type { LeaderboardData } from '../types/leaderboard-player';
-import { getJson } from './http-client';
+import { getJson } from './http-client.ts';
 
 export const LIBRARY_PAGE_SIZE = 6;
 export const LATEST_COMMENTS_LIMIT = 3;
