@@ -1,3 +1,4 @@
+import libraryDataNotFoundImage from '../../assets/images/library-data-not-found.png';
 import { ApiError } from '../../api/http-client';
 import { getLibraryGames } from '../../api/minigames-api';
 import { ContentFeedback } from '../../components/content-feedback';
@@ -78,6 +79,7 @@ export class LibraryGames {
         this.feedback.showEmpty({
           title: 'Data Not Found',
           message: 'No games are available for this selection.',
+          imageSrc: libraryDataNotFoundImage,
         });
       } else {
         this.feedback.showContent(games.map((game) => new LibraryCard(game).render()).join(''));

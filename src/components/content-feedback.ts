@@ -13,6 +13,7 @@ interface ErrorFeedback {
 interface EmptyFeedback {
   title: string;
   message: string;
+  imageSrc?: string;
 }
 
 const skeletonCounts: Record<SkeletonLayout, number> = {
@@ -147,15 +148,24 @@ export class ContentFeedback {
     }
   }
 
-  public showEmpty({ title, message }: EmptyFeedback): void {
+  public showEmpty({ title, message, imageSrc }: EmptyFeedback): void {
     this.replace(
-      `<div class="content-feedback content-feedback--empty" role="status">
-        <span class="content-feedback__symbol" aria-hidden="true">○</span>
-        <div class="content-feedback__body">
-          <h3 class="content-feedback__title">${escapeHtml(title)}</h3>
-          <p class="content-feedback__message">${escapeHtml(message)}</p>
-        </div>
-      </div>`,
+      `<div class="content-feedback content-feedback--empty${imageSrc ? ' content-feedback--illustrated' : ''}" role="status">
+      ${
+        imageSrc
+          ? `<img
+              class="content-feedback__image"
+              src="${escapeHtml(imageSrc)}"
+              alt=""
+              aria-hidden="true"
+            />`
+          : `<span class="content-feedback__symbol" aria-hidden="true">○</span>`
+      }
+      <div class="content-feedback__body">
+        <h3 class="content-feedback__title">${escapeHtml(title)}</h3>
+        <p class="content-feedback__message">${escapeHtml(message)}</p>
+      </div>
+    </div>`,
       'empty',
     );
   }
