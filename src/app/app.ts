@@ -16,12 +16,21 @@ export class App {
   private pageKey: string | undefined;
   private readonly router: Router;
   private readonly controller = new AbortController();
-  private readonly gameDetails = new GameDetails((isOpen) => {
-    this.page?.setDialogOpen?.(isOpen);
-  });
-
-  private readonly authDialog = new AuthDialog((isOpen) => {
-    this.page?.setDialogOpen?.(isOpen);
+  private dialogTrigger: HTMLElement | undefined;
+  private dialogKey: string | undefined;
+  private readonly gameDetails = new GameDetails(
+    () => this.updateDialogPause(),
+    () => {
+      this.router.updateQuery({ game: undefined });
+    },
+  );
+  private readonly authDialog = new AuthDialog(() => this.updateDialogPause(), {
+    close: () => {
+      this.router.updateQuery({ auth: undefined });
+    },
+    setMode: (mode) => {
+      this.router.updateQuery({ auth: mode, game: undefined });
+    },
   });
 
   public constructor(root: HTMLElement) {
@@ -49,26 +58,67 @@ export class App {
           event.target instanceof Element
             ? event.target.closest<HTMLElement>('[data-game-details]')
             : undefined;
-        if (trigger && !this.root.querySelector('dialog[open]'))
-          this.gameDetails.open(trigger.dataset.gameDetails ?? '', trigger);
+        if (trigger?.dataset.gameDetails) {
+          this.dialogTrigger = trigger;
+          this.router.updateQuery({ game: trigger.dataset.gameDetails, auth: undefined });
+          return;
+        }
         const authTrigger =
           event.target instanceof Element
             ? event.target.closest<HTMLElement>('[data-auth-open]')
             : undefined;
-        if (authTrigger)
-          this.authDialog.open(
-            authTrigger.dataset.authOpen === 'register' ? 'register' : 'login',
-            authTrigger,
-          );
+        if (!authTrigger) {
+          return;
+        }
+
+        this.dialogTrigger = authTrigger;
+        this.router.updateQuery({
+          auth: authTrigger.dataset.authOpen === 'register' ? 'register' : 'login',
+          game: undefined,
+        });
       },
       { signal: this.controller.signal },
     );
+  }
+
+  private updateDialogPause(): void {
+    this.page?.setDialogOpen?.(Boolean(this.root.querySelector('dialog[open]')));
+  }
+
+  private syncDialogs(route: RouteState): void {
+    const dialog = route.dialog;
+    const key = dialog
+      ? `${dialog.kind}:${dialog.kind === 'game' ? dialog.slug : dialog.mode}`
+      : undefined;
+    if (key === this.dialogKey) {
+      this.dialogTrigger = undefined;
+      return;
+    }
+    snackbar.dismiss();
+    this.dialogKey = key;
+    let trigger = this.dialogTrigger;
+    this.dialogTrigger = undefined;
+    if (!trigger && dialog && !this.root.querySelector('dialog[open]')) {
+      trigger = this.root.querySelector<HTMLElement>(':scope main h1') ?? undefined;
+      if (trigger) trigger.tabIndex = -1;
+    }
+    if (dialog?.kind === 'game') {
+      this.authDialog.close(false, false);
+      this.gameDetails.open(dialog.slug, trigger);
+    } else if (dialog?.kind === 'auth') {
+      this.gameDetails.close(false, false);
+      this.authDialog.open(dialog.mode, trigger);
+    } else {
+      this.gameDetails.close();
+      this.authDialog.close();
+    }
   }
 
   private renderRoute(route: RouteState, reason: NavigationReason): void {
     const key = route.page === 'not-found' ? route.url.pathname : route.page;
     if (this.page && this.pageKey === key) {
       this.page.updateRoute?.(route);
+      this.syncDialogs(route);
       return;
     }
 
@@ -77,6 +127,7 @@ export class App {
     this.authDialog.destroy();
     this.page?.destroy?.();
     this.pageKey = key;
+    this.dialogKey = undefined;
     switch (route.page) {
       case 'home': {
         this.page = new HomePage();
@@ -101,8 +152,9 @@ export class App {
     this.gameDetails.bindEvents();
     this.authDialog.bindEvents();
     this.page.updateRoute?.(route);
+    this.syncDialogs(route);
 
-    if (reason !== 'initial') {
+    if (reason !== 'initial' && !route.dialog) {
       const heading = this.root.querySelector<HTMLElement>(':scope main h1');
       if (heading) {
         heading.tabIndex = -1;
@@ -125,6 +177,8 @@ export class App {
     this.page?.destroy?.();
     this.page = undefined;
     this.pageKey = undefined;
+    this.dialogKey = undefined;
+    this.dialogTrigger = undefined;
     this.root.replaceChildren();
   }
 }
