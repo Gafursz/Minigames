@@ -7,11 +7,10 @@
   padding-inline: tokens.$size-2;
 }
 
-// Figma uses a different reading order for the single-column layout.
-@each $index, $order in (1: 1, 2: 3, 3: 2, 4: 4, 5: 6, 6: 5) {
-  .library__cards > :nth-child(#{$index}) {
-    order: $order;
-  }
+// Feedback fills the list area; ready cards retain the backend's order at every width.
+.library__cards > .feedback-skeleton,
+.library__cards > .content-feedback {
+  grid-column: 1 / -1;
 }
 
 // @include inserts the media query defined in _breakpoints.scss.
@@ -31,10 +30,6 @@
 @include breakpoints.wide {
   .library__cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .library__cards > .library-card {
-    order: 0;
   }
 }
 
