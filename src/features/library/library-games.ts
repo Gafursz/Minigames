@@ -43,6 +43,18 @@ export class LibraryGames {
     this.feedback = new ContentFeedback(root);
   }
 
+  public showLoading(): void {
+    if (this.isDestroyed) return;
+    this.requestController?.abort();
+    this.feedback.showLoading('cards', 'Loading games…');
+  }
+
+  public clear(): void {
+    if (this.isDestroyed) return;
+    this.requestController?.abort();
+    this.feedback.showContent('');
+  }
+
   public async load(
     query: Readonly<LibraryQuery> = DEFAULT_LIBRARY_QUERY,
     isRetry = false,

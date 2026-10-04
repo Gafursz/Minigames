@@ -206,6 +206,17 @@
   &--details &__media {
     height: tokens.$dialog-hero-height;
   }
+
+  &--categories {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  &--categories &__item {
+    flex: 0 0 tokens.$size-14;
+    border-radius: tokens.$radius-pill;
+  }
 }
 
 @include breakpoints.tablet {

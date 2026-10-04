@@ -1,6 +1,7 @@
 import { escapeHtml } from '../utils/html.ts';
 
-export type SkeletonLayout = 'cards' | 'slider' | 'leaderboard' | 'details' | 'comments';
+export type SkeletonLayout =
+  'cards' | 'slider' | 'leaderboard' | 'details' | 'comments' | 'categories';
 
 interface ErrorFeedback {
   message: string;
@@ -20,9 +21,15 @@ const skeletonCounts: Record<SkeletonLayout, number> = {
   leaderboard: 5,
   details: 1,
   comments: 3,
+  categories: 7,
 };
 
 function renderSkeleton(layout: SkeletonLayout): string {
+  if (layout === 'categories') {
+    return `<div class="feedback-skeleton feedback-skeleton--categories" aria-hidden="true">
+      ${'<div class="feedback-skeleton__item"><span class="feedback-skeleton__line"></span></div>'.repeat(skeletonCounts.categories)}
+    </div>`;
+  }
   const lines = `
     <span class="feedback-skeleton__line feedback-skeleton__line--title"></span>
     <span class="feedback-skeleton__line"></span>

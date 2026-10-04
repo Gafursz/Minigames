@@ -83,7 +83,9 @@ export class App {
         break;
       }
       case 'library': {
-        this.page = new LibraryPage();
+        this.page = new LibraryPage((changes, shouldReplace) => {
+          this.router.updateQuery(changes, shouldReplace);
+        });
         document.title = 'MiniGames — Library';
         break;
       }
