@@ -59,6 +59,11 @@
   line-height: tokens.$comment-line-height;
 }
 
+.game-comments__input:focus {
+  outline: none;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+}
+
 .game-comments__input::placeholder {
   color: tokens.$color-placeholder;
   opacity: 1;
