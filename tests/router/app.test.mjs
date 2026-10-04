@@ -57,6 +57,9 @@ test('integrates page navigation, 404 recovery, history, and page cleanup', asyn
 });
 
 test('boots directly into an unknown route and migrates a legacy shared Library link', async (context) => {
+  context.mock.method(globalThis, 'fetch', async () =>
+    globalThis.Response.json({ data: [], meta: {} }),
+  );
   const { App } = await bundleModule(context, 'src/app/app.ts');
   let app;
   context.after(() => app?.destroy());

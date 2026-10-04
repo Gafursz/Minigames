@@ -58,9 +58,9 @@ async function setup(context) {
   return { ...modules, window, document, page, list, root, calls, complete, owned };
 }
 
-test('LibraryPage requests limit=6 and renders exactly the returned items in backend order', async (context) => {
-  const { page, root, document, calls, complete, getApiGameCardImage } = await setup(context);
-  page.bindEvents();
+test('Library list requests limit=6 and renders exactly the returned items in backend order', async (context) => {
+  const { list, root, document, calls, complete, getApiGameCardImage } = await setup(context);
+  void list.load();
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url.pathname, '/api/games');
   assert.deepEqual(Object.fromEntries(calls[0].url.searchParams), {

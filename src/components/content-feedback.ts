@@ -1,6 +1,7 @@
 import { escapeHtml } from '../utils/html.ts';
 
-export type SkeletonLayout = 'cards' | 'slider' | 'leaderboard' | 'details' | 'comments';
+export type SkeletonLayout =
+  'cards' | 'slider' | 'leaderboard' | 'details' | 'comments' | 'categories';
 
 interface ErrorFeedback {
   message: string;
@@ -12,6 +13,7 @@ interface ErrorFeedback {
 interface EmptyFeedback {
   title: string;
   message: string;
+  imageSrc?: string;
 }
 
 const skeletonCounts: Record<SkeletonLayout, number> = {
@@ -20,9 +22,15 @@ const skeletonCounts: Record<SkeletonLayout, number> = {
   leaderboard: 5,
   details: 1,
   comments: 3,
+  categories: 7,
 };
 
 function renderSkeleton(layout: SkeletonLayout): string {
+  if (layout === 'categories') {
+    return `<div class="feedback-skeleton feedback-skeleton--categories" aria-hidden="true">
+      ${'<div class="feedback-skeleton__item"><span class="feedback-skeleton__line"></span></div>'.repeat(skeletonCounts.categories)}
+    </div>`;
+  }
   const lines = `
     <span class="feedback-skeleton__line feedback-skeleton__line--title"></span>
     <span class="feedback-skeleton__line"></span>
@@ -140,15 +148,24 @@ export class ContentFeedback {
     }
   }
 
-  public showEmpty({ title, message }: EmptyFeedback): void {
+  public showEmpty({ title, message, imageSrc }: EmptyFeedback): void {
     this.replace(
-      `<div class="content-feedback content-feedback--empty" role="status">
-        <span class="content-feedback__symbol" aria-hidden="true">○</span>
-        <div class="content-feedback__body">
-          <h3 class="content-feedback__title">${escapeHtml(title)}</h3>
-          <p class="content-feedback__message">${escapeHtml(message)}</p>
-        </div>
-      </div>`,
+      `<div class="content-feedback content-feedback--empty${imageSrc ? ' content-feedback--illustrated' : ''}" role="status">
+      ${
+        imageSrc
+          ? `<img
+              class="content-feedback__image"
+              src="${escapeHtml(imageSrc)}"
+              alt=""
+              aria-hidden="true"
+            />`
+          : `<span class="content-feedback__symbol" aria-hidden="true">○</span>`
+      }
+      <div class="content-feedback__body">
+        <h3 class="content-feedback__title">${escapeHtml(title)}</h3>
+        <p class="content-feedback__message">${escapeHtml(message)}</p>
+      </div>
+    </div>`,
       'empty',
     );
   }
