@@ -6,6 +6,7 @@ interface ErrorFeedback {
   message: string;
   onRetry: () => Promise<void> | void;
   title?: string;
+  imageSrc?: string;
 }
 
 interface EmptyFeedback {
@@ -99,16 +100,26 @@ export class ContentFeedback {
     message,
     onRetry,
     title = 'Unable to load this section',
+    imageSrc,
   }: ErrorFeedback): void {
     this.replace(
-      `<div class="content-feedback content-feedback--error" role="alert">
-      <span class="content-feedback__symbol" aria-hidden="true">!</span>
-      <div class="content-feedback__body">
-        <h3 class="content-feedback__title">${escapeHtml(title)}</h3>
-        <p class="content-feedback__message">${escapeHtml(message)}</p>
-      </div>
-      <button class="content-feedback__retry" type="button">Retry</button>
-    </div>`,
+      `<div class="content-feedback content-feedback--error${imageSrc ? ' content-feedback--illustrated' : ''}" role="alert">
+    ${
+      imageSrc
+        ? `<img
+            class="content-feedback__image"
+            src="${escapeHtml(imageSrc)}"
+            alt=""
+            aria-hidden="true"
+          />`
+        : `<span class="content-feedback__symbol" aria-hidden="true">!</span>`
+    }
+    <div class="content-feedback__body">
+      <h3 class="content-feedback__title">${escapeHtml(title)}</h3>
+      <p class="content-feedback__message">${escapeHtml(message)}</p>
+    </div>
+    <button class="content-feedback__retry" type="button">Retry</button>
+  </div>`,
       'error',
     );
 
