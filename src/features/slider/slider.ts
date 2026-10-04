@@ -1,10 +1,17 @@
+import unableLoadGamesImage from '../../assets/images/unable_load_games.png';
+
 import { getFeaturedGames } from '../../api/minigames-api';
+
 import { GameCard } from '../../components/game-card';
+
 import type { ApiGame, FeaturedGamesResponse } from '../../types/api';
+
 import { HomeResource, hasNoItems } from '../home/home-resource';
 
 import { bindSliderGestures } from './slider-gestures';
+
 import { AutoplayTimer } from './autoplay-timer';
+
 import { getSlideOffset, wrapIndex } from './slider-model';
 
 export class Slider {
@@ -173,12 +180,14 @@ export class Slider {
       isEmpty: hasNoItems,
       layout: 'slider',
       label: 'Featured games',
-      emptyMessage: 'There are no featured games to show right now. Check back later.',
+      emptyMessage: 'No featured games to show right now. Check back later.',
+      errorImageSrc: unableLoadGamesImage,
       render: (response) => {
         this.games = response.data;
         return `<div class="slider__track">${this.renderGameCards()}</div>`;
       },
       onClear: () => this.clearSlides(),
+
       onReady: () => this.bindSlides(),
     });
     void this.resource.load();

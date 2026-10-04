@@ -1,6 +1,11 @@
 import { getLeaderboard } from '../api/minigames-api';
+
+import unableLoadPlayersImage from '../assets/images/unable_load_players.png';
+
 import { HomeResource, hasNoItems } from '../features/home/home-resource';
+
 import { escapeHtml } from '../utils/html';
+
 import type { LeaderboardData, LeaderboardPlayer } from '../types/leaderboard-player';
 
 export class Leaderboard {
@@ -118,6 +123,8 @@ export class Leaderboard {
       layout: 'leaderboard',
       label: 'Top players',
       emptyMessage: 'No players have reached the leaderboard yet. Check back later.',
+      errorImageSrc: unableLoadPlayersImage,
+
       render: (response) => {
         const title = document.querySelector('.leaderboard-section__title-desktop');
         if (title) title.textContent = response.meta.description || 'Top Players This Week';

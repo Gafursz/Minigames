@@ -1,6 +1,9 @@
 import { ApiError } from '../../api/http-client';
+
 import { ContentFeedback } from '../../components/content-feedback';
+
 import type { SkeletonLayout } from '../../components/content-feedback';
+
 import { snackbar } from '../../components/snackbar';
 
 interface HomeResourceOptions<T> {
@@ -12,9 +15,10 @@ interface HomeResourceOptions<T> {
   emptyMessage: string;
   onReady?: () => void;
   onClear?: () => void;
+  errorImageSrc?: string;
 }
-
 // A page owns each instance. Requests and content bindings end with that page.
+
 export class HomeResource<T> {
   private readonly feedback: ContentFeedback;
   private requestController: AbortController | undefined;
@@ -40,7 +44,9 @@ export class HomeResource<T> {
 
     try {
       const data = await this.options.request(controller.signal);
+
       // Some transports can still resolve after abort: never update a replaced page.
+
       if (!isCurrent()) return;
       if (this.options.isEmpty(data)) {
         this.feedback.showEmpty({
@@ -63,8 +69,9 @@ export class HomeResource<T> {
         title: `Unable to load ${label.toLowerCase()}`,
         message,
         onRetry: () => this.load(true),
+        imageSrc: this.options.errorImageSrc,
       });
-      snackbar.show(`${label} could not be loaded. Use Retry to try again.`, 'error');
+      snackbar.show(`${label} could not be loaded.`, 'error');
     }
   }
 
