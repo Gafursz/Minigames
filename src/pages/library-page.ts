@@ -1,9 +1,8 @@
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
-import { LibraryCard } from '../components/library-card';
-import gamesData from '../data/all-games-seed.json';
 import { LibraryFilters } from '../components/library-filters';
 import { Pagination } from '../components/pagination';
+import { LibraryGames } from '../features/library/library-games';
 
 export class LibraryPage {
   private readonly header = new Header('library');
@@ -11,6 +10,7 @@ export class LibraryPage {
   private readonly controller = new AbortController();
   private readonly filters = new LibraryFilters();
   private readonly pagination = new Pagination();
+  private games: LibraryGames | undefined;
 
   public render(): string {
     return `
@@ -22,12 +22,7 @@ export class LibraryPage {
           <p class="library__description">Browse our collection of casual mini-games</p>
         </section>
         ${this.filters.render()}
-        <section class="library__cards" aria-label="Games">
-          ${gamesData.data
-            .slice(0, 6)
-            .map((game) => new LibraryCard(game).render())
-            .join('')}
-        </section>
+        <section class="library__cards" aria-label="Games" aria-busy="true"></section>
         ${this.pagination.render()}
       </main>
 
@@ -39,10 +34,17 @@ export class LibraryPage {
     this.header.bindEvents();
     this.filters.bindEvents(this.controller.signal);
     this.pagination.bindEvents(this.controller.signal);
+    const cards = document.querySelector<HTMLElement>('.library__cards');
+    if (!cards) return;
+    this.games?.destroy();
+    this.games = new LibraryGames(cards);
+    void this.games.load();
   }
 
   public destroy(): void {
     this.header.destroy();
     this.controller.abort();
+    this.games?.destroy();
+    this.games = undefined;
   }
 }
