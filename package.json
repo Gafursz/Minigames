@@ -15,6 +15,7 @@
     "prepare": "husky",
     "test:api": "node --test --experimental-test-isolation=none tests/api/*.test.mjs",
     "test:ui": "node --test --experimental-test-isolation=none tests/feedback/*.test.mjs",
+    "test:home": "node --test --experimental-test-isolation=none tests/home/*.test.mjs",
     "typecheck:feedback": "tsc -p tsconfig.feedback.json"
   },
   "repository": {
