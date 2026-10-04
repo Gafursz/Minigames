@@ -1,4 +1,5 @@
 import libraryDataNotFoundImage from '../../assets/images/library-data-not-found.png';
+import unableLoadGamesImage from '../../assets/images/unable_load_games.png';
 import { ApiError } from '../../api/http-client';
 import { getLibraryGames } from '../../api/minigames-api';
 import { ContentFeedback } from '../../components/content-feedback';
@@ -124,6 +125,7 @@ export class LibraryGames {
       this.feedback.showError({
         title: 'Unable to load games',
         message,
+        imageSrc: unableLoadGamesImage,
         onRetry: () => this.load(attemptedQuery, true),
       });
       this.onState({ kind: 'error' });
