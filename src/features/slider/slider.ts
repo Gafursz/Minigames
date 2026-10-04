@@ -1,19 +1,21 @@
-import gamesData from '../../data/all-games-seed.json';
+import { getFeaturedGames } from '../../api/minigames-api';
 import { GameCard } from '../../components/game-card';
-import type { Game } from '../../types/game';
+import type { ApiGame, FeaturedGamesResponse } from '../../types/api';
+import { HomeResource, hasNoItems } from '../home/home-resource';
 
 import { bindSliderGestures } from './slider-gestures';
 import { AutoplayTimer } from './autoplay-timer';
 import { getSlideOffset, wrapIndex } from './slider-model';
 
-const featuredGames: Game[] = gamesData.data.filter((game) => game.featured);
-
 export class Slider {
-  private readonly games = featuredGames;
+  private games: ApiGame[] = [];
   private activeIndex = 0;
-  private readonly autoplay = new AutoplayTimer(() => this.step(1));
-  private readonly controller = new AbortController();
+  private autoplay: AutoplayTimer | undefined;
+  private controller: AbortController | undefined;
+  private resource: HomeResource<FeaturedGamesResponse> | undefined;
+  private root: HTMLElement | undefined;
   private track: HTMLElement | undefined;
+  private isDialogOpen = false;
 
   private updateSlides(): void {
     if (!this.track) return;
@@ -30,13 +32,14 @@ export class Slider {
   }
 
   private step(direction: number): void {
+    if (this.games.length < 2) return;
     this.activeIndex = wrapIndex(this.activeIndex + direction, this.games.length);
     this.updateSlides();
   }
 
   private manualStep(direction: number): void {
     this.step(direction);
-    this.autoplay.reset();
+    this.autoplay?.reset();
   }
 
   private renderGameCards(): string {
@@ -58,6 +61,7 @@ export class Slider {
           class="slider__control slider__control--previous"
           type="button"
           aria-label="Previous games"
+          disabled
         >
           <svg
             class="slider__control-icon"
@@ -79,6 +83,7 @@ export class Slider {
           class="slider__control slider__control--next"
           type="button"
           aria-label="Next games"
+          disabled
         >
           <svg
             class="slider__control-icon"
@@ -99,25 +104,48 @@ export class Slider {
     `;
   }
 
-  public bindEvents(): void {
-    const track = document.querySelector<HTMLElement>('.slider__track');
+  private clearSlides(): void {
+    this.autoplay?.destroy();
+    this.autoplay = undefined;
+    this.controller?.abort();
+    this.controller = undefined;
+    this.track = undefined;
+    this.games = [];
+    this.activeIndex = 0;
+    this.setControlsDisabled(true);
+  }
+
+  private setControlsDisabled(isDisabled: boolean): void {
+    const controls = this.root?.querySelectorAll<HTMLButtonElement>('.slider__control') ?? [];
+    for (const button of controls) {
+      button.disabled = isDisabled;
+    }
+  }
+
+  private bindSlides(): void {
+    const track = this.root?.querySelector<HTMLElement>('.slider__track');
     if (!track) return;
     this.track = track;
+    this.updateSlides();
+    if (this.games.length < 2) return;
+    this.setControlsDisabled(false);
+    this.autoplay = new AutoplayTimer(() => this.step(1));
+    this.controller = new AbortController();
     const { signal } = this.controller;
     bindSliderGestures(
       track,
       {
-        onHold: () => this.autoplay.pause('pointer'),
-        onRelease: () => this.autoplay.resume('pointer'),
+        onHold: () => this.autoplay?.pause('pointer'),
+        onRelease: () => this.autoplay?.resume('pointer'),
         onSwipe: (direction) => this.manualStep(direction),
       },
       signal,
     );
-    document
-      .querySelector('.slider__control--previous')
+    this.root
+      ?.querySelector('.slider__control--previous')
       ?.addEventListener('click', () => this.manualStep(-1), { signal });
-    document
-      .querySelector('.slider__control--next')
+    this.root
+      ?.querySelector('.slider__control--next')
       ?.addEventListener('click', () => this.manualStep(1), { signal });
     const observer = new ResizeObserver(() => this.updateSlides());
     observer.observe(track);
@@ -125,25 +153,48 @@ export class Slider {
     document.addEventListener(
       'visibilitychange',
       () => {
-        if (document.hidden) this.autoplay.pause('hidden');
-        else this.autoplay.resume('hidden');
+        if (document.hidden) this.autoplay?.pause('hidden');
+        else this.autoplay?.resume('hidden');
       },
       { signal },
     );
     if (document.hidden) this.autoplay.pause('hidden');
-    this.updateSlides();
+    if (this.isDialogOpen) this.autoplay.pause('dialog');
     this.autoplay.start();
   }
 
+  public bindEvents(): void {
+    this.resource?.destroy();
+    this.root = document.querySelector<HTMLElement>('.slider') ?? undefined;
+    const content = this.root?.querySelector<HTMLElement>('.slider__content');
+    if (!content) return;
+    this.resource = new HomeResource(content, {
+      request: getFeaturedGames,
+      isEmpty: hasNoItems,
+      layout: 'slider',
+      label: 'Featured games',
+      emptyMessage: 'There are no featured games to show right now. Check back later.',
+      render: (response) => {
+        this.games = response.data;
+        return `<div class="slider__track">${this.renderGameCards()}</div>`;
+      },
+      onClear: () => this.clearSlides(),
+      onReady: () => this.bindSlides(),
+    });
+    void this.resource.load();
+  }
+
   public setDialogOpen(isOpen: boolean): void {
-    if (isOpen) this.autoplay.pause('dialog');
-    else this.autoplay.resume('dialog');
+    this.isDialogOpen = isOpen;
+    if (isOpen) this.autoplay?.pause('dialog');
+    else this.autoplay?.resume('dialog');
   }
 
   public destroy(): void {
-    this.autoplay.destroy();
-    this.controller.abort();
-    this.track = undefined;
+    this.resource?.destroy();
+    this.resource = undefined;
+    this.clearSlides();
+    this.root = undefined;
   }
 
   public render(): string {
@@ -162,9 +213,7 @@ export class Slider {
             ${this.renderControls()}
           </div>
 
-          <div class="slider__track">
-            ${this.renderGameCards()}
-          </div>
+          <div class="slider__content" aria-busy="true"></div>
         </div>
       </section>
     `;

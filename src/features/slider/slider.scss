@@ -7,7 +7,7 @@
 
 .slider {
   width: 100%;
-  height: tokens.$home-games-height-desktop;
+  min-height: tokens.$home-games-height-desktop;
   padding: tokens.$size-5 0;
   overflow: hidden;
 }
@@ -263,7 +263,7 @@
 
 @media (max-width: breakpoints.$breakpoint-tablet) {
   .slider {
-    height: clamp(
+    min-height: clamp(
       tokens.$home-games-height-mobile,
       calc(171.36px + 29.77vw),
       tokens.$home-games-height-tablet
@@ -330,7 +330,7 @@
 
 @media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and (max-width: breakpoints.$breakpoint-wide) {
   .slider {
-    height: tokens.$home-games-height-tablet;
+    min-height: tokens.$home-games-height-tablet;
     padding-block: tokens.$size-3;
   }
 
@@ -392,4 +392,33 @@
 
 .slider__track.is-dragging .game-card__trigger {
   cursor: grabbing;
+}
+
+// API feedback must fit naturally, including long error text at narrow widths.
+.slider__content {
+  min-width: 0;
+}
+
+.slider__content .feedback-skeleton--slider {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.slider__control:disabled {
+  color: tokens.$color-text-muted;
+  background-color: tokens.$color-outline;
+  cursor: default;
+}
+
+// The backend may return more than the original nine seeded games.
+.slider__item[aria-hidden='true'] {
+  visibility: hidden;
+}
+
+.game-card__placeholder {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-surface-low;
+  font-size: tokens.$font-size-xl;
 }
