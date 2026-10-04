@@ -141,7 +141,14 @@ export class Header {
 
     closeButton.addEventListener('click', closeMenu, { signal });
     for (const button of mobileMenu.querySelectorAll<HTMLButtonElement>('[data-auth-open]')) {
-      button.addEventListener('click', closeMenu, { signal });
+      button.addEventListener(
+        'click',
+        () => {
+          closeMenu();
+          mobileMenu.hidden = true;
+        },
+        { signal },
+      );
     }
 
     mobileMenu.addEventListener(

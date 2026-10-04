@@ -50,6 +50,11 @@ async function setup(context, path = '/Minigames/library') {
   const calls = [];
   context.mock.method(globalThis, 'fetch', (target, options) => {
     const url = new URL(target);
+    if (url.pathname.includes('/games/')) {
+      return Promise.resolve(
+        globalThis.Response.json({ error: 'Game fixture not defined' }, { status: 404 }),
+      );
+    }
     // Home can also be API-backed in the combined integration build.
     if (url.pathname.endsWith('/leaderboard') || url.searchParams.has('featured')) {
       return Promise.resolve(globalThis.Response.json({ data: [], meta: {} }));
