@@ -1,4 +1,5 @@
 import gameData from '../data/game-details.json';
+import favoriteActiveIcon from '../assets/icons/favorite-heart-active.svg';
 import favoriteIcon from '../assets/icons/favorite-heart.svg';
 import { escapeHtml } from '../utils/game';
 import { renderGameStats } from './game-stats';
@@ -6,16 +7,39 @@ import { renderGameStats } from './game-stats';
 export class GameInfo {
   public reset(dialog: HTMLDialogElement): void {
     const button = dialog.querySelector<HTMLButtonElement>('.game-details__favorite');
+    const icon = button?.querySelector<HTMLImageElement>('img');
+    const label = button?.querySelector<HTMLElement>('.game-details__favorite-label');
+
     button?.setAttribute('aria-pressed', 'false');
     button?.setAttribute('aria-label', 'Add to Favorites');
+
+    if (icon) {
+      icon.src = favoriteIcon;
+    }
+
+    if (label) {
+      label.textContent = 'Add to Favorites';
+    }
   }
 
   public bindEvents(dialog: HTMLDialogElement): void {
     const button = dialog.querySelector<HTMLButtonElement>('.game-details__favorite');
     button?.addEventListener('click', () => {
       const isFavorite = button.getAttribute('aria-pressed') !== 'true';
+      const icon = button.querySelector<HTMLImageElement>('img');
+      const label = button.querySelector<HTMLElement>('.game-details__favorite-label');
+      const text = isFavorite ? 'Remove from Favorites' : 'Add to Favorites';
+
       button.setAttribute('aria-pressed', String(isFavorite));
-      button.setAttribute('aria-label', isFavorite ? 'Remove from Favorites' : 'Add to Favorites');
+      button.setAttribute('aria-label', text);
+
+      if (icon) {
+        icon.src = isFavorite ? favoriteActiveIcon : favoriteIcon;
+      }
+
+      if (label) {
+        label.textContent = text;
+      }
     });
   }
 

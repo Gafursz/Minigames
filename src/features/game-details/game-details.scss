@@ -131,7 +131,7 @@
 
 @media (hover: hover) {
   .game-details__close:hover {
-    background-color: tokens.$color-primary-low;
+    background-color: tokens.$color-surface;
   }
 }
 
@@ -216,7 +216,7 @@
 }
 
 .game-details__play {
-  background-color: tokens.$color-primary;
+  background-color: tokens.$color-primary-low;
   border: tokens.$border-width-medium solid tokens.$color-on-primary;
 }
 
@@ -225,9 +225,12 @@
 }
 
 @media (hover: hover) {
-  .game-details__play:hover,
+  .game-details__play:hover {
+    background-color: tokens.$color-primary;
+  }
+
   .game-details__favorite:hover {
-    background-color: tokens.$color-primary-low;
+    background-color: tokens.$color-surface;
   }
 }
 
@@ -262,6 +265,5 @@
 }
 
 .game-details__favorite[aria-pressed='true'] {
-  background-color: tokens.$color-primary;
   border-color: tokens.$color-on-primary;
 }
