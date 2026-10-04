@@ -12,11 +12,12 @@
     max-width: tokens.$not-found-content-width;
   }
 
-  &__code {
-    margin: 0 0 tokens.$size-1;
-    color: tokens.$color-tertiary;
-    font-size: tokens.$font-size-display-large;
-    font-weight: tokens.$font-weight-extra-bold;
+  &__image {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 0 auto tokens.$size-3;
   }
 
   &__title {
