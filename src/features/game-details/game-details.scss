@@ -126,7 +126,7 @@
   font-size: tokens.$font-size-display-medium;
   font-weight: tokens.$font-weight-bold;
   line-height: normal;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 @media (hover: hover) {
@@ -266,4 +266,31 @@
 
 .game-details__favorite[aria-pressed='true'] {
   border-color: tokens.$color-on-primary;
+}
+
+.game-details__content:not([data-feedback-state='ready']) {
+  padding: tokens.$size-8 tokens.$size-3 tokens.$size-3;
+}
+
+.game-details__close {
+  z-index: 1;
+}
+
+.game-details__cover--placeholder {
+  background-color: tokens.$color-outline;
+}
+
+.game-details__title,
+.game-details__description,
+.game-details__spec dd {
+  overflow-wrap: anywhere;
+}
+
+.game-details__spec dd {
+  white-space: normal;
+}
+
+.game-details__play:disabled,
+.game-details__favorite:disabled {
+  cursor: default;
 }

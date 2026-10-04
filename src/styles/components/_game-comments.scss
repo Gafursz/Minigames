@@ -162,20 +162,6 @@
   cursor: pointer;
 }
 
-.game-comment__text--mobile {
-  display: none;
-}
-
-@media (max-width: breakpoints.$breakpoint-dialog) {
-  .game-comment__text--desktop {
-    display: none;
-  }
-
-  .game-comment__text--mobile {
-    display: block;
-  }
-}
-
 @media (hover: hover) {
   .game-comments__submit:hover {
     background-color: tokens.$color-footer-lowest;
@@ -188,4 +174,29 @@
 
 .game-comment__like[aria-pressed='true'] {
   color: tokens.$color-like;
+}
+
+.game-comments__hint {
+  margin: 0;
+  color: tokens.$color-text;
+  font-size: tokens.$font-size-body-small;
+}
+
+.game-comment__header {
+  flex-wrap: wrap;
+}
+
+.game-comment__author,
+.game-comment__name {
+  min-width: 0;
+}
+
+.game-comment__text,
+.game-comment__name {
+  overflow-wrap: anywhere;
+}
+
+.game-comments__submit:disabled,
+.game-comment__like:disabled {
+  cursor: default;
 }

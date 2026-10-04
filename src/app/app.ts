@@ -49,7 +49,8 @@ export class App {
           event.target instanceof Element
             ? event.target.closest<HTMLElement>('[data-game-details]')
             : undefined;
-        if (trigger && !this.root.querySelector('dialog[open]')) this.gameDetails.open(trigger);
+        if (trigger && !this.root.querySelector('dialog[open]'))
+          this.gameDetails.open(trigger.dataset.gameDetails ?? '', trigger);
         const authTrigger =
           event.target instanceof Element
             ? event.target.closest<HTMLElement>('[data-auth-open]')
