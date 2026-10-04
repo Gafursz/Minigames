@@ -42,6 +42,7 @@ export class LibraryPage {
   }
 
   public destroy(): void {
+    this.header.destroy();
     this.controller.abort();
   }
 }

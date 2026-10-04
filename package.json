@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "postbuild": "node scripts/copy-spa-fallback.mjs",
+    "test:router": "node --test --experimental-test-isolation=none tests/router/*.test.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",

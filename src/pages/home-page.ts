@@ -32,6 +32,7 @@ export class HomePage {
   }
 
   public destroy(): void {
+    this.header.destroy();
     this.slider.destroy();
   }
 
