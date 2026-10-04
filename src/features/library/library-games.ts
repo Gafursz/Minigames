@@ -4,7 +4,11 @@ import { getLibraryGames } from '../../api/minigames-api';
 import { ContentFeedback } from '../../components/content-feedback';
 import { LibraryCard } from '../../components/library-card';
 import { snackbar } from '../../components/snackbar';
-import type { ApiGame, LibraryQuery } from '../../types/api';
+import type { ApiGame, LibraryQuery, PaginationMetadata } from '../../types/api';
+
+export type LibraryListState =
+  | { kind: 'loading' | 'idle' | 'error' }
+  | { kind: 'ready'; meta: PaginationMetadata; isEmpty: boolean };
 
 export const DEFAULT_LIBRARY_QUERY: Readonly<LibraryQuery> = {
   category: 'all',
@@ -35,12 +39,33 @@ function readGames(response: unknown): ApiGame[] {
   return response.data;
 }
 
+function isInteger(value: unknown, minimum: number): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= minimum;
+}
+
+function readMetadata(response: unknown): PaginationMetadata {
+  if (!isRecord(response) || !isRecord(response.meta))
+    throw new TypeError('Missing pagination metadata.');
+  const { page, limit, totalItems, totalPages } = response.meta;
+  if (
+    !isInteger(page, 1) ||
+    !isInteger(limit, 1) ||
+    !isInteger(totalItems, 0) ||
+    !isInteger(totalPages, 0)
+  )
+    throw new TypeError('Invalid pagination metadata.');
+  return { page, limit, totalItems, totalPages };
+}
+
 export class LibraryGames {
   private readonly feedback: ContentFeedback;
   private requestController: AbortController | undefined;
   private isDestroyed = false;
 
-  public constructor(root: HTMLElement) {
+  public constructor(
+    root: HTMLElement,
+    private readonly onState: (state: LibraryListState) => void = () => {},
+  ) {
     this.feedback = new ContentFeedback(root);
   }
 
@@ -48,12 +73,14 @@ export class LibraryGames {
     if (this.isDestroyed) return;
     this.requestController?.abort();
     this.feedback.showLoading('cards', 'Loading games…');
+    this.onState({ kind: 'loading' });
   }
 
   public clear(): void {
     if (this.isDestroyed) return;
     this.requestController?.abort();
     this.feedback.showContent('');
+    this.onState({ kind: 'idle' });
   }
 
   public async load(
@@ -70,11 +97,13 @@ export class LibraryGames {
       !this.isDestroyed && !controller.signal.aborted && this.requestController === controller;
 
     this.feedback.showLoading('cards', 'Loading games…');
+    this.onState({ kind: 'loading' });
 
     try {
       const response = await getLibraryGames(attemptedQuery, controller.signal);
       if (!isCurrent()) return;
       const games = readGames(response);
+      const meta = readMetadata(response);
       if (games.length === 0) {
         this.feedback.showEmpty({
           title: 'Data Not Found',
@@ -84,7 +113,8 @@ export class LibraryGames {
       } else {
         this.feedback.showContent(games.map((game) => new LibraryCard(game).render()).join(''));
       }
-      if (isRetry) snackbar.show('Game library loaded successfully.', 'success');
+      this.onState({ kind: 'ready', meta, isEmpty: games.length === 0 });
+      if (isRetry && isCurrent()) snackbar.show('Game library loaded successfully.', 'success');
     } catch (error) {
       if (!isCurrent()) return;
       const message =
@@ -96,6 +126,7 @@ export class LibraryGames {
         message,
         onRetry: () => this.load(attemptedQuery, true),
       });
+      this.onState({ kind: 'error' });
       snackbar.show('Games could not be loaded. Use Retry to try again.', 'error');
     }
   }
