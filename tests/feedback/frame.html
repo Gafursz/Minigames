@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback size preview</title>
+  </head>
+  <body>
+    <main class="feedback-preview feedback-preview--frame">
+      <h1>Feedback at this width</h1>
+      <div class="feedback-preview__controls">
+        <button type="button" id="frame-error">Error</button>
+        <button type="button" id="frame-empty">Empty</button>
+        <button type="button" id="frame-loading">Skeleton</button>
+        <button type="button" id="frame-notification">Notification</button>
+      </div>
+      <div id="frame-region"></div>
+    </main>
+    <script type="module" src="./frame.ts"></script>
+  </body>
+</html>
