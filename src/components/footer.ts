@@ -4,6 +4,7 @@ import rssIcon from '../assets/icons/footer-rss.svg';
 import schoolIcon from '../assets/icons/footer-school.svg';
 import shareIcon from '../assets/icons/footer-share.svg';
 import logoIcon from '../assets/icons/logo-icon.svg';
+import developerIcon from '../assets/icons/footer_developer_icon.svg';
 
 export class Footer {
   public render(): string {
@@ -173,6 +174,7 @@ export class Footer {
             target="_blank"
             rel="noopener noreferrer"
           >
+            <img class="footer__developer-icon" src="${developerIcon}" alt="" />
             @Gafursz
           </a>
 

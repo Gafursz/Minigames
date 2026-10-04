@@ -64,7 +64,13 @@ export class Header {
   id="mobile-navigation"
   hidden 
 ><div class="header__mobile-top">
-  <a class="header__mobile-logo" href="${appHref('home')}" data-router-link aria-label="MiniGames home">
+  <img class="header__mobile-logo-icon" src="${logoIcon}" alt="" />
+  <a
+    class="header__mobile-logo"
+    href="${appHref('home')}"
+    data-router-link
+    aria-label="MiniGames home"
+  >
     MiniGames
   </a>
 

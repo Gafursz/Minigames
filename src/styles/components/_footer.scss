@@ -162,6 +162,26 @@
   text-decoration: none;
 }
 
+.footer__developer-icon {
+  width: tokens.$size-3;
+  height: tokens.$size-3;
+  object-fit: contain;
+  border-radius: 50%;
+  background-color: tokens.$color-white;
+}
+
+@media (hover: hover) {
+  .footer__nav-link:hover,
+  .footer__credit:hover {
+    color: tokens.$color-primary;
+    text-decoration: underline;
+  }
+
+  .footer__social-link:hover {
+    outline: 2px solid tokens.$color-primary;
+  }
+}
+
 .footer__school-icon {
   width: tokens.$size-3;
   height: tokens.$size-3;

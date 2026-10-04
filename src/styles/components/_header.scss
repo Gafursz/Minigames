@@ -24,10 +24,6 @@
   cursor: pointer;
 }
 
-.header__burger:hover {
-  background-color: tokens.$color-primary-high;
-}
-
 .header__burger-line {
   width: 1.25rem;
   height: 0.125rem;
@@ -181,7 +177,15 @@
   justify-content: space-between;
 }
 
+.header__mobile-logo-icon {
+  width: tokens.$logo-icon-size;
+  height: tokens.$logo-icon-size;
+  flex-shrink: 0;
+}
+
 .header__mobile-logo {
+  margin-right: auto;
+  padding-left: tokens.$size-2;
   color: tokens.$color-white;
   font-size: tokens.$font-size-headline-small;
   font-weight: 700;
@@ -242,6 +246,40 @@
   color: tokens.$color-on-primary;
   background-color: tokens.$color-primary;
   border-color: tokens.$color-on-primary;
+}
+
+@media (hover: hover) {
+  .header__burger:hover {
+    background-color: tokens.$color-surface;
+  }
+
+  .header__login:hover {
+    color: tokens.$color-on-primary;
+    background-color: tokens.$color-surface;
+  }
+
+  .header__signup:hover {
+    color: tokens.$color-on-primary;
+    background-color: tokens.$color-primary-high;
+  }
+
+  .header__mobile-close:hover {
+    background-color: tokens.$color-footer-lowest;
+    outline: 2px solid tokens.$color-primary;
+  }
+
+  .header__mobile-link:hover {
+    color: tokens.$color-primary;
+    text-decoration: underline;
+  }
+
+  .header__mobile-login:hover {
+    border-color: tokens.$color-primary;
+  }
+
+  .header__mobile-signup:hover {
+    background-color: tokens.$color-primary-high;
+  }
 }
 
 @media (max-width: breakpoints.$breakpoint-wide) {

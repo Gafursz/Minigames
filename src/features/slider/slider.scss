@@ -104,6 +104,12 @@
   height: tokens.$size-3;
 }
 
+@media (hover: hover) {
+  .slider__control:hover {
+    background-color: tokens.$color-surface;
+  }
+}
+
 .slider__control--next {
   background-color: tokens.$color-primary;
 }
