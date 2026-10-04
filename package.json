@@ -4,6 +4,7 @@
   "description": "MiniGames — a responsive single-page web application built with TypeScript, Sass, and modern frontend development tools.",
   "main": "index.js",
   "scripts": {
+    "test:details": "node --test --experimental-test-isolation=none tests/game-details/*.test.mjs",
     "test:pagination": "node --test --experimental-test-isolation=none tests/pagination/*.test.mjs",
     "test:filters": "node --test --experimental-test-isolation=none tests/library-controls/*.test.mjs",
     "dev": "vite",
