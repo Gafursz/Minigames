@@ -1,0 +1,58 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.not-found {
+  display: grid;
+  place-items: center;
+  min-height: tokens.$not-found-min-height;
+  padding: tokens.$size-8 tokens.$size-3;
+  text-align: center;
+
+  &__content {
+    max-width: tokens.$not-found-content-width;
+  }
+
+  &__image {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 0 auto tokens.$size-3;
+  }
+
+  &__title {
+    margin: 0 0 tokens.$size-2;
+    color: tokens.$color-on-primary;
+    font-size: tokens.$font-size-display-small;
+  }
+
+  &__message {
+    margin: 0 0 tokens.$size-4;
+    line-height: 1.5;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: tokens.$touch-target;
+    padding: tokens.$size-2 tokens.$size-3;
+    color: tokens.$color-on-primary;
+    background: tokens.$color-primary;
+    border: tokens.$border-width-medium solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-md;
+    box-shadow: tokens.$shadow-widget;
+    font-weight: tokens.$font-weight-bold;
+    text-decoration: none;
+  }
+
+  @include breakpoints.tablet {
+    padding: tokens.$size-10 tokens.$size-5;
+  }
+}
+
+@media (hover: hover) {
+  .not-found__link:hover {
+    background: tokens.$color-primary-low;
+  }
+}

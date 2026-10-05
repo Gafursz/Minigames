@@ -1,13 +1,11 @@
 @use '../../styles/tokens';
 @use '../../styles/breakpoints';
 
-/* ======================================================
-   NEW GAMES SECTION
-   ====================================================== */
+// New Games Section
 
 .slider {
   width: 100%;
-  height: tokens.$home-games-height-desktop;
+  min-height: tokens.$home-games-height-desktop;
   padding: tokens.$size-5 0;
   overflow: hidden;
 }
@@ -28,6 +26,7 @@
  * Above 1920px the container remains 1760px wide
  * and the automatic margins continue growing.
  */
+
 .slider__container {
   display: flex;
   width: 100%;
@@ -39,9 +38,16 @@
   padding: 0 tokens.$size-5;
 }
 
-/* ======================================================
-   HEADER
-   ====================================================== */
+.slider__error-image {
+  display: block;
+  width: min(100%, 560px);
+  height: auto;
+  max-height: 300px;
+  margin: tokens.$size-3 auto 0;
+  object-fit: contain;
+}
+
+// Header
 
 .slider__header {
   display: flex;
@@ -70,9 +76,7 @@
   border-radius: tokens.$radius-sm;
 }
 
-/* ======================================================
-   CONTROLS
-   ====================================================== */
+// Controls
 
 .slider__controls {
   display: flex;
@@ -100,12 +104,17 @@
   height: tokens.$size-3;
 }
 
+@media (hover: hover) {
+  .slider__control:hover {
+    background-color: tokens.$color-surface;
+  }
+}
+
 .slider__control--next {
   background-color: tokens.$color-primary;
 }
 
-/* ======================================================
-   CAROUSEL TRACK — DESKTOP
+/* CAROUSEL TRACK — DESKTOP
 
    Figma @ 1920px:
    Track: 1680 × 388
@@ -114,8 +123,7 @@
    Cards:
    120 | 288 | 816 | 288 | 120
 
-   Card height: 384px
-   ====================================================== */
+   Card height: 384px  */
 
 .slider__track {
   --visible-slides: 5;
@@ -180,9 +188,7 @@
   visibility: hidden;
 }
 
-/* ======================================================
-   GAME CARD
-   ====================================================== */
+// Game Card
 
 .game-card {
   position: relative;
@@ -234,12 +240,11 @@
   font-size: tokens.$font-size-md;
 }
 
-/* ======================================================
-   CARD CONTAINER QUERIES
-   ====================================================== */
+//  CARD CONTAINER QUERIES
 
 // Container queries measure the content box; the requirement measures the card
 // including both borders. Subtract them so a 288px card shows its information.
+
 .game-card__info {
   display: none;
 }
@@ -256,14 +261,12 @@
   }
 }
 
-// ======================================================
 // TABLET AND MOBILE
 // up to 768px
-// ======================================================
 
 @media (max-width: breakpoints.$breakpoint-tablet) {
   .slider {
-    height: clamp(
+    min-height: clamp(
       tokens.$home-games-height-mobile,
       calc(171.36px + 29.77vw),
       tokens.$home-games-height-tablet
@@ -323,14 +326,12 @@
   }
 }
 
-// ======================================================
 // TABLET → LAPTOP
 // 769px–1440px
-// ======================================================
 
 @media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and (max-width: breakpoints.$breakpoint-wide) {
   .slider {
-    height: tokens.$home-games-height-tablet;
+    min-height: tokens.$home-games-height-tablet;
     padding-block: tokens.$size-3;
   }
 
@@ -392,4 +393,33 @@
 
 .slider__track.is-dragging .game-card__trigger {
   cursor: grabbing;
+}
+
+// API feedback must fit naturally, including long error text at narrow widths.
+.slider__content {
+  min-width: 0;
+}
+
+.slider__content .feedback-skeleton--slider {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.slider__control:disabled {
+  color: tokens.$color-text-muted;
+  background-color: tokens.$color-outline;
+  cursor: default;
+}
+
+// The backend may return more than the original nine seeded games.
+.slider__item[aria-hidden='true'] {
+  visibility: hidden;
+}
+
+.game-card__placeholder {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-surface-low;
+  font-size: tokens.$font-size-xl;
 }
