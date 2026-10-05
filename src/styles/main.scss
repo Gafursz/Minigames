@@ -1,6 +1,8 @@
+@use './components/snackbar';
 @use './tokens';
 @use './breakpoints';
 @use './utilities';
+@use './pages/not-found';
 @use './components/header';
 @use './components/hero';
 @use '../features/slider/slider';
@@ -17,6 +19,7 @@
 @use '../features/auth-dialog/auth-dialog';
 @use './components/game-records';
 @use './components/game-comments';
+@use './components/content-feedback';
 *,
 *::before,
 *::after {
