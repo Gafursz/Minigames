@@ -1,24 +1,17 @@
 import checkIcon from '../assets/icons/sort-check.svg';
 import dividerIcon from '../assets/icons/sort-divider.svg';
-import type { GameSort } from '../types/api';
 
-const options: { value: GameSort; label: string }[] = [
-  { value: 'rating-asc', label: 'Rating ↑' },
-  { value: 'rating-desc', label: 'Rating ↓' },
-  { value: 'name-asc', label: 'Name A→Z' },
-  { value: 'name-desc', label: 'Name Z→A' },
-];
+const options = ['Rating ↑', 'Rating ↓', 'Name A→Z', 'Name Z→A'];
 
 export class LibrarySort {
   private selectedIndex = 1;
-  private root: HTMLElement | undefined;
 
   public render(): string {
     return `
       <div class="library-sort">
         <button class="library-sort__trigger" type="button" aria-haspopup="listbox"
           aria-controls="library-sort-options" aria-expanded="false">
-          Sort by: <span class="library-sort__label">${options[this.selectedIndex].label}</span>
+          Sort by: <span class="library-sort__label">${options[this.selectedIndex]}</span>
         </button>
         <ul class="library-sort__options" id="library-sort-options" role="listbox" aria-label="Sort games" hidden>
           ${options
@@ -27,7 +20,7 @@ export class LibrarySort {
             <li class="library-sort__option" role="option" tabindex="-1"
               data-sort-index="${index}" aria-selected="${index === this.selectedIndex}">
               <img class="library-sort__check" src="${checkIcon}" alt="" />
-              <span>${option.label}</span>
+              <span>${option}</span>
               ${index < options.length - 1 ? `<img class="library-sort__divider" src="${dividerIcon}" alt="" />` : ''}
             </li>
           `,
@@ -38,32 +31,12 @@ export class LibrarySort {
     `;
   }
 
-  public setValue(value: GameSort): void {
-    const index = options.findIndex((option) => option.value === value);
-    if (index === -1) return;
-    this.selectedIndex = index;
-    const label = this.root?.querySelector('.library-sort__label');
-    if (label) label.textContent = options[index].label;
-    const items = this.root?.querySelectorAll<HTMLElement>('[data-sort-index]') ?? [];
-    for (const item of items) {
-      item.setAttribute('aria-selected', String(Number(item.dataset.sortIndex) === index));
-    }
-  }
-
-  public bindEvents(signal: AbortSignal, onChange: (value: GameSort) => void): void {
+  public bindEvents(signal: AbortSignal): void {
     const root = document.querySelector<HTMLElement>('.library-sort');
     const trigger = root?.querySelector<HTMLButtonElement>('.library-sort__trigger');
     const list = root?.querySelector<HTMLElement>('.library-sort__options');
     const label = root?.querySelector<HTMLElement>('.library-sort__label');
     if (!(root && trigger && list && label)) return;
-    this.root = root;
-    signal.addEventListener(
-      'abort',
-      () => {
-        this.root = undefined;
-      },
-      { once: true },
-    );
     const items = [...list.querySelectorAll<HTMLElement>('[role="option"]')];
 
     const close = (shouldFocus = false): void => {
@@ -79,8 +52,11 @@ export class LibrarySort {
     };
 
     const select = (index: number): void => {
-      const selected = options[index];
-      if (selected && index !== this.selectedIndex) onChange(selected.value);
+      this.selectedIndex = index;
+      label.textContent = options[index];
+      for (const [itemIndex, item] of items.entries()) {
+        item.setAttribute('aria-selected', String(itemIndex === index));
+      }
       close(true);
     };
 

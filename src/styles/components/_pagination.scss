@@ -46,7 +46,7 @@
 
 @media (hover: hover) {
   .pagination__button:not(:disabled):not(.pagination__button--active):hover {
-    background-color: tokens.$color-surface;
+    background-color: tokens.$color-primary-low;
   }
 }
 

@@ -1,9 +1,6 @@
-import { appHref } from '../router/links';
 import logoIcon from '../assets/icons/logo-icon.svg';
 export class Header {
-  private controller: AbortController | undefined;
-
-  public constructor(private readonly activePage: 'home' | 'library' | 'not-found' = 'home') {}
+  public constructor(private readonly activePage: 'home' | 'library' = 'home') {}
 
   public render(): string {
     const isHome = this.activePage === 'home';
@@ -13,7 +10,7 @@ export class Header {
         
       <header class="header">
         <nav class="header__nav" aria-label="Main navigation">
-          <a class="header__logo" href="${appHref('home')}" data-router-link aria-label="MiniGames home">
+          <a class="header__logo" href="#/" aria-label="MiniGames home">
           <span class="header__logo-icon-wrapper">
           <img class="header__logo-icon" src="${logoIcon}" alt=""/>
           </span>
@@ -24,16 +21,16 @@ export class Header {
           <div class="header__nav-actions">
             <ul class="header__menu">
             <li class="header__menu-item">
-              <a class="header__link${isHome ? ' header__link--active' : ''}" href="${appHref('home')}" data-router-link${isHome ? ' aria-current="page"' : ''}>Home</a>
+              <a class="header__link${isHome ? ' header__link--active' : ''}" href="#/"${isHome ? ' aria-current="page"' : ''}>Home</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link${isLibrary ? ' header__link--active' : ''}" href="${appHref('library')}" data-router-link${isLibrary ? ' aria-current="page"' : ''}>Library</a>
+              <a class="header__link${isLibrary ? ' header__link--active' : ''}" href="#/library"${isLibrary ? ' aria-current="page"' : ''}>Library</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link" href="${appHref('home')}" data-router-link>Tournaments</a>
+              <a class="header__link" href="#/">Tournaments</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link" href="${appHref('home')}" data-router-link>Community</a>
+              <a class="header__link" href="#/">Community</a>
             </li>
           </ul>
           <div class="header__actions">
@@ -64,13 +61,7 @@ export class Header {
   id="mobile-navigation"
   hidden 
 ><div class="header__mobile-top">
-  <img class="header__mobile-logo-icon" src="${logoIcon}" alt="" />
-  <a
-    class="header__mobile-logo"
-    href="${appHref('home')}"
-    data-router-link
-    aria-label="MiniGames home"
-  >
+  <a class="header__mobile-logo" href="#/" aria-label="MiniGames home">
     MiniGames
   </a>
 
@@ -84,16 +75,16 @@ export class Header {
 </div>
 <ul class="header__mobile-links">
   <li>
-    <a class="header__mobile-link${isHome ? ' header__mobile-link--active' : ''}" href="${appHref('home')}" data-router-link${isHome ? ' aria-current="page"' : ''}>Home</a>
+    <a class="header__mobile-link${isHome ? ' header__mobile-link--active' : ''}" href="#/"${isHome ? ' aria-current="page"' : ''}>Home</a>
   </li>
   <li>
-    <a class="header__mobile-link${isLibrary ? ' header__mobile-link--active' : ''}" href="${appHref('library')}" data-router-link${isLibrary ? ' aria-current="page"' : ''}>Library</a>
+    <a class="header__mobile-link${isLibrary ? ' header__mobile-link--active' : ''}" href="#/library"${isLibrary ? ' aria-current="page"' : ''}>Library</a>
   </li>
   <li>
-    <a class="header__mobile-link" href="${appHref('home')}" data-router-link>Tournaments</a>
+    <a class="header__mobile-link" href="#/">Tournaments</a>
   </li>
   <li>
-    <a class="header__mobile-link" href="${appHref('home')}" data-router-link>Community</a>
+    <a class="header__mobile-link" href="#/">Community</a>
   </li>
 </ul>
 <div class="header__mobile-actions">
@@ -111,9 +102,6 @@ export class Header {
   }
 
   public bindEvents(): void {
-    this.controller?.abort();
-    this.controller = new AbortController();
-    const { signal } = this.controller;
     const burgerButton = document.querySelector<HTMLButtonElement>('.header__burger');
     const mobileMenu = document.querySelector<HTMLElement>('.header__mobile-menu');
     const closeButton = document.querySelector<HTMLButtonElement>('.header__mobile-close');
@@ -124,12 +112,12 @@ export class Header {
 
     const openMenu = (): void => {
       mobileMenu.hidden = false;
-      burgerButton.setAttribute('aria-expanded', 'true');
-      globalThis.requestAnimationFrame(() => {
-        if (!signal.aborted && burgerButton.getAttribute('aria-expanded') === 'true') {
-          mobileMenu.classList.add('header__mobile-menu--open');
-        }
+
+      requestAnimationFrame(() => {
+        mobileMenu.classList.add('header__mobile-menu--open');
       });
+
+      burgerButton.setAttribute('aria-expanded', 'true');
     };
 
     const closeMenu = (): void => {
@@ -137,55 +125,35 @@ export class Header {
       burgerButton.setAttribute('aria-expanded', 'false');
     };
 
-    burgerButton.addEventListener('click', openMenu, { signal });
+    burgerButton.addEventListener('click', openMenu);
 
-    closeButton.addEventListener('click', closeMenu, { signal });
+    closeButton.addEventListener('click', closeMenu);
     for (const button of mobileMenu.querySelectorAll<HTMLButtonElement>('[data-auth-open]')) {
-      button.addEventListener(
-        'click',
-        () => {
-          closeMenu();
-          mobileMenu.hidden = true;
-        },
-        { signal },
-      );
+      button.addEventListener('click', closeMenu);
     }
 
-    mobileMenu.addEventListener(
-      'transitionend',
-      (event) => {
-        if (
-          event.propertyName !== 'transform' ||
-          mobileMenu.classList.contains('header__mobile-menu--open')
-        ) {
-          return;
-        }
+    mobileMenu.addEventListener('transitionend', (event) => {
+      if (
+        event.propertyName !== 'transform' ||
+        mobileMenu.classList.contains('header__mobile-menu--open')
+      ) {
+        return;
+      }
 
-        mobileMenu.hidden = true;
-      },
-      { signal },
-    );
+      mobileMenu.hidden = true;
+    });
 
-    document.addEventListener(
-      'keydown',
-      (event) => {
-        if (event.key !== 'Escape' || mobileMenu.hidden) {
-          return;
-        }
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || mobileMenu.hidden) {
+        return;
+      }
 
-        closeMenu();
-        burgerButton.focus();
-      },
-      { signal },
-    );
+      closeMenu();
+      burgerButton.focus();
+    });
 
     for (const link of mobileMenu.querySelectorAll<HTMLAnchorElement>('a')) {
-      link.addEventListener('click', closeMenu, { signal });
+      link.addEventListener('click', closeMenu);
     }
-  }
-
-  public destroy(): void {
-    this.controller?.abort();
-    this.controller = undefined;
   }
 }

@@ -1,10 +1,8 @@
-import { appHref } from '../router/links';
 import chatIcon from '../assets/icons/footer-chat.svg';
 import rssIcon from '../assets/icons/footer-rss.svg';
 import schoolIcon from '../assets/icons/footer-school.svg';
 import shareIcon from '../assets/icons/footer-share.svg';
 import logoIcon from '../assets/icons/logo-icon.svg';
-import developerIcon from '../assets/icons/footer_developer_icon.svg';
 
 export class Footer {
   public render(): string {
@@ -14,7 +12,7 @@ export class Footer {
           <div class="footer__about">
             <a
               class="footer__logo"
-              href="${appHref('home')}" data-router-link
+              href="#/"
               aria-label="MiniGames home"
             >
               <img
@@ -45,25 +43,25 @@ export class Footer {
 
               <ul class="footer__nav-list">
                 <li>
-                  <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
+                  <a class="footer__nav-link" href="#/">
                     Home
                   </a>
                 </li>
 
                 <li>
-                  <a class="footer__nav-link" href="${appHref('library')}" data-router-link>
+                  <a class="footer__nav-link" href="#/library">
                     Library
                   </a>
                 </li>
 
                 <li>
-                  <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
+                  <a class="footer__nav-link" href="#/">
                     Categories
                   </a>
                 </li>
 
                 <li>
-                  <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
+                  <a class="footer__nav-link" href="#/">
                     Tournaments
                   </a>
                 </li>
@@ -77,25 +75,25 @@ export class Footer {
 
               <ul class="footer__nav-list">
                 <li>
-                  <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
+                  <a class="footer__nav-link" href="#/">
                     About Us
                   </a>
                 </li>
 
                 <li>
-                  <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
+                  <a class="footer__nav-link" href="#/">
                     Contact
                   </a>
                 </li>
 
                 <li>
-                  <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
+                  <a class="footer__nav-link" href="#/">
                     Privacy Policy
                   </a>
                 </li>
 
                 <li>
-                  <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
+                  <a class="footer__nav-link" href="#/">
                     Terms of Service
                   </a>
                 </li>
@@ -110,7 +108,7 @@ export class Footer {
               <div class="footer__socials">
                 <a
                   class="footer__social-link"
-                  href="${appHref('home')}" data-router-link
+                  href="#/"
                   aria-label="Share MiniGames"
                 >
                   <img
@@ -122,7 +120,7 @@ export class Footer {
 
                 <a
                   class="footer__social-link"
-                  href="${appHref('home')}" data-router-link
+                  href="#/"
                   aria-label="MiniGames community"
                 >
                   <img
@@ -134,7 +132,7 @@ export class Footer {
 
                 <a
                   class="footer__social-link"
-                  href="${appHref('home')}" data-router-link
+                  href="#/"
                   aria-label="MiniGames RSS feed"
                 >
                   <img
@@ -174,7 +172,6 @@ export class Footer {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img class="footer__developer-icon" src="${developerIcon}" alt="" />
             @Gafursz
           </a>
 

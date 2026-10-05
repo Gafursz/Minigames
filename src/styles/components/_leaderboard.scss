@@ -6,7 +6,7 @@
 .leaderboard-section {
   display: flex;
   width: 100%;
-  min-height: tokens.$home-leaderboard-height-desktop;
+  height: tokens.$home-leaderboard-height-desktop;
   flex-direction: column;
   gap: tokens.$size-5;
   padding: tokens.$size-5 0;
@@ -244,7 +244,7 @@
 
 /* 
   Intermediate — 769px to 1440px
-  All returned players remain visible.
+  Three players remain visible.
   Favorite Game is removed.
     */
 
@@ -285,6 +285,10 @@
     padding: tokens.$size-1 tokens.$size-2;
   }
 
+  .leaderboard__row:nth-child(n + 4) {
+    display: none;
+  }
+
   .leaderboard__header th:nth-child(6),
   .leaderboard__row td:nth-child(6) {
     display: none;
@@ -315,7 +319,7 @@
 
 @media (max-width: breakpoints.$breakpoint-tablet) {
   .leaderboard-section {
-    min-height: tokens.$home-leaderboard-height-mobile;
+    height: tokens.$home-leaderboard-height-mobile;
     gap: tokens.$size-2;
     padding-block: tokens.$size-2;
   }
@@ -384,6 +388,10 @@
     display: none;
   }
 
+  .leaderboard__row:nth-child(n + 4) {
+    display: none;
+  }
+
   .leaderboard__header th:first-child {
     width: 16%;
   }
@@ -410,12 +418,4 @@
   .leaderboard__player-name {
     max-width: 100%;
   }
-}
-
-.leaderboard-section__content {
-  min-width: 0;
-}
-
-.leaderboard__player-name {
-  max-width: calc(100% - #{tokens.$size-3 + tokens.$size-2});
 }

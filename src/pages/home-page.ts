@@ -32,14 +32,11 @@ export class HomePage {
   }
 
   public destroy(): void {
-    this.header.destroy();
     this.slider.destroy();
-    this.leaderboard.destroy();
   }
 
   public bindEvents(): void {
     this.header.bindEvents();
     this.slider.bindEvents();
-    this.leaderboard.bindEvents();
   }
 }

@@ -20,19 +20,6 @@
   object-fit: cover;
 }
 
-.library-card__image--placeholder {
-  display: grid;
-  place-items: center;
-  background-color: tokens.$color-surface-low;
-  font-size: tokens.$font-size-xl;
-}
-
-.library-card__title,
-.library-card__description,
-.library-card__price {
-  overflow-wrap: anywhere;
-}
-
 .library-card__content {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -58,7 +45,6 @@
 }
 
 .library-card__category {
-  max-width: 100%;
   flex-shrink: 0;
   padding: tokens.$size-05 tokens.$size-1;
   font-size: tokens.$font-size-label-medium;
@@ -66,9 +52,6 @@
   background-color: tokens.$color-secondary;
   border: tokens.$border-width-thin solid tokens.$color-on-primary;
   border-radius: tokens.$radius-pill;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .library-card__description {

@@ -9,22 +9,8 @@ export class AuthDialog {
   private closeTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
   private mode: AuthMode = 'login';
   private isClosing = false;
-  private shouldRestoreFocus = true;
 
-  constructor(
-    private readonly onOpenChange: (isOpen: boolean) => void,
-    private readonly actions?: { close: () => void; setMode: (mode: AuthMode) => void },
-  ) {}
-
-  private requestMode(mode: AuthMode): void {
-    if (this.actions) this.actions.setMode(mode);
-    else this.setMode(mode, true);
-  }
-
-  private requestClose(): void {
-    if (this.actions) this.actions.close();
-    else this.close();
-  }
+  constructor(private readonly onOpenChange: (isOpen: boolean) => void) {}
 
   private setMode(mode: AuthMode, shouldFocusTab = false): void {
     if (!this.element || this.isClosing) return;
@@ -54,7 +40,7 @@ export class AuthDialog {
     visibility?.setAttribute('aria-label', 'Show password');
   }
 
-  private finishClose(shouldRestoreFocus = this.shouldRestoreFocus): void {
+  private finishClose(shouldRestoreFocus = true): void {
     globalThis.clearTimeout(this.closeTimer);
     this.closeTimer = undefined;
     this.element?.close();
@@ -76,7 +62,7 @@ export class AuthDialog {
     const switcher = target.closest<HTMLElement>('[data-auth-switch]');
     if (switcher) {
       event.preventDefault();
-      this.requestMode(switcher.dataset.authSwitch === 'register' ? 'register' : 'login');
+      this.setMode(switcher.dataset.authSwitch === 'register' ? 'register' : 'login', true);
       return;
     }
     const visibility = target.closest<HTMLButtonElement>('.auth-dialog__visibility');
@@ -103,7 +89,7 @@ export class AuthDialog {
       event.clientY < bounds.top ||
       event.clientY > bounds.bottom
     )
-      this.requestClose();
+      this.close();
   }
 
   public render(): string {
@@ -132,7 +118,7 @@ export class AuthDialog {
       'cancel',
       (event) => {
         event.preventDefault();
-        this.requestClose();
+        this.close();
       },
       { signal },
     );
@@ -170,26 +156,19 @@ export class AuthDialog {
         if (event.key === 'Home') nextMode = 'login';
         else if (event.key === 'End') nextMode = 'register';
         else nextMode = this.mode === 'login' ? 'register' : 'login';
-        this.requestMode(nextMode);
+        this.setMode(nextMode, true);
       },
       { signal },
     );
   }
 
-  public open(mode: AuthMode, trigger?: HTMLElement): void {
-    if (!this.element || (document.querySelector('dialog[open]') && !this.element.open)) return;
-    globalThis.clearTimeout(this.closeTimer);
-    this.closeTimer = undefined;
-    this.isClosing = false;
-    this.element.classList.remove('is-closing');
-    if (!this.element.open) this.resetForms();
-    this.setMode(mode, true);
-    if (trigger) {
-      this.returnFocus = trigger.closest('.header__mobile-menu')
-        ? (document.querySelector<HTMLElement>('.header__burger') ?? trigger)
-        : trigger;
-    }
-    if (this.element.open) return;
+  public open(mode: AuthMode, trigger: HTMLElement): void {
+    if (!this.element || document.querySelector('dialog[open]')) return;
+    this.resetForms();
+    this.setMode(mode);
+    this.returnFocus = trigger.closest('.header__mobile-menu')
+      ? (document.querySelector<HTMLElement>('.header__burger') ?? trigger)
+      : trigger;
     this.element.showModal();
     this.element.scrollTop = 0;
     this.element
@@ -199,14 +178,8 @@ export class AuthDialog {
     this.onOpenChange(true);
   }
 
-  public close(shouldAnimate = true, shouldRestoreFocus = true): void {
-    if (!this.element?.open) return;
-    this.shouldRestoreFocus = shouldRestoreFocus;
-    if (!shouldAnimate) {
-      this.finishClose(shouldRestoreFocus);
-      return;
-    }
-    if (this.isClosing) return;
+  public close(): void {
+    if (!this.element?.open || this.isClosing) return;
     this.isClosing = true;
     this.element.classList.add('is-closing');
     const duration = getComputedStyle(this.element).animationDuration;

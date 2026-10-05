@@ -57,12 +57,3 @@
     gap: tokens.$size-1;
   }
 }
-
-.game-records__row {
-  flex-wrap: wrap;
-}
-
-.game-records__player {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}

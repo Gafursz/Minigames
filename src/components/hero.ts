@@ -1,4 +1,3 @@
-import { appHref } from '../router/links';
 export class Hero {
   public render(): string {
     return `
@@ -19,7 +18,7 @@ export class Hero {
               Discover hundreds of curated casual mini-games right in your browser.
             </p>
 
-            <a class="hero__button" href="${appHref('library')}" data-router-link>
+            <a class="hero__button" href="#/library">
               Browse Library
             </a>
           </div>
