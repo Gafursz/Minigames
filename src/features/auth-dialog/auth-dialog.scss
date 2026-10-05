@@ -1,0 +1,409 @@
+@use '../../styles/tokens';
+@use '../../styles/breakpoints';
+@use './auth-tokens' as auth;
+
+@font-face {
+  font-family: 'Auth Symbols';
+  src: url('./assets/auth-symbols.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
+.auth-dialog {
+  width: min(auth.$width, calc(100% - tokens.$size-4));
+  max-width: none;
+  max-height: calc(100dvh - tokens.$size-4);
+  margin: auto;
+  padding: auth.$mobile-padding;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: tokens.$color-on-primary;
+  background: tokens.$color-background;
+  border: auth.$border-width solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-extra-large;
+  box-shadow: tokens.$shadow-dialog;
+  font-size: tokens.$font-size-body-small;
+  line-height: normal;
+
+  // Figma's 32px inset includes the 3px outline.
+  @include breakpoints.tablet {
+    padding: auth.$padding;
+  }
+
+  &[open] {
+    animation: auth-dialog-enter tokens.$duration-dialog ease both;
+  }
+
+  &::backdrop {
+    background: tokens.$color-backdrop;
+    animation: auth-backdrop-enter tokens.$duration-dialog ease both;
+  }
+
+  &.is-closing {
+    animation: auth-dialog-leave tokens.$duration-dialog ease both;
+  }
+
+  &.is-closing::backdrop {
+    animation: auth-backdrop-leave tokens.$duration-dialog ease both;
+  }
+
+  &__tabs {
+    position: relative;
+    display: flex;
+    height: tokens.$size-6;
+    margin-bottom: tokens.$size-3;
+    border: tokens.$border-width-card solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-medium;
+    background: tokens.$color-white;
+
+    &::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 50%;
+      content: '';
+      background: tokens.$color-footer-low;
+      border-radius: tokens.$radius-md;
+      transition: transform auth.$duration-panel ease;
+    }
+  }
+
+  &[data-mode='register'] &__tabs::before {
+    transform: translateX(100%);
+  }
+
+  &__tab {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    padding: 0 tokens.$size-2;
+    color: tokens.$color-text;
+    border: 0;
+    border-radius: tokens.$radius-md;
+    background: transparent;
+    font: inherit;
+    font-size: tokens.$font-size-md;
+    font-weight: tokens.$font-weight-bold;
+    cursor: pointer;
+
+    &[aria-selected='true'] {
+      color: tokens.$color-white;
+    }
+  }
+
+  &__panel,
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$size-3;
+    margin: 0;
+  }
+
+  &__panel {
+    animation: auth-panel-enter auth.$duration-panel ease both;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__heading,
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$size-1;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: tokens.$font-size-display-small;
+    font-weight: tokens.$font-weight-bold;
+  }
+
+  &__description,
+  &__footer {
+    margin: 0;
+    color: tokens.$color-text;
+    font-weight: tokens.$font-weight-regular;
+  }
+
+  &__fields,
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$size-2;
+  }
+
+  &__label {
+    font-weight: tokens.$font-weight-bold;
+    cursor: pointer;
+  }
+
+  &__control {
+    display: flex;
+    align-items: center;
+    gap: tokens.$size-2;
+    min-width: 0;
+    height: tokens.$size-6;
+    padding-inline: tokens.$size-2;
+    color: tokens.$color-text;
+    border: tokens.$border-width-medium solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-md;
+    background: tokens.$color-white;
+    transition: box-shadow auth.$duration-panel ease;
+
+    &:focus-within {
+      box-shadow: auth.$focus-ring;
+    }
+  }
+
+  &__input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    color: tokens.$color-on-primary;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    font-weight: tokens.$font-weight-medium;
+    text-overflow: ellipsis;
+
+    &::placeholder {
+      color: tokens.$color-text;
+      opacity: 1;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  &__symbol {
+    display: inline-block;
+    flex-shrink: 0;
+    width: auth.$icon-size;
+    height: auth.$icon-size;
+    font-family: auth.$font-family-symbols;
+    font-size: auth.$icon-size;
+    font-weight: tokens.$font-weight-regular;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  &__visibility {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0;
+    color: inherit;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  &__forgot {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__link {
+    padding: 0;
+    color: tokens.$color-on-primary;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-weight: tokens.$font-weight-bold;
+    text-decoration: underline;
+    text-underline-position: under;
+    cursor: pointer;
+  }
+
+  &__submit,
+  &__google {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: tokens.$size-2;
+    width: 100%;
+    min-height: auth.$submit-height;
+    padding: 0 tokens.$size-3;
+    color: tokens.$color-on-primary;
+    border: tokens.$border-width-card solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-medium;
+    background: tokens.$color-primary;
+    box-shadow: auth.$shadow-button;
+    font: inherit;
+    font-size: tokens.$font-size-md;
+    font-weight: tokens.$font-weight-bold;
+    cursor: pointer;
+    transition:
+      background-color auth.$duration-panel ease,
+      transform auth.$duration-panel ease;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__submit:active:not(:disabled) {
+    transform: translateY(tokens.$border-width-medium);
+    background: tokens.$color-primary-high;
+  }
+
+  &__google {
+    min-height: auth.$google-height;
+    border-width: tokens.$border-width-medium;
+    background: tokens.$color-white;
+    box-shadow: none;
+  }
+
+  &__google-icon {
+    position: relative;
+    display: block;
+    flex-shrink: 0;
+    width: tokens.$size-3;
+    height: tokens.$size-3;
+
+    img {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) scale(auth.$google-icon-scale);
+      transform-origin: top center;
+    }
+  }
+
+  &__divider {
+    display: flex;
+    align-items: center;
+    gap: tokens.$size-2;
+    color: tokens.$color-text;
+    font-size: tokens.$font-size-label-medium;
+    font-weight: tokens.$font-weight-bold;
+
+    &::before,
+    &::after {
+      flex: 1;
+      height: tokens.$border-width-small;
+      content: '';
+      background: tokens.$color-outline;
+    }
+  }
+
+  &__footer {
+    text-align: center;
+    line-height: normal;
+  }
+
+  &__status {
+    margin: tokens.$size-2 0 0;
+    color: tokens.$color-text;
+    line-height: 1.4;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  :where(button, a):focus-visible {
+    outline: tokens.$border-width-medium solid tokens.$color-tertiary;
+    outline-offset: tokens.$size-05;
+  }
+}
+
+@media (hover: hover) {
+  .auth-dialog__submit:hover:not(:disabled) {
+    background: tokens.$color-primary-low;
+  }
+
+  .auth-dialog__google:hover:not(:disabled),
+  .auth-dialog__tab[aria-selected='false']:hover {
+    background: tokens.$color-surface;
+  }
+
+  .auth-dialog__link:hover,
+  .auth-dialog__visibility:hover {
+    color: tokens.$color-tertiary;
+  }
+}
+
+body.has-open-auth {
+  overflow: hidden;
+}
+
+@keyframes auth-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(tokens.$size-2) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes auth-dialog-leave {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(tokens.$size-2) scale(0.98);
+  }
+}
+
+@keyframes auth-backdrop-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes auth-backdrop-leave {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes auth-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateX(tokens.$size-1);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-dialog[open],
+  .auth-dialog::backdrop,
+  .auth-dialog__panel {
+    animation-duration: 0s;
+  }
+
+  .auth-dialog__tabs::before,
+  .auth-dialog :where(button, input, .auth-dialog__control) {
+    transition: none;
+  }
+}

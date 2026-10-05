@@ -3,7 +3,7 @@ name: Deploy MiniGames to GitHub Pages
 on:
   push:
     branches:
-      - feature/project-setup
+      - story-2
 
   workflow_dispatch:
 

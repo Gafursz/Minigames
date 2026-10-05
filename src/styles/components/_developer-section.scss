@@ -1,10 +1,7 @@
 @use '../tokens';
 @use '../breakpoints';
 
-/* =========================
-   Desktop
-   Figma frame: 1920px
-   ========================= */
+//  Desktop
 
 .developer-section {
   display: flex;
@@ -109,12 +106,9 @@
   text-decoration: underline;
 }
 
-/* ==========================================
-   Intermediate layout: 769px–1535px
-
-   Keeps the Developer section stacked between
-   the tablet and full desktop layouts.
-   ========================================== */
+//  Intermediate layout: 769px–1535px
+//  Keeps the Developer section stacked between
+//  the tablet and full desktop layouts.
 
 @media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and (max-width: calc(breakpoints.$breakpoint-developer-desktop - 1px)) {
   .developer-section {
@@ -137,12 +131,9 @@
   }
 }
 
-/* ==========================================
-   Desktop container spacing: 1441px–1535px
-
-   Developer remains stacked, but horizontal
-   padding matches New Games and Top Players.
-   ========================================== */
+//  Desktop container spacing: 1441px–1535px
+//  Developer remains stacked, but horizontal
+//  padding matches New Games and Top Players.
 
 @media (min-width: calc(breakpoints.$breakpoint-wide + 1px)) and (max-width: calc(breakpoints.$breakpoint-developer-desktop - 1px)) {
   .developer-section {
@@ -150,12 +141,9 @@
   }
 }
 
-/* ==========================================
-   Fluid mobile → tablet: 481px–768px
-
-   Starts close to the mobile composition and
-   grows smoothly toward the 768px Figma frame.
-   ========================================== */
+//  Fluid mobile → tablet: 481px–768px
+//  Starts close to the mobile composition and
+//  grows smoothly toward the 768px Figma frame.
 
 @media (min-width: calc(breakpoints.$breakpoint-mobile + 1px)) and (max-width: breakpoints.$breakpoint-tablet) {
   .developer-section {
@@ -199,39 +187,9 @@
     );
   }
 }
-// /* =========================
-//    Tablet: 768px and below
-//    Figma frame: 768px
-//    ========================= */
 
-// @media (max-width: breakpoints.$breakpoint-tablet) {
-//   .developer-section {
-//     flex-direction: column;
-//     align-items: stretch;
-//     height: tokens.$home-developer-height-tablet;
-//     gap: tokens.$size-3;
-//     padding: tokens.$size-3 tokens.$size-5;
-//   }
-
-//   .developer-section__illustration {
-//     flex: none;
-//     width: 100%;
-//     height: 300px;
-//   }
-
-//   .developer-section__card {
-//     flex: none;
-//     width: 100%;
-//     height: 256px;
-//     gap: tokens.$size-2;
-//     padding: tokens.$size-4;
-//   }
-// }
-
-/* =========================
-   Mobile: 480px and below
-   Figma frame: 375px
-   ========================= */
+//  Mobile: 480px and below
+//  Figma frame: 375px
 
 @media (max-width: breakpoints.$breakpoint-mobile) {
   .developer-section {

@@ -1,0 +1,64 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.pagination {
+  --page-buttons: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: tokens.$size-1;
+  padding: tokens.$size-3 tokens.$size-2;
+}
+
+.pagination__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: tokens.$size-5;
+  height: tokens.$size-5;
+  padding: 0;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-pill;
+  font: inherit;
+  font-size: tokens.$font-size-label-large;
+  font-weight: tokens.$font-weight-bold;
+  cursor: pointer;
+}
+
+.pagination__button--active {
+  color: tokens.$color-white;
+  background-color: tokens.$color-on-primary;
+}
+
+.pagination__button:disabled {
+  color: tokens.$color-outline-variant;
+  background-color: transparent;
+  border-color: tokens.$color-outline;
+  cursor: default;
+}
+
+.pagination__arrow {
+  font-size: tokens.$font-size-display-small;
+  line-height: 1;
+}
+
+@media (hover: hover) {
+  .pagination__button:not(:disabled):not(.pagination__button--active):hover {
+    background-color: tokens.$color-primary-low;
+  }
+}
+
+@include breakpoints.tablet {
+  .pagination {
+    --page-buttons: 4;
+    padding-block: tokens.$size-5;
+  }
+}
+
+@include breakpoints.wide {
+  .pagination {
+    gap: tokens.$size-2;
+  }
+}

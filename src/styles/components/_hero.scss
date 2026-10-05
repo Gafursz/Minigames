@@ -1,9 +1,7 @@
 @use '../tokens';
 @use '../breakpoints';
 
-// ======================================================
 // DESKTOP
-// ======================================================
 
 .hero {
   position: relative;
@@ -93,9 +91,7 @@
   cursor: pointer;
 }
 
-// ======================================================
 // TABLET
-// ======================================================
 
 @media (max-width: breakpoints.$breakpoint-wide) {
   .hero {
@@ -132,9 +128,7 @@
   }
 }
 
-// ======================================================
 // MOBILE
-// ======================================================
 
 @media (max-width: breakpoints.$breakpoint-tablet) {
   .hero {
@@ -175,72 +169,3 @@
     font-size: tokens.$font-size-body-small;
   }
 }
-
-// ======================================================
-// MOBILE → TABLET
-// Same visual design as 769px, only responsively scaled
-// ======================================================
-
-// // ======================================================
-// // MOBILE → LAPTOP
-// // 375px–1440px
-// // Same Hero design at every width
-// // ======================================================
-
-// @media (max-width: breakpoints.$breakpoint-wide) {
-//   .hero {
-//     height: tokens.$home-hero-height-mobile;
-//     padding: 0;
-//   }
-
-//   .hero__container {
-//     width: 100%;
-//     height: 100%;
-//     max-width: none;
-//     margin-inline: 0;
-
-//     padding-inline: tokens.$size-2;
-
-//     display: flex;
-//     align-items: center;
-//     justify-content: flex-start;
-//   }
-
-//   .hero__content {
-//     width: 100%;
-//     max-width: 30rem;
-
-//     gap: tokens.$size-2;
-//     padding: tokens.$size-3;
-
-//     border-width: 2px;
-//     border-radius: tokens.$radius-md;
-//     box-shadow: 4px 4px 0 tokens.$color-on-primary;
-//   }
-
-//   .hero__title {
-//     margin: 0;
-//     font-size: tokens.$font-size-display-small;
-//     line-height: 120%;
-//   }
-
-//   .hero__description {
-//     margin: 0;
-//     font-size: tokens.$font-size-body-small;
-//     line-height: 140%;
-//   }
-
-//   .hero__description--desktop {
-//     display: block;
-//   }
-
-//   .hero__description--mobile {
-//     display: none;
-//   }
-
-//   .hero__button {
-//     padding: tokens.$btn-medium-y tokens.$btn-medium-x;
-//     font-size: tokens.$font-size-body-small;
-//     line-height: 100%;
-//   }
-// }

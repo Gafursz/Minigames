@@ -1,0 +1,59 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.game-records,
+.game-records__list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$size-2;
+}
+
+.game-records__title {
+  display: flex;
+  align-items: center;
+  gap: tokens.$size-1;
+  margin: 0;
+  font-size: tokens.$font-size-md;
+  font-weight: tokens.$font-weight-bold;
+}
+
+.game-records__list {
+  gap: tokens.$size-1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.game-records__row,
+.game-records__player,
+.game-records__result {
+  display: flex;
+  align-items: center;
+  gap: tokens.$size-2;
+}
+
+.game-records__row {
+  justify-content: space-between;
+  padding: tokens.$size-2;
+  font-size: tokens.$font-size-label-large;
+  background-color: tokens.$color-white;
+  border-radius: tokens.$radius-md;
+}
+
+.game-records__row strong {
+  font-weight: tokens.$font-weight-bold;
+}
+
+.game-records__date {
+  color: tokens.$color-text;
+  font-size: tokens.$font-size-label-medium;
+  white-space: nowrap;
+}
+
+@media (max-width: breakpoints.$breakpoint-dialog) {
+  .game-records__row,
+  .game-records__player,
+  .game-records__result {
+    gap: tokens.$size-1;
+  }
+}
