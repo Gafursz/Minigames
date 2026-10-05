@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - story-2
+      - story-3-submission
 
   workflow_dispatch:
 
