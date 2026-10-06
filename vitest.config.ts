@@ -1,5 +1,5 @@
 import { defineConfig, mergeConfig } from 'vitest/config';
-import viteConfig from './vite.config';
+import viteConfig from './vite.config.ts';
 
 export default mergeConfig(
   viteConfig,
@@ -7,6 +7,8 @@ export default mergeConfig(
     test: {
       // Pure logic runs in Node. DOM suites create their own isolated jsdom window.
       environment: 'node',
+      // Vitest serves modules at '/'; the app must still see its deployed Vite base.
+      env: { BASE_URL: viteConfig.base },
       include: ['tests/**/*.test.{ts,mjs}'],
       setupFiles: ['./tests/setup.ts'],
       maxWorkers: 2,

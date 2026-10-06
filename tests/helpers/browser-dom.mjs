@@ -43,7 +43,7 @@ export function createBrowserDom(context, markup = '<div id="app"></div>', path 
       value: DialogMethods.prototype[name],
     });
   }
-  context.after(() => {
+  context.onTestFinished(() => {
     for (const [name, descriptor] of originals) {
       if (descriptor) Object.defineProperty(globalThis, name, descriptor);
       else Reflect.deleteProperty(globalThis, name);

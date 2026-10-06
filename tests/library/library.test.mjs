@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { URL } from 'node:url';
 import { setImmediate as nextTurn } from 'node:timers/promises';
-import { bundleModule } from '../helpers/bundle.mjs';
 import { createBrowserDom } from '../helpers/browser-dom.mjs';
 
 const game = (number, changes = {}) => ({
@@ -28,18 +27,17 @@ const response = (data) => ({
 });
 
 async function setup(context) {
-  const modules = await bundleModule(context, 'tests/library/entry.ts');
+  const modules = await import('./entry.ts');
   const owned = [];
-  context.after(() => {
+
+  const window = createBrowserDom(context);
+  context.onTestFinished(() => {
     for (const item of owned) item.destroy();
     modules.snackbar.destroy();
   });
-  const window = createBrowserDom(context);
   const { document } = window;
   const calls = [];
-  context.mock.method(
-    globalThis,
-    'fetch',
+  vi.spyOn(globalThis, 'fetch').mockImplementation(
     (url, options) =>
       new Promise((resolve, reject) => {
         calls.push({ url: new URL(url), options, resolve, reject });

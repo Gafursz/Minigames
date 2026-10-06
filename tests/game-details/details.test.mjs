@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { URL } from 'node:url';
 import { setImmediate as nextTurn } from 'node:timers/promises';
-import { bundleModule } from '../helpers/bundle.mjs';
 import { createBrowserDom } from '../helpers/browser-dom.mjs';
 
 const NOW = Date.parse('2026-10-04T12:00:00Z');
@@ -41,16 +40,17 @@ const commentsData = (data = [comment(1), comment(2), comment(3)], totalComments
   meta: { totalComments, returnedCount: data.length, sort: 'newest' },
 });
 async function setup(context) {
-  const modules = await bundleModule(context, 'tests/game-details/entry.ts');
+  const modules = await import('./entry.ts');
   let details;
-  context.after(() => {
-    details?.destroy();
-    modules.snackbar.destroy();
-  });
+
   const window = createBrowserDom(
     context,
     '<main>Base page</main><button id="trigger">Details</button><div id="mount"></div>',
   );
+  context.onTestFinished(() => {
+    details?.destroy();
+    modules.snackbar.destroy();
+  });
   const { document } = window;
   const changes = [];
   details = new modules.GameDetails((isOpen) => {
@@ -58,11 +58,9 @@ async function setup(context) {
   });
   document.querySelector('#mount').innerHTML = details.render();
   details.bindEvents();
-  context.mock.method(Date, 'now', () => NOW);
+  vi.spyOn(Date, 'now').mockImplementation(() => NOW);
   const calls = [];
-  context.mock.method(
-    globalThis,
-    'fetch',
+  vi.spyOn(globalThis, 'fetch').mockImplementation(
     (target, options) =>
       new Promise((resolve, reject) => {
         calls.push({ url: new URL(target), options, resolve, reject });

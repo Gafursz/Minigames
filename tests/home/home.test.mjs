@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { URL } from 'node:url';
 import { setImmediate as nextTurn } from 'node:timers/promises';
-import { bundleModule } from '../helpers/bundle.mjs';
 import { createBrowserDom } from '../helpers/browser-dom.mjs';
 
 const game = (number, name = `API game ${number}`) => ({
@@ -31,17 +30,16 @@ const players = (data) => ({
 });
 
 async function mount(context) {
-  const modules = await bundleModule(context, 'tests/home/entry.ts');
+  const modules = await import('./entry.ts');
   let page;
-  context.after(() => {
+
+  const window = createBrowserDom(context);
+  context.onTestFinished(() => {
     page?.destroy();
     modules.snackbar.destroy();
   });
-  const window = createBrowserDom(context);
   const calls = [];
-  context.mock.method(
-    globalThis,
-    'fetch',
+  vi.spyOn(globalThis, 'fetch').mockImplementation(
     (url, options) =>
       new Promise((resolve, reject) => {
         calls.push({ url: new URL(url), options, resolve, reject });
@@ -256,30 +254,30 @@ test('carousel arrows wrap over the API list and dispose their old listeners', a
 
 test('a single returned game never creates a carousel timer', async (context) => {
   const { document, page, complete } = await mount(context);
-  const timeout = context.mock.method(globalThis, 'setTimeout');
+  const timeout = vi.spyOn(globalThis, 'setTimeout');
   await complete(0, games([game(1)]));
   await complete(1, players([]));
   page.setDialogOpen(true);
   page.setDialogOpen(false);
   assert.ok(document.querySelector('.slider__control--next').disabled);
-  assert.equal(timeout.mock.calls.filter((call) => call.arguments[1] === 4000).length, 0);
+  assert.equal(timeout.mock.calls.filter((call) => call[1] === 4000).length, 0);
 });
 
 test('a dialog opened before the data arrives still pauses autoplay', async (context) => {
   const { page, document, complete } = await mount(context);
   Object.defineProperty(document, 'hidden', { configurable: true, value: false });
-  const timeout = context.mock.method(globalThis, 'setTimeout');
+  const timeout = vi.spyOn(globalThis, 'setTimeout');
   page.setDialogOpen(true);
   await complete(0, games([game(1), game(2)]));
   await complete(1, players([]));
-  const timerCount = () => timeout.mock.calls.filter((call) => call.arguments[1] === 4000).length;
+  const timerCount = () => timeout.mock.calls.filter((call) => call[1] === 4000).length;
   assert.equal(timerCount(), 0);
   page.setDialogOpen(false);
   assert.equal(timerCount(), 1);
 });
 
-test('image resolution honors the API path and rejects unsafe or unknown paths', async (context) => {
-  const { getApiGameCardImage } = await bundleModule(context, 'tests/home/entry.ts');
+test('image resolution honors the API path and rejects unsafe or unknown paths', async () => {
+  const { getApiGameCardImage } = await import('./entry.ts');
   assert.ok(getApiGameCardImage('/assets/images/games/cat-mail-co-card.jpg'));
   assert.equal(getApiGameCardImage('/assets/images/games/missing-card.jpg'), undefined);
   assert.equal(getApiGameCardImage('javascript:alert(1)'), undefined);
@@ -292,13 +290,14 @@ test('image resolution honors the API path and rejects unsafe or unknown paths',
 });
 
 test('a newer resource load wins even if an aborted request resolves last', async (context) => {
-  const { HomeResource, snackbar } = await bundleModule(context, 'tests/home/entry.ts');
+  const { HomeResource, snackbar } = await import('./entry.ts');
   let resource;
-  context.after(() => {
+
+  const window = createBrowserDom(context, '<div id="resource"></div>');
+  context.onTestFinished(() => {
     resource?.destroy();
     snackbar.destroy();
   });
-  const window = createBrowserDom(context, '<div id="resource"></div>');
   const pending = [];
   const root = window.document.querySelector('#resource');
   resource = new HomeResource(root, {
