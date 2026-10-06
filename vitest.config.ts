@@ -18,8 +18,10 @@ export default mergeConfig(
         exclude: [
           '**/*.d.ts', // Type declarations have no executable application logic.
         ],
-        reporter: ['text', 'html', 'json-summary', 'json'],
+        reporter: [['text', { skipFull: false }], 'text-summary', 'html', 'json-summary', 'json'],
         reportsDirectory: './coverage',
+        // Story 4 measures aggregate statements across all application-logic files.
+        thresholds: { statements: 80 },
       },
     },
   }),
