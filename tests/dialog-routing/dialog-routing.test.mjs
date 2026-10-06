@@ -216,19 +216,36 @@ test('auth tabs, inline links, keyboard controls, and history share the same mod
   const auth = document.querySelector('#auth-dialog');
   const email = auth.querySelector('#auth-login-email');
   email.value = 'learner@example.com';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
   auth.querySelector('#auth-register-tab').click();
   assert.equal(url().searchParams.get('auth'), 'register');
+  assert.equal(email.value, '');
   auth.querySelector(':scope #auth-register-panel [data-auth-switch="login"]').click();
   assert.equal(url().searchParams.get('auth'), 'login');
-  assert.equal(email.value, 'learner@example.com');
+  // Story 4 deliberately replaces Story 3's mode-switch value-preservation behavior.
+  assert.equal(email.value, '');
   auth
     .querySelector('#auth-login-tab')
     .dispatchEvent(new window.KeyboardEvent('keydown', { key: 'End', bubbles: true }));
   assert.equal(url().searchParams.get('auth'), 'register');
+  const username = auth.querySelector('#auth-register-username');
+  username.value = 'lowercase';
+  username.dispatchEvent(new window.Event('input', { bubbles: true }));
+  assert.equal(username.getAttribute('aria-invalid'), 'true');
   await navigateHistory('back');
   assert.equal(auth.dataset.mode, 'login');
+  assert.equal(username.value, '');
+  assert.equal(username.getAttribute('aria-invalid'), 'false');
+  email.value = 'bad-email';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
+  assert.equal(email.getAttribute('aria-invalid'), 'true');
   await navigateHistory('forward');
   assert.equal(auth.dataset.mode, 'register');
+  assert.equal(email.value, '');
+  assert.equal(email.getAttribute('aria-invalid'), 'false');
+  for (const submit of auth.querySelectorAll('[type="submit"]')) assert.ok(submit.disabled);
+  for (const error of auth.querySelectorAll('.auth-dialog__error'))
+    assert.equal(error.textContent, '');
   assert.ok(auth.open);
   assert.ok(!url().href.includes('learner'));
 });
@@ -297,13 +314,50 @@ test('duplicate dialog state does not refetch games or add a history entry', asy
 });
 
 test('unrelated URL changes keep auth input focus and values', async (context) => {
-  const { document, setUrl } = await setup(context, '/Minigames/library?category=all&auth=login');
+  const { document, window, setUrl } = await setup(
+    context,
+    '/Minigames/library?category=all&auth=login',
+  );
   const email = document.querySelector('#auth-login-email');
-  email.value = 'learner@example.com';
+  const error = document.querySelector('#auth-login-email-error');
+  email.value = 'bad-email';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
   email.focus();
   await setUrl('/Minigames/library?category=all&auth=login&utm_source=test');
   assert.equal(document.activeElement, email);
+  assert.equal(email.value, 'bad-email');
+  assert.match(error.textContent, /valid email/);
+  email.value = 'learner@example.com';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
+  const password = document.querySelector('#auth-login-password');
+  password.value = 'abcdef';
+  password.dispatchEvent(new window.Event('input', { bubbles: true }));
+  await setUrl('/Minigames/library?category=puzzle&auth=login&utm_source=test');
+  assert.equal(document.activeElement, email);
   assert.equal(email.value, 'learner@example.com');
+  assert.equal(error.textContent, '');
+  assert.equal(document.querySelector('#auth-login-panel [type="submit"]').disabled, false);
+});
+
+test('direct URL mode changes reset both forms and their inline errors', async (context) => {
+  const { document, window, setUrl } = await setup(context, '/Minigames/library?auth=register');
+  const username = document.querySelector('#auth-register-username');
+  username.value = 'bad_name';
+  username.dispatchEvent(new window.Event('change', { bubbles: true }));
+  username.focus();
+  assert.equal(username.getAttribute('aria-invalid'), 'true');
+  await setUrl('/Minigames/library?auth=login');
+  assert.equal(username.value, '');
+  assert.equal(document.querySelector('#auth-register-username-error').textContent, '');
+  const email = document.querySelector('#auth-login-email');
+  email.value = 'invalid';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
+  email.focus();
+  await setUrl('/Minigames/library?auth=register');
+  assert.equal(email.value, '');
+  assert.equal(document.querySelector('#auth-login-email-error').textContent, '');
+  assert.equal(document.querySelector('#auth-register-panel [type="submit"]').disabled, true);
+  assert.ok(document.querySelector('#auth-dialog').open);
 });
 
 test('missing and malformed game URLs show modal not-found states over Library', async (context) => {

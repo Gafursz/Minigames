@@ -1,12 +1,17 @@
+import { AUTH_RULES } from './auth-validation';
+import type { AuthFieldName } from './auth-validation';
+
 export type AuthMode = 'login' | 'register';
 
 type Field = {
-  name: string;
+  name: AuthFieldName;
   label: string;
   type: 'text' | 'email' | 'password';
   icon: 'person' | 'mail' | 'lock';
   placeholder: string;
   autocomplete: string;
+  hint?: string;
+  minLength?: number;
 };
 
 const loginFields: Field[] = [
@@ -25,6 +30,8 @@ const loginFields: Field[] = [
     icon: 'lock',
     placeholder: '••••••••',
     autocomplete: 'current-password',
+    minLength: AUTH_RULES.passwordMinLength,
+    hint: 'Use at least 6 characters.',
   },
 ];
 
@@ -34,8 +41,10 @@ const registerFields: Field[] = [
     label: 'Username',
     type: 'text',
     icon: 'person',
-    placeholder: 'e.g. CozyGamer_99',
+    placeholder: 'e.g. CozyGamer99',
     autocomplete: 'username',
+    minLength: AUTH_RULES.usernameMinLength,
+    hint: '2–30 English letters or digits. Start with an uppercase letter.',
   },
   {
     name: 'email',
@@ -50,8 +59,10 @@ const registerFields: Field[] = [
     label: 'Password',
     type: 'password',
     icon: 'lock',
-    placeholder: 'Min. 8 characters',
+    placeholder: 'Min. 6 characters',
     autocomplete: 'new-password',
+    minLength: AUTH_RULES.passwordMinLength,
+    hint: 'At least 6 characters: an uppercase English letter, a digit, and a symbol. No spaces.',
   },
   {
     name: 'confirm-password',
@@ -72,9 +83,13 @@ function renderField(field: Field, mode: AuthMode): string {
       <div class="auth-dialog__control">
         <span class="auth-dialog__symbol" aria-hidden="true">${field.icon}</span>
         <input class="auth-dialog__input" id="${id}" name="${field.name}" type="${field.type}"
-          placeholder="${field.placeholder}" autocomplete="${field.autocomplete}" required />
+          placeholder="${field.placeholder}" autocomplete="${field.autocomplete}"
+          aria-describedby="${field.hint ? `${id}-hint ` : ''}${id}-error" aria-invalid="false"
+          ${field.minLength ? `minlength="${field.minLength}"` : ''} required />
         ${hasVisibilityToggle ? `<button class="auth-dialog__visibility" type="button" aria-label="Show password" aria-pressed="false" aria-controls="${id}"><span class="auth-dialog__symbol" aria-hidden="true">visibility</span></button>` : ''}
       </div>
+      ${field.hint ? `<p class="auth-dialog__hint" id="${id}-hint">${field.hint}</p>` : ''}
+      <p class="auth-dialog__error" id="${id}-error" aria-live="polite" aria-atomic="true"></p>
     </div>
   `;
 }
@@ -95,7 +110,7 @@ export function renderAuthPanel(mode: AuthMode, googleIcon: string): string {
           ${isLogin ? '<div class="auth-dialog__forgot"><button class="auth-dialog__link" type="button" data-auth-placeholder="Password recovery will be available in a later update.">Forgot Password?</button></div>' : ''}
         </div>
         <div class="auth-dialog__actions">
-          <button class="auth-dialog__submit" type="submit">${isLogin ? 'Login' : 'Create Account'}</button>
+          <button class="auth-dialog__submit" type="submit" disabled>${isLogin ? 'Login' : 'Create Account'}</button>
           <div class="auth-dialog__divider" aria-hidden="true"><span>OR</span></div>
           <button class="auth-dialog__google" type="button" data-auth-placeholder="Google sign-in will be available in a later update.">
             <span class="auth-dialog__google-icon"><img src="${googleIcon}" alt="" /></span>
