@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { once } from 'node:events';
 import { URL } from 'node:url';
 import { setImmediate as nextTurn } from 'node:timers/promises';
-import { bundleModule } from '../helpers/bundle.mjs';
 import { createBrowserDom } from '../helpers/browser-dom.mjs';
 
 const game = (slug) => ({
@@ -30,21 +29,22 @@ const detail = (slug) => ({
   },
 });
 async function setup(context, path = '/Minigames/library', shouldHoldDetails = false) {
-  const modules = await bundleModule(context, 'tests/dialog-routing/entry.ts');
+  const modules = await import('./entry.ts');
   let app;
-  context.after(() => app?.destroy());
+
   const window = createBrowserDom(context, '<div id="app"></div>', path);
+  context.onTestFinished(() => app?.destroy());
   for (const name of ['Node', 'KeyboardEvent']) {
     const descriptor = Object.getOwnPropertyDescriptor(globalThis, name);
     Object.defineProperty(globalThis, name, { configurable: true, value: window[name] });
-    context.after(() => {
+    context.onTestFinished(() => {
       if (descriptor) Object.defineProperty(globalThis, name, descriptor);
       else Reflect.deleteProperty(globalThis, name);
     });
   }
-  const pauses = context.mock.method(modules.Slider.prototype, 'setDialogOpen');
+  const pauses = vi.spyOn(modules.Slider.prototype, 'setDialogOpen');
   const calls = [];
-  context.mock.method(globalThis, 'fetch', (target, options) => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((target, options) => {
     const url = new URL(target);
     const call = { url, options };
     calls.push(call);
@@ -405,12 +405,12 @@ test('switching dialog types keeps only one modal and Home remains paused', asyn
     context,
     '/Minigames/?auth=login',
   );
-  assert.equal(pauses.mock.calls.at(-1).arguments[0], true);
+  assert.equal(pauses.mock.calls.at(-1)[0], true);
   await setUrl('/Minigames/?game=alpha');
   assert.equal(document.querySelectorAll('dialog[open]').length, 1);
   assert.ok(document.querySelector('#game-details').open);
   assert.ok(!document.body.classList.contains('has-open-auth'));
-  assert.equal(pauses.mock.calls.at(-1).arguments[0], true);
+  assert.equal(pauses.mock.calls.at(-1)[0], true);
   await setUrl('/Minigames/?auth=register');
   assert.equal(document.querySelectorAll('dialog[open]').length, 1);
   assert.ok(!document.body.classList.contains('has-open-dialog'));
@@ -418,7 +418,7 @@ test('switching dialog types keeps only one modal and Home remains paused', asyn
     .querySelector('#auth-dialog')
     .dispatchEvent(new window.Event('cancel', { cancelable: true }));
   finishExits();
-  assert.equal(pauses.mock.calls.at(-1).arguments[0], false);
+  assert.equal(pauses.mock.calls.at(-1)[0], false);
 });
 
 test('page navigation aborts dialog loading and Back restores the previous base page and modal', async (context) => {

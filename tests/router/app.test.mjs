@@ -1,17 +1,17 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { once } from 'node:events';
-import { bundleModule } from '../helpers/bundle.mjs';
 import { createBrowserDom } from '../helpers/browser-dom.mjs';
 
 test('integrates page navigation, 404 recovery, history, and page cleanup', async (context) => {
-  const { App } = await bundleModule(context, 'src/app/app.ts');
+  const { App } = await import('../../src/app/app.ts');
   let app;
-  context.after(() => app?.destroy());
+
   const window = createBrowserDom(context);
+  context.onTestFinished(() => app?.destroy());
   const { document } = window;
   // Later Home API integration can run in the same test without making live requests.
-  context.mock.method(globalThis, 'fetch', async () =>
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async () =>
     globalThis.Response.json({ data: [], meta: {} }),
   );
   app = new App(document.querySelector('#app'));
@@ -57,13 +57,14 @@ test('integrates page navigation, 404 recovery, history, and page cleanup', asyn
 });
 
 test('boots directly into an unknown route and migrates a legacy shared Library link', async (context) => {
-  context.mock.method(globalThis, 'fetch', async () =>
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async () =>
     globalThis.Response.json({ data: [], meta: {} }),
   );
-  const { App } = await bundleModule(context, 'src/app/app.ts');
+  const { App } = await import('../../src/app/app.ts');
   let app;
-  context.after(() => app?.destroy());
+
   const window = createBrowserDom(context, '<div id="app"></div>', '/Minigames/%E0%A4%A');
+  context.onTestFinished(() => app?.destroy());
   const root = window.document.querySelector('#app');
   app = new App(root);
   app.render();
