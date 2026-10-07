@@ -208,7 +208,7 @@
 
     &:disabled {
       cursor: not-allowed;
-      opacity: 0.5;
+      opacity: tokens.$opacity-disabled;
     }
   }
 
@@ -283,7 +283,7 @@
       transform auth.$duration-panel ease;
 
     &:disabled {
-      opacity: 0.5;
+      opacity: tokens.$opacity-disabled;
       cursor: not-allowed;
     }
   }
@@ -352,6 +352,11 @@
     outline: tokens.$border-width-medium solid tokens.$color-tertiary;
     outline-offset: tokens.$size-05;
   }
+
+  :where(button:disabled, a[aria-disabled='true']) {
+    cursor: not-allowed;
+    opacity: tokens.$opacity-disabled;
+  }
 }
 
 @media (hover: hover) {
@@ -360,12 +365,12 @@
   }
 
   .auth-dialog__google:hover:not(:disabled),
-  .auth-dialog__tab[aria-selected='false']:hover {
+  .auth-dialog__tab[aria-selected='false']:hover:not(:disabled) {
     background: tokens.$color-surface;
   }
 
-  .auth-dialog__link:hover,
-  .auth-dialog__visibility:hover {
+  .auth-dialog__link:hover:not(:disabled, [aria-disabled='true']),
+  .auth-dialog__visibility:hover:not(:disabled) {
     color: tokens.$color-tertiary;
   }
 }

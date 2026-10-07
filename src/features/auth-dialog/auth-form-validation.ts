@@ -12,6 +12,7 @@ export class AuthFormValidation {
   private readonly controller = new AbortController();
   private readonly touched = new Set<AuthFieldName>();
   private readonly fields: FormField[];
+  private isLocked = false;
 
   constructor(
     private readonly form: HTMLFormElement,
@@ -49,9 +50,7 @@ export class AuthFormValidation {
   }
 
   private refresh(): FormField | undefined {
-    const values: AuthValues = { username: '', email: '', password: '', 'confirm-password': '' };
-    for (const { name, input } of this.fields) values[name] = input.value;
-    const errors = validateAuthForm(this.mode, values);
+    const errors = validateAuthForm(this.mode, this.getValues());
     for (const { name, input, error } of this.fields) {
       const message = this.touched.has(name) ? errors[name] : '';
       error.textContent = message;
@@ -59,11 +58,18 @@ export class AuthFormValidation {
     }
     const firstInvalid = this.fields.find(({ name }) => errors[name].length > 0);
     const submit = this.form.querySelector<HTMLButtonElement>('[type="submit"]');
-    if (submit) submit.disabled = Boolean(firstInvalid);
+    if (submit) submit.disabled = this.isLocked || Boolean(firstInvalid);
     return firstInvalid;
   }
 
+  public getValues(): AuthValues {
+    const values: AuthValues = { username: '', email: '', password: '', 'confirm-password': '' };
+    for (const { name, input } of this.fields) values[name] = input.value;
+    return values;
+  }
+
   public validateSubmission(): boolean {
+    if (this.isLocked) return false;
     for (const { name } of this.fields) this.touched.add(name);
     const firstInvalid = this.refresh();
     firstInvalid?.input.focus();
@@ -73,6 +79,12 @@ export class AuthFormValidation {
   public reset(): void {
     this.form.reset();
     this.touched.clear();
+    this.refresh();
+  }
+
+  public setLocked(isLocked: boolean): void {
+    this.isLocked = isLocked;
+    this.form.setAttribute('aria-busy', String(isLocked));
     this.refresh();
   }
 

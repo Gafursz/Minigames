@@ -175,6 +175,7 @@ $duration-skeleton: 1400ms;
 $skeleton-line-height: 0.75rem;
 $skeleton-row-height: 4rem;
 $skeleton-highlight-opacity: 0.7;
+$opacity-disabled: 0.5;
 $feedback-symbol-size: 2rem;
 $touch-target: 2.75rem;
 
@@ -183,3 +184,6 @@ $color-success: $color-price-free;
 $duration-feedback: 160ms;
 $snackbar-width: 28rem;
 $snackbar-layer: 1000;
+
+// Authenticated header
+$profile-name-max-width: 9rem;
