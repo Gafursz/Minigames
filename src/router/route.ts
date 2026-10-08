@@ -90,7 +90,7 @@ export function readRoute(input: URL, base: string): RouteState {
     if (auth === 'login' || auth === 'register') {
       dialog = { kind: 'auth', mode: auth };
       setSingleParameter(parameters, 'auth', auth);
-      parameters.delete('game');
+      setSingleParameter(parameters, 'game', game);
     } else {
       parameters.delete('auth');
       setSingleParameter(parameters, 'game', game);

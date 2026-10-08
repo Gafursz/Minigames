@@ -80,7 +80,7 @@ test('parses game and auth URLs without turning an unknown game into a page 404'
   });
   const route = read('/Minigames/library?game=one&auth=register');
   assert.deepEqual(route.dialog, { kind: 'auth', mode: 'register' });
-  assert.equal(route.url.searchParams.has('game'), false);
+  assert.equal(route.url.searchParams.get('game'), 'one');
   assert.equal(read('/Minigames/?auth=invalid').dialog, undefined);
   assert.equal(read('/Minigames/unknown?game=one').dialog, undefined);
 });
