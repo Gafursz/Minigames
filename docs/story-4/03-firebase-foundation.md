@@ -1,136 +1,113 @@
-# Story 4 — Feature 3: Firebase foundation
+# Story 4 — Feature 3: Firebase Authentication Foundation
 
-## What is ready
+## Overview
 
-Branch: `feature/firebase-auth`, based on Feature 2 commit
-`3ad65e95841a3cfb5acf1efd08b0753832f2413f`. Feature 2 must be integrated into
-`story-4` before this dependent task branch is integrated.
+Feature 3 established the Firebase Authentication foundation for MiniGames Story 4, enabling the application to initialize and reuse Firebase services.
 
-Firebase **12.19.0** is installed as an exact runtime dependency. The app has typed
-web configuration, reusable SDK initialization, explicit Firebase persistence, and
-build-time configuration wiring for the existing GitHub Pages workflow. It keeps
-the TypeScript/SCSS architecture and adds no UI framework or router.
+The implementation preserves the existing TypeScript, Vite, SCSS, and custom SPA routing architecture.
 
-**Your personal Firebase Console setup is still required.** No Firebase web-app
-settings were present in the supplied project. This delivery does not claim to
-have created your personal cloud project, enabled its Email/Password provider, or
-verified a live sign-in. Complete the setup below before treating the 50-point
-Firebase task as fully verified. Feature 4 connects the forms to these SDK methods.
+| Item         | Details                                             |
+| ------------ | --------------------------------------------------- |
+| Branch       | `feature/firebase-auth`                             |
+| Pull request | [#18](https://github.com/Gafursz/Minigames/pull/18) |
+| Merge commit | `448240b`                                           |
+| Status       | Completed and merged                                |
 
-## What changed and why
+## Implementation
 
-| File                                 | Purpose                                                                                                                         |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `package.json`, `package-lock.json`  | Install and pin the official Firebase SDK. It is needed at runtime, unlike Vitest.                                              |
-| `.env.example`                       | List the four public web settings without inventing project values. Local `.env.local` stays ignored by the existing Git rules. |
-| `src/vite-env.d.ts`                  | Give the four Vite environment variables explicit optional string types.                                                        |
-| `src/auth/firebase-config.ts`        | Map and check settings before calling Firebase, with a recognizable configuration error.                                        |
-| `src/auth/firebase-client.ts`        | Reuse one named Firebase app and one initialization operation; recover from failed initialization so a retry remains possible.  |
-| `src/main.ts`                        | Start SDK preparation without blocking Home/Library if configuration or storage is unavailable.                                 |
-| `.github/workflows/deploy.yml`       | Pass the four repository variables to the Vite build. Deployment triggers are unchanged; nothing was deployed by this work.     |
-| `tests/auth/firebase-config.test.ts` | Check mapping and every missing/blank required setting.                                                                         |
-| `tests/auth/firebase-client.test.ts` | Check one-time initialization, named-app reuse, readiness, failed-setup retry, and public-page startup behavior.                |
+The feature introduced:
 
-## How initialization works
+- Firebase SDK 12.19.0 as an exact runtime dependency.
+- TypeScript definitions for Firebase environment variables.
+- Configuration validation for required Firebase values.
+- Reusable Firebase application and authentication initialization.
+- Browser-local Firebase authentication persistence.
+- Initialization failure handling and retry support.
+- Non-blocking Firebase initialization during application startup.
+- GitHub Actions variables for Firebase configuration during deployment.
+- Automated tests for Firebase configuration and initialization.
 
-`getFirebaseAuth()` reads the web settings, reuses or initializes the app named
-`minigames`, obtains its Auth instance, selects `browserLocalPersistence`, and waits
-for `authStateReady()`. Concurrent callers share the underlying initialization.
-If setup fails, the cached attempt is cleared so a later call can try again.
+Firebase initialization is managed through `getFirebaseAuth()`, which validates configuration, reuses the named `minigames` application, initializes Firebase Auth, configures persistence, and waits for authentication readiness.
 
-This matters even for immediate failures: a missing setting can reject before the
-SDK makes an asynchronous request. The client clears the cached failure only after
-the attempt has been assigned. A test changes missing configuration to valid test
-configuration and verifies that the next call succeeds.
+Concurrent initialization requests reuse the same operation. Failed initialization attempts can be retried.
 
-Startup uses `prepareFirebaseAuth()`, which handles initialization failure so public
-pages remain available. A subsequent authentication request still receives the
-error and can show user feedback; it is not converted into successful authentication.
+Public application pages remain available when Firebase initialization fails.
 
-Firebase persistence and the MiniGames five-minute app session are separate. Firebase
-remembers identity according to its provider settings. Feature 4's app-session state
-decides whether the UI is authenticated, and expiry/logout must also call Firebase
-`signOut`. Reading Firebase's `currentUser` alone must never create a fresh app session.
+## Files and Responsibilities
 
-## Complete your personal Firebase setup
+| File                                 | Purpose                                            |
+| ------------------------------------ | -------------------------------------------------- |
+| `src/auth/firebase-config.ts`        | Firebase configuration mapping and validation      |
+| `src/auth/firebase-client.ts`        | Firebase initialization, persistence, and recovery |
+| `src/vite-env.d.ts`                  | TypeScript definitions for environment variables   |
+| `src/main.ts`                        | Non-blocking Firebase startup initialization       |
+| `.env.example`                       | Firebase environment configuration template        |
+| `.github/workflows/deploy.yml`       | Firebase variables in the GitHub Pages build       |
+| `tests/auth/firebase-config.test.ts` | Configuration validation tests                     |
+| `tests/auth/firebase-client.test.ts` | Initialization and lifecycle tests                 |
+| `package.json`                       | Firebase SDK dependency                            |
 
-1. Open [Firebase Console](https://console.firebase.google.com/) using your account.
-   Create a personal project, or choose your existing MiniGames project. A database,
-   Firebase Hosting deployment, or Analytics integration is not required for this
-   authentication feature.
-2. In Project settings → General, register a **Web** app and open its SDK configuration.
-   Copy `apiKey`, `authDomain`, `projectId`, and `appId` into the matching environment
-   variables below. Use your real values; the ZIP intentionally supplies none.
-3. In Authentication → Sign-in method, enable **Email/Password** and save. Email-link
-   sign-in is a separate option and is not used here.
-4. Review Authentication → Settings → Authorized domains for your development and
-   deployed hosts. Use hostnames, not URL paths. Add the actual hosts you use, such
-   as `localhost` and `gafursz.github.io`, when needed.
-5. Complete a real registration/login smoke check with Feature 4. Confirm that a
-   registration creates a Firebase user and saves the username as `displayName`.
+## Firebase Configuration
 
-| Firebase web property | Environment variable        |
-| --------------------- | --------------------------- |
-| `apiKey`              | `VITE_FIREBASE_API_KEY`     |
-| `authDomain`          | `VITE_FIREBASE_AUTH_DOMAIN` |
-| `projectId`           | `VITE_FIREBASE_PROJECT_ID`  |
-| `appId`               | `VITE_FIREBASE_APP_ID`      |
+A Firebase project and Web App were configured for MiniGames.
 
-These are client web-app settings and will be present in the browser build. They
-are not an Admin SDK service-account credential. Never put service-account keys,
-passwords, or Firebase user tokens in these variables or in the app-session object.
+The following setup was completed:
 
-## Local configuration commands
+- Email/Password authentication enabled.
+- Email Link authentication left disabled.
+- `localhost` authorized for development.
+- `gafursz.github.io` authorized for GitHub Pages.
+- Firebase default authentication domains retained.
 
-Run commands from the repository root after importing this branch. `npm ci` installs
-the exact lockfile dependencies and replaces `node_modules`; it does not edit source
-or upgrade packages. The new Firebase dependency is included in that installation.
+The application uses four environment variables:
 
-```bash
-npm ci
-```
+| Environment variable        | Purpose                     |
+| --------------------------- | --------------------------- |
+| `VITE_FIREBASE_API_KEY`     | Firebase web API key        |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Authentication domain       |
+| `VITE_FIREBASE_PROJECT_ID`  | Firebase project identifier |
+| `VITE_FIREBASE_APP_ID`      | Firebase Web App identifier |
 
-If `.env.local` does not already exist, `cp` copies the template. `-n` means
-no-clobber: it does not overwrite an existing destination. The source is
-`.env.example`, and the destination is your ignored local configuration file.
+Local configuration is stored in Git-ignored `.env.local`.
 
-```bash
-cp -n .env.example .env.local
-```
+Matching GitHub Actions repository variables were created for deployment.
 
-Open `.env.local` in your editor and fill the four values using the mapping above.
-Do not delete an existing configuration. `npm run dev` starts Vite. Restart it after
-environment changes because Vite reads these settings when the server starts.
-Open the URL it prints, including the configured `/Minigames/` path. Ctrl+C stops it.
+No Firebase Admin credentials, private keys, passwords, or user authentication tokens were committed.
 
-```bash
-npm run dev
-```
+## Authentication Architecture
 
-For the existing GitHub Pages workflow, add the same four values as repository
-**Actions variables** (Settings → Secrets and variables → Actions → Variables).
-The workflow now forwards them to the build. A deployed build must be rebuilt after
-changing variables; an old bundle cannot pick up new settings at runtime. No remote
-repository settings or deployment triggers were changed by the assistant.
+Firebase authentication and the MiniGames application session have separate responsibilities.
 
-## Tests and verification
+Firebase manages the underlying user identity and authentication persistence.
 
-The ten new cases extend the existing Vitest suite. Firebase modules are mocked at
-the SDK boundary, so unit tests need no cloud project or real credentials. These
-tests verify our configuration and lifecycle behavior; they do not prove a personal
-Firebase project exists or that its provider has been enabled.
+The MiniGames application session determines whether the application interface treats a user as authenticated.
 
-The full run for this feature passed **201 tests in 20 files**, with **89.12%
-statement coverage** across all **50** non-declaration application TypeScript files.
-There are no failed, skipped, or todo cases. The existing 80% aggregate statement
-gate is unchanged, and no application files were excluded. Raw logs, metrics, and
-the HTML report are included in the ZIP.
+Feature 3 established the Firebase client foundation. The five-minute application session and Email/Password authentication flow were subsequently implemented in Feature 4.
 
-`npm test` runs the suite once. `test:coverage` measures the same suite and enforces
-the statement gate. `lint` checks ESLint; `format:check` checks Prettier without
-rewriting files. `typecheck:tests` runs TypeScript checks without JS output. `build`
-checks app types and creates the Vite production files and SPA fallback under `dist/`.
-These checks do not perform a live Firebase login or change cloud settings.
+The Firebase identity alone does not automatically create or extend the MiniGames application session.
+
+## Testing and Verification
+
+Feature 3 added ten Firebase-related tests covering configuration validation, initialization, application reuse, authentication readiness, and failure recovery.
+
+Firebase SDK boundaries were mocked during unit testing.
+
+### Feature 3 Verification Results
+
+| Metric                                |         Result |
+| ------------------------------------- | -------------: |
+| Test files                            |  **20 passed** |
+| Tests                                 | **201 passed** |
+| Statement coverage                    |     **89.12%** |
+| Branch coverage                       |         81.65% |
+| Function coverage                     |         93.33% |
+| Line coverage                         |         92.03% |
+| Application TypeScript files included |             50 |
+| Required statement coverage           |            80% |
+
+The implementation exceeded the required 80% aggregate statement coverage threshold without excluding executable application logic.
+
+The following checks passed:
 
 ```bash
 npm test
@@ -141,20 +118,37 @@ npm run typecheck:tests
 npm run build
 ```
 
-## Integration and remaining work
+The application also loaded locally with Firebase configuration present and no observed Firebase-related browser console errors.
 
-Use the ZIP's guarded importer and task PR draft. Integrate prerequisite task PRs
-in order: Feature 1, Feature 2, then this feature. This branch was not pushed or
-merged, and your Windows checkout was not changed. The final `story-4` → `story-3`
-Cross-Check PR remains unmerged.
+The automated tests did not establish successful live account registration or login. Those interactions require browser verification against the configured Firebase project.
 
-Feature 4 implements real Email/Password operations, pending controls, error/success
-feedback, and the app session required by its success criteria. Google OAuth and
-authenticated game mutations remain separate later work.
+Dependency installation reported five high-severity npm audit findings, which remain subject to separate review.
 
-## References checked on 7 October 2026
+## Git Integration
 
-- [Official Firebase setup task](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/minigames/tasks/story-4/RSS-QS-4-1-3-firebase-auth-setup.md)
-- [Firebase web setup](https://firebase.google.com/docs/web/setup)
-- [Firebase Email/Password authentication](https://firebase.google.com/docs/auth/web/password-auth)
-- [Firebase persistence](https://firebase.google.com/docs/auth/web/auth-state-persistence)
+Feature 3 was developed on `feature/firebase-auth` and integrated into `story-4` through **PR #18**.
+
+The original feature commits were preserved, including:
+
+`2ad9c70 docs(auth): record completed Firebase foundation setup`
+
+**Merge commit:** `448240b`
+
+The implementation was integrated without introducing an external UI framework or routing library.
+
+## Completion
+
+Feature 3 completed the Firebase configuration and initialization foundation.
+
+Real Email/Password authentication, five-minute application sessions, authenticated header behavior, and logout functionality were implemented in the subsequent Feature 4 code.
+
+Google OAuth, complete authentication guards, favorites, and comment interactions remain outside Feature 3's scope.
+
+The final `story-4` → `story-3` Cross-Check pull request must remain unmerged.
+
+## References
+
+- [RS School Firebase Authentication Setup](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/minigames/tasks/story-4/RSS-QS-4-1-3-firebase-auth-setup.md)
+- [Firebase Web Setup](https://firebase.google.com/docs/web/setup)
+- [Firebase Email/Password Authentication](https://firebase.google.com/docs/auth/web/password-auth)
+- [Firebase Authentication Persistence](https://firebase.google.com/docs/auth/web/auth-state-persistence)
