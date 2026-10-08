@@ -43,7 +43,7 @@ export class GameInfo {
     });
   }
 
-  public render(game: GameDetailsData): string {
+  public render(game: GameDetailsData, hasGuard = false): string {
     return `
       <div class="game-details__heading">
         <h2 class="game-details__title" id="game-info-title">${escapeHtml(game.name)}</h2>
@@ -69,7 +69,7 @@ export class GameInfo {
       </dl>
       <div class="game-details__actions">
         <button class="game-details__play" type="button" disabled title="Game launching is not available yet">Play Now</button>
-        <button class="game-details__favorite" type="button" disabled title="Sign in to add favorites" aria-pressed="false" aria-label="Add to Favorites">
+        <button class="game-details__favorite" type="button" ${hasGuard ? '' : 'disabled'} title="Sign in to add favorites" aria-pressed="false" aria-label="Add to Favorites">
           <img src="${favoriteIcon}" alt="" />
           <span class="game-details__favorite-label">Add to Favorites</span>
         </button>

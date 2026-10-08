@@ -387,15 +387,15 @@ test('unknown paths keep the dedicated 404 and return Home through the SPA', asy
   assert.equal(document.title, 'MiniGames — Home');
 });
 
-test('conflicting auth/game parameters normalize to exactly one auth dialog', async (context) => {
+test('auth/game parameters retain recovery context with exactly one active dialog', async (context) => {
   const { document, url, detailsCalls } = await setup(
     context,
     '/Minigames/library?category=all&game=alpha&auth=register',
   );
   assert.equal(document.querySelectorAll('dialog[open]').length, 1);
   assert.ok(document.querySelector('#auth-dialog').open);
-  assert.ok(!url().searchParams.has('game'));
-  assert.equal(detailsCalls().length, 0);
+  assert.equal(url().searchParams.get('game'), 'alpha');
+  assert.equal(detailsCalls().length, 1);
 });
 
 test('rapid game URL changes cancel old requests and render only the latest slug', async (context) => {

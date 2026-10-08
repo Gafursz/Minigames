@@ -71,6 +71,7 @@ export class AppSession {
     private readonly signOut: () => Promise<void>,
     private readonly onChange: (session: AppSessionData | undefined) => void,
     private readonly onExpired: () => void,
+    private readonly onSignOutError?: () => void,
   ) {}
 
   private publish(session: AppSessionData | undefined): void {
@@ -86,17 +87,18 @@ export class AppSession {
     if (isChanged) this.onChange(this.value);
   }
 
-  private async signOutAfter(previous: Promise<void>): Promise<void> {
+  private async signOutAfter(previous: Promise<void>, shouldReportError: boolean): Promise<void> {
     await previous;
     try {
       await this.signOut();
     } catch {
-      // Local guest state is authoritative. Startup will attempt provider cleanup again.
+      // Local guest state stays authoritative even when Firebase cleanup fails.
+      if (shouldReportError) this.onSignOutError?.();
     }
   }
 
-  private clearIdentity(): void {
-    this.cleanup = this.signOutAfter(this.cleanup);
+  private clearIdentity(shouldReportError = false): void {
+    this.cleanup = this.signOutAfter(this.cleanup, shouldReportError);
     this.publish(undefined);
     try {
       const storage = this.getStorage();
@@ -134,7 +136,7 @@ export class AppSession {
     this.hasChecked = true;
     this.lastRejected = raw;
     if (shouldRecover) {
-      this.clearIdentity();
+      this.clearIdentity(raw !== undefined || Boolean(this.value));
       if (result.kind === 'expired') this.onExpired();
     }
     return undefined;
@@ -168,7 +170,7 @@ export class AppSession {
   public logout(): void {
     this.hasChecked = true;
     this.lastRejected = undefined;
-    this.clearIdentity();
+    this.clearIdentity(true);
   }
 
   public destroy(): void {
