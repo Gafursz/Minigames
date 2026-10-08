@@ -170,8 +170,8 @@ TypeScript files. Coverage includes every application-logic file; the same 80%
 statement gate remains in place.
 
 Read [Feature 2: validation rules, UI behavior, and tests](docs/story-4/02-auth-validation.md)
-for the what/how/why guide and manual review steps. Valid input does not yet sign in;
-Firebase integration is a later feature.
+for the what/how/why guide and manual review steps. Feature 2 added validation;
+Feature 4 now connects valid forms to Firebase as described below.
 
 Read [Feature 3: Firebase setup and configuration](docs/story-4/03-firebase-foundation.md)
 to configure your personal Firebase Web app and enable Email/Password. Copy the
@@ -179,6 +179,14 @@ provided `.env.example` to an ignored `.env.local` and fill your own project val
 The SDK foundation is ready; personal Console/provider setup and live authentication
 verification remain required. The existing deploy workflow reads matching repository
 Actions variables. Nothing has been deployed by this feature.
+
+Read [Feature 4: Email/Password flow and the five-minute app session](docs/story-4/04-email-password-auth.md)
+for SDK calls, pending controls, retry/success behavior, header state, session expiry,
+logout, and the remaining manual checks. Its verification passed **230 tests**, with
+**89.70% statements** across all **54** source TypeScript files. Firebase Console
+configuration and a live sign-in check are still required; unit tests mock Firebase.
+Google OAuth, the full authenticated Auth URL/protected-action guards, and game
+mutations remain later work.
 
 ## 🌿 Git Workflow
 
@@ -194,6 +202,11 @@ Cross-Check PR unmerged too.
 Feature 2 uses `feature/auth-validation` → `story-4` and depends on Feature 1.
 Its delivery was built from Feature 1's exact tip because that prerequisite had
 not yet been integrated on GitHub. Integrate Feature 1 before Feature 2.
+
+Feature 3 uses `feature/firebase-auth`; Feature 4 uses `feature/email-password-auth`.
+These are dependent task branches built from the previous feature's exact tip.
+Integrate their task PRs into `story-4` in order. No push or PR merge is claimed by
+their delivery packages. Keep the final Cross-Check PR unmerged.
 
 ## 👨‍💻 Author
 

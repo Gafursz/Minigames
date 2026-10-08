@@ -9,6 +9,12 @@ import type { NavigationReason } from '../router/router';
 import type { RouteState } from '../router/route';
 import { isRouterLink } from '../router/links';
 import { snackbar } from '../components/snackbar';
+import { emailAuth } from '../auth/email-auth';
+import type { EmailAuth } from '../auth/email-auth';
+import { AppSession, APP_SESSION_KEY } from '../auth/app-session';
+import type { AuthMode } from '../features/auth-dialog/auth-form';
+import type { AuthValues } from '../features/auth-dialog/auth-validation';
+import { updateHeaderProfile } from '../components/header-profile';
 
 export class App {
   private readonly root: HTMLElement;
@@ -18,23 +24,42 @@ export class App {
   private readonly controller = new AbortController();
   private dialogTrigger: HTMLElement | undefined;
   private dialogKey: string | undefined;
+  private readonly session: AppSession;
+  private pendingAuthUrl: string | undefined;
   private readonly gameDetails = new GameDetails(
     () => this.updateDialogPause(),
     () => {
       this.router.updateQuery({ game: undefined });
     },
   );
-  private readonly authDialog = new AuthDialog(() => this.updateDialogPause(), {
-    close: () => {
-      this.router.updateQuery({ auth: undefined });
+  private readonly authDialog = new AuthDialog(
+    () => this.updateDialogPause(),
+    {
+      close: () => {
+        this.router.updateQuery({ auth: undefined });
+      },
+      setMode: (mode) => {
+        this.router.updateQuery({ auth: mode, game: undefined });
+      },
     },
-    setMode: (mode) => {
-      this.router.updateQuery({ auth: mode, game: undefined });
-    },
-  });
+    (mode, values) => this.authenticate(mode, values),
+  );
 
-  public constructor(root: HTMLElement) {
+  public constructor(
+    root: HTMLElement,
+    private readonly auth: EmailAuth = emailAuth,
+  ) {
     this.root = root;
+    this.session = new AppSession(
+      () => root.ownerDocument.defaultView?.localStorage,
+      () => this.auth.logout(),
+      (profile) => updateHeaderProfile(this.root, profile),
+      () =>
+        queueMicrotask(() => {
+          if (!this.controller.signal.aborted)
+            snackbar.show('Your session expired. Please sign in again.', 'error');
+        }),
+    );
     this.router = new Router(import.meta.env.BASE_URL, (route, reason) => {
       this.renderRoute(route, reason);
     });
@@ -42,6 +67,15 @@ export class App {
     this.root.addEventListener(
       'click',
       (event) => {
+        if (this.authDialog.isPending) {
+          event.preventDefault();
+          return;
+        }
+        if (event.target instanceof Element && event.target.closest('[data-auth-logout]')) {
+          this.session.logout();
+          snackbar.show('You are signed out.');
+          return;
+        }
         const link =
           event.target instanceof Element
             ? event.target.closest<HTMLAnchorElement>('a[data-router-link]')
@@ -79,6 +113,48 @@ export class App {
       },
       { signal: this.controller.signal },
     );
+    const window = root.ownerDocument.defaultView;
+    window?.addEventListener('focus', () => this.session.check(), {
+      signal: this.controller.signal,
+    });
+    window?.addEventListener(
+      'storage',
+      (event) => {
+        if (event.key === APP_SESSION_KEY || event.key === null) this.session.check();
+      },
+      { signal: this.controller.signal },
+    );
+    root.ownerDocument.addEventListener(
+      'visibilitychange',
+      () => {
+        if (root.ownerDocument.visibilityState === 'visible') this.session.check();
+      },
+      { signal: this.controller.signal },
+    );
+  }
+
+  private async authenticate(mode: AuthMode, values: AuthValues): Promise<void> {
+    this.pendingAuthUrl = this.router.current.url.href;
+    try {
+      this.session.check();
+      await this.session.readyForAuthentication();
+      const profile =
+        mode === 'login'
+          ? await this.auth.login(values.email, values.password)
+          : await this.auth.register(values.username, values.email, values.password);
+      if (this.controller.signal.aborted) {
+        await this.auth.logout();
+        throw new Error('Authentication view was destroyed.');
+      }
+      try {
+        this.session.establish(profile);
+      } catch (error) {
+        this.session.logout();
+        throw error;
+      }
+    } finally {
+      this.pendingAuthUrl = undefined;
+    }
   }
 
   private updateDialogPause(): void {
@@ -115,6 +191,18 @@ export class App {
   }
 
   private renderRoute(route: RouteState, reason: NavigationReason): void {
+    this.session.check();
+    if (this.authDialog.isPending && this.pendingAuthUrl) {
+      const pending = new URL(this.pendingAuthUrl);
+      if (
+        route.url.pathname !== pending.pathname ||
+        route.url.searchParams.get('auth') !== pending.searchParams.get('auth')
+      ) {
+        this.router.navigate(pending, true);
+        return;
+      }
+      this.pendingAuthUrl = route.url.href;
+    }
     const key = route.page === 'not-found' ? route.url.pathname : route.page;
     if (this.page && this.pageKey === key) {
       this.page.updateRoute?.(route);
@@ -151,6 +239,7 @@ export class App {
     this.page.bindEvents();
     this.gameDetails.bindEvents();
     this.authDialog.bindEvents();
+    updateHeaderProfile(this.root, this.session.current);
     this.page.updateRoute?.(route);
     this.syncDialogs(route);
 
@@ -171,6 +260,7 @@ export class App {
   public destroy(): void {
     this.router.destroy();
     this.controller.abort();
+    this.session.destroy();
     snackbar.destroy();
     this.gameDetails.destroy();
     this.authDialog.destroy();
