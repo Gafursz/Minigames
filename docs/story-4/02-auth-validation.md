@@ -1,262 +1,390 @@
-# Story 4 — Feature 2: real-time auth form validation
+# Story 4 — Feature 2: Real-Time Authentication Form Validation
 
-## Result and scope
+## 1. Feature overview
 
-This feature implements the 30-point **RSS-QS-4-1-1** validation task on
-`feature/auth-validation`. It extends the existing TypeScript classes, HTML string
-rendering, and SCSS tokens. It adds no dependencies, UI framework, external router,
-Firebase calls, session records, or authenticated API mutations.
+Feature 2 implemented real-time validation for the Login and Registration forms in MiniGames Story 4.
 
-The public GitHub check on **6 October 2026** found `story-3` at
-`85b56dfe03beb93f51593157c303eb3452c2f8bd`, with no remote `story-4`,
-`feature/test-foundation`, or `feature/auth-validation` branch. The local Feature 1
-checkout was clean. Therefore this feature depends on the exact delivered Feature 1
-tip, `a7e8ec1b1dd72eb7feb8238a937dbcd9ebb2ba22`; it does not pretend that Feature 1
-was merged. Merge Feature 1's task PR into `story-4` before integrating Feature 2.
+The implementation addresses **RSS-QS-4-1-1: Auth Forms Real-Time Validation**, worth 30 points.
 
-The Windows checkout at `C:\Users\User\Desktop\MiniGames-project` has not been
-changed by this delivery. No branch was pushed and no GitHub PR was created or
-merged. See the ZIP's `START-HERE.md` and `PR-FEATURE-2.md` for the remaining steps.
-The final **`story-4` → `story-3` Cross-Check PR must remain unmerged**.
+The feature was developed on `feature/auth-validation`, building on the completed Feature 1 testing foundation.
 
-## The rules and their observable behavior
+It was successfully merged into `story-4` through [Pull Request #17](https://github.com/Gafursz/Minigames/pull/17).
 
-| Field                 | Requirement                                                                     | Example                                                                  |
-| --------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Email, both modes     | Required; common valid email format                                             | `alex+games@example.com` is valid; `alex@` is not.                       |
-| Registration username | 2–30 characters; first character uppercase English; English letters/digits only | `A1` and `CozyGamer99` are valid; `CozyGamer_99` is not.                 |
-| Registration password | At least 6 characters, including uppercase English, a digit, and a symbol       | `Abcd1!` is valid; `abcdef` is not.                                      |
-| Confirmation          | Required and exactly equal to the registration password                         | Case and whitespace differences do not match.                            |
-| Login password        | Required and at least 6 characters                                              | `abcdef` is valid input even though it would fail registration strength. |
+The implementation extends the existing TypeScript classes, HTML rendering functions, and SCSS architecture without adding dependencies, UI frameworks, or external routing libraries.
 
-These are input checks, not proof of identity. A valid form still shows the existing
-message that account sign-in is coming in a later update. It does not create an
-account, sign in, set a session, or contact Firebase. Request locking and Firebase
-error/success handling will be implemented with the actual authentication flow.
+Firebase authentication and authenticated API mutations were intentionally outside this feature's scope.
 
-The old registration examples were corrected: the username placeholder is now
-`CozyGamer99`, and the password placeholder says **6**, not 8, characters. Visible
-hints explain the username and password rules before an error occurs.
+## 2. Completed implementation
 
-## What each file does and why
+The following functionality was implemented:
 
-| File                                                    | Responsibility and reason                                                                                                                                                                         |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/features/auth-dialog/auth-validation.ts`           | Pure rules returning error strings. The same rules determine inline feedback and whether submission is allowed. Pure functions are easy to test without a browser or credentials.                 |
-| `src/features/auth-dialog/auth-form-validation.ts`      | One controller per form. It reads values, tracks visited/edited fields, listens to input/change/blur, updates errors and the submit button, and removes its listeners on destruction.             |
-| `src/features/auth-dialog/auth-form.ts`                 | Keeps the existing field definitions and rendering approach. Adds hints, error elements, accessible descriptions, minimum lengths, corrected placeholders, and initially disabled submit buttons. |
-| `src/features/auth-dialog/auth-dialog.ts`               | Owns the controllers, checks submissions, and resets them when the mode changes or the dialog closes. Existing routing actions, animation, and focus behavior remain in this class.               |
-| `src/features/auth-dialog/auth-dialog.scss`             | Styles hints and errors, including the invalid border. Long feedback wraps inside the existing responsive, scrollable dialog.                                                                     |
-| `src/features/auth-dialog/_auth-tokens.scss`            | Adds the named feedback line-height token. Colors, spacing, typography, borders, and breakpoints reuse existing tokens.                                                                           |
-| `tests/auth-validation/auth-validation.test.ts`         | 43 rule cases covering valid inputs, invalid inputs, exact matching, and boundaries.                                                                                                              |
-| `tests/auth-validation/auth-dialog-validation.test.mjs` | 14 DOM cases covering event behavior, submission, accessibility, resets, focus, cleanup, and no fake authentication. Uses the existing jsdom helpers.                                             |
-| `tests/dialog-routing/dialog-routing.test.mjs`          | Updates the Story 3 mode-switch assertion for Story 4, strengthens history/unrelated-URL checks, and adds one direct URL reset case.                                                              |
-| `README.md` and this guide                              | Explain the current feature, verification snapshot, dependency, and remaining integration.                                                                                                        |
+- Real-time validation for Login and Registration fields.
+- Required-field and email-format validation.
+- Username validation for registration.
+- Separate password rules for Login and Registration.
+- Exact password confirmation.
+- Immediate revalidation when passwords change.
+- Inline validation errors and explanatory input hints.
+- Disabled submission buttons when forms are invalid.
+- Full form revalidation on submission.
+- Automatic clearing of fields and errors when switching authentication modes.
+- Preservation of form values when unrelated URL parameters change.
+- Accessible validation markup and error announcements.
+- Integration with the existing authentication dialog and custom SPA routing.
+- Figma-related correction of the focused input appearance.
+- Automated tests for validation rules, DOM behavior, and dialog navigation.
 
-`AuthMode` remains the existing `'login' | 'register'` type. The new `AuthFieldName`
-union prevents misspelled field names. `AuthValues` and `AuthErrors` map those names
-to strings. Empty error strings mean a field passed validation. Login deliberately
-returns empty username/confirmation errors because those fields are not required
-in that mode.
+## 3. Validation rules
 
-## How an edit moves through the code
+The validation requirements differ between Login and Registration.
 
-When an input emits `input`, `change`, or `blur`, the form controller identifies the
-field and marks it as touched. It reads the current values and calls
-`validateAuthForm`. It then writes error text with `textContent`, updates
-`aria-invalid`, and enables the submit button only if every active-form field passes.
+| Field                 | Requirement                                                                                    | Example            |
+| --------------------- | ---------------------------------------------------------------------------------------------- | ------------------ |
+| Email — both modes    | Required; valid email format                                                                   | `alex@example.com` |
+| Registration username | 2–30 characters; begins with uppercase English letter; English letters and digits only         | `CozyGamer99`      |
+| Registration password | At least 6 characters, including an uppercase English letter, a digit, and a special character | `Abcd1!`           |
+| Confirm password      | Required; must match registration password exactly                                             | `Abcd1!`           |
+| Login password        | Required; minimum 6 characters                                                                 | `abcdef`           |
 
-All fields are checked from the beginning, so an empty form cannot submit. Error
-messages are initially empty to avoid showing errors before the user has interacted.
-An edited field or one left empty on blur shows its error immediately. Correcting
-the value clears the error without a submit, mode change, or page reload.
+### Email validation
 
-Every event recomputes the form's rules, including confirmation. If a password
-changes after confirmation has a value, a mismatch is shown immediately and the
-submit button becomes disabled. An untouched, still-empty confirmation stays quiet
-until visited, while still keeping the form invalid. Confirmation checks only
-presence and equality: matching a weak password clears the confirmation error,
-but the original password error still blocks the form.
+The email validator accepts common unquoted ASCII addresses, including aliases and subdomains.
 
-The blur listener uses capture because native `blur` does not bubble. Input and
-change use normal bubbling. These listeners are attached with an `AbortController`,
-so destroying or rebinding a dialog removes them rather than stacking handlers.
+It rejects missing address components, internal whitespace, consecutive dots in the local part, and malformed domain labels.
 
-At submission, `AuthDialog` first prevents default browser navigation. A hidden
-form, closed dialog, or dialog in its closing animation cannot submit. The active
-form is validated again against its current values. This catches values changed
-programmatically without an input event and does not rely only on the button's
-disabled state. An invalid attempt reveals the relevant errors and focuses the
-first invalid field. A valid attempt reaches only the existing future-auth message.
+Leading and trailing whitespace is ignored during format checking, but the validator does not silently modify the input value.
 
-## Why mode changes reset, but unrelated URL updates do not
+The validation checks address format, not whether the mailbox exists.
 
-Story 3 preserved typed values between Login and Register. Story 4 explicitly
-requires clearing them. The implementation checks whether the mode actually
-changed and resets **both** forms only for that change. Resetting clears values,
-touched state, error text, invalid attributes, and submit readiness. It also restores
-the existing login password visibility toggle to its concealed state.
+### Username validation
 
-Tabs, inline links, keyboard controls, direct auth URLs, and browser Back/Forward all
-reach the existing dialog mode method, so they share this reset behavior. Selecting
-the current tab does not discard values. The existing app's dialog-state comparison
-preserves the form when a tracking parameter or Library category changes while the
-auth mode remains the same. Tests check values, errors, submit readiness, and focus.
+Registration usernames must:
 
-Focus ordering matters: moving focus away from the previous input can emit blur.
-The reset runs **after** that focus movement. Otherwise blur could recreate a
-required-field error immediately after resetting the form. Closing likewise clears
-validation after returning focus to the trigger. These paths have regression tests.
+- Contain between 2 and 30 characters.
+- Start with an uppercase English letter.
+- Contain only English letters and digits.
 
-Neither passwords nor form values are put in the URL, localStorage, or logs. The
-router continues to store only the existing public dialog mode state.
+Spaces, underscores, and lowercase initial letters are rejected.
 
-## Input-format decisions
+For example, `CozyGamer99` is valid, while `CozyGamer_99` is invalid.
 
-- Email validation accepts common unquoted ASCII addresses, aliases, and subdomains.
-  It rejects missing parts, whitespace inside the address, consecutive dots in the
-  local part, and malformed domain labels. It checks format, not mailbox ownership.
-  Outer email whitespace is ignored for this check; the validator does not mutate
-  input values. Internationalized or quoted local parts are outside this practical
-  form format. The future auth provider remains authoritative about real accounts.
-- Usernames are not trimmed or silently changed. Spaces and underscores are invalid,
-  and a lowercase first letter is explained rather than automatically capitalized.
-- Registration symbols are visible ASCII punctuation, such as `!`, `@`, `_`, and
-  `~`. Spaces, control characters, and non-English letters do not satisfy the allowed
-  character set. Passwords are never trimmed or normalized. Login applies only the
-  required/minimum-length rules, without adding registration character restrictions.
-- Confirmation equality is literal. It has no separate strength check or minimum
-  length rule, so a mismatch cannot be hidden by validating it as another password.
+### Password validation
 
-## Accessibility and SCSS choices
+Registration requires at least six characters, including an uppercase English letter, a digit, and an ASCII punctuation symbol.
 
-Every field retains a visible label, correct input type, required attribute, and
-autocomplete purpose. Password and username minimum lengths are also represented
-in markup. The form keeps `novalidate` so native popups do not compete with custom
-inline feedback.
+Registration passwords do not accept spaces, control characters, or non-English characters under the implemented character rules.
 
-Each input's `aria-describedby` references its hint, where present, and a stable
-error element. Error elements use `aria-live="polite"` and `aria-atomic="true"`.
-They remain in the DOM even when empty. `aria-invalid` changes with visible errors.
-Error text explains the problem, so the red border is not the only signal. Typing
-and correcting fields does not move focus; invalid submission can focus the first
-invalid input.
+Login passwords are checked only for presence and minimum length. Registration strength rules do not apply to Login.
 
-The error color uses `tokens.$color-error`; spacing and font sizes use the existing
-tokens. The focus ring remains visible on an invalid field. Feedback wraps, and the
-existing dialog width, maximum viewport height, scrolling, animations, reduced
-motion treatment, and breakpoint mixins are preserved. No layout is replaced with
-an image.
+Passwords are not trimmed or automatically normalized.
 
-DOM tests verify labels, descriptions, states, focus, and reset behavior. They do
-not prove screen-reader announcements, native dialog top-layer behavior, browser
-autofill event timing, or mobile pixel rendering. Those manual checks remain listed
-below; no Figma or native-browser verification is claimed for this delivery.
+### Password confirmation
 
-## Verification evidence
+Password confirmation checks required presence and exact equality with the registration password.
 
-The completed run on 6 October 2026 used **Node 24.19.0** and **npm 11.9.0**.
-Both normal and coverage runs passed **191 tests across 18 files**, with zero failed,
-skipped, or todo cases. This is Feature 1's 133 cases plus 58 new cases. The existing
-mode-switch expectation was deliberately revised, not removed or skipped.
+If the original password changes after confirmation has been entered, the confirmation field is immediately revalidated.
 
-| Metric     | Covered / total | Result |
-| ---------- | --------------- | ------ |
-| Statements | 1393 / 1565     | 89%    |
-| Branches   | 844 / 1034      | 81.62% |
-| Functions  | 286 / 307       | 93.15% |
-| Lines      | 1273 / 1384     | 91.97% |
+A matching confirmation does not make a weak registration password valid; the original password requirements remain independent.
 
-All **48** non-declaration `src/**/*.ts` files remain in the coverage report,
-including the bootstrap and lower-coverage gesture code. The configuration and
-80% aggregate statement gate are unchanged. No application logic was excluded to
-raise coverage. The ZIP includes raw command logs, JSON test results, a source
-coverage audit, and an HTML report at `coverage-report/index.html`.
+## 4. Files created and modified
 
-The focused tests cover username lengths 1/2/30/31, registration password lengths
-5/6, each missing strength requirement, login without registration strength, empty
-and mismatched confirmation, and password changes after a matching confirmation.
-UI tests use the real form controllers and dialog. Existing routing integration
-tests use mocked public API responses; unexpected network calls are blocked by
-shared test setup. No live credentials or Firebase mocks are needed yet because
-this feature imports no Firebase code.
+| File                                                    | Implementation and purpose                                                                                 |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `src/features/auth-dialog/auth-validation.ts`           | Implements pure validation functions and typed validation results.                                         |
+| `src/features/auth-dialog/auth-form-validation.ts`      | Manages input events, touched fields, errors, form validity, and listener cleanup.                         |
+| `src/features/auth-dialog/auth-form.ts`                 | Adds hints, error elements, accessible descriptions, minimum lengths, and disabled initial submit buttons. |
+| `src/features/auth-dialog/auth-dialog.ts`               | Integrates validation controllers, submission checks, and form resets with existing dialog behavior.       |
+| `src/features/auth-dialog/auth-dialog.scss`             | Styles validation feedback and the focused/error input states.                                             |
+| `src/features/auth-dialog/_auth-tokens.scss`            | Adds the feedback line-height token.                                                                       |
+| `tests/auth-validation/auth-validation.test.ts`         | Adds 43 validation rule tests.                                                                             |
+| `tests/auth-validation/auth-dialog-validation.test.mjs` | Adds 14 DOM and interaction tests.                                                                         |
+| `tests/dialog-routing/dialog-routing.test.mjs`          | Updates and extends tests for authentication mode changes and URL synchronization.                         |
+| `README.md`                                             | Records the validation feature and verification results.                                                   |
+| `docs/story-4/02-auth-validation.md`                    | Documents the feature's architecture, implementation, tests, and completion.                               |
 
-## Commands, explained before running
+## 5. How real-time validation works
 
-Run these from the repository root after following `START-HERE.md`. The delivered
-`project/` is also a complete source snapshot for a separate inspection copy.
+The implementation separates validation rules from browser event handling.
 
-`npm ci` installs exact lockfile dependencies and replaces the local `node_modules`
-directory. It does not update source or dependency versions. Use the supported Node
-range in `package.json`; installation may configure the existing Husky hooks.
+### Validation functions
 
-```bash
-npm ci
+`auth-validation.ts` defines typed validation functions and data structures.
+
+`AuthFieldName` identifies supported fields, and `AuthValues` and `AuthErrors` represent their values and corresponding validation messages.
+
+The validation functions return error strings when input is invalid.
+
+An empty error string represents a successful validation result.
+
+### Form validation controller
+
+`AuthFormValidation` manages each form's validation lifecycle.
+
+It listens for three events:
+
+- `input` — updates validation while the user types.
+- `change` — handles value changes.
+- `blur` — validates when the user leaves a field.
+
+The `blur` listener uses event capture because native `blur` events do not bubble.
+
+Each event triggers the same validation rules.
+
+The controller updates error text using `textContent`, changes `aria-invalid`, and enables or disables the submit button according to the active form's validity.
+
+### Touched-field behavior
+
+All required values are checked when determining whether a form can submit.
+
+However, error messages are not displayed immediately when the form first opens.
+
+A field displays an error only after relevant user interaction.
+
+This prevents an empty form from showing multiple validation errors before the user starts typing.
+
+Correcting a value clears its corresponding error without requiring a page reload or new submission.
+
+### Password confirmation revalidation
+
+When the registration password changes, the controller also checks confirmation if confirmation already contains a value.
+
+A mismatch immediately displays an error and disables the Create Account button.
+
+This prevents a previously matching confirmation from remaining incorrectly marked as valid.
+
+### Event listener cleanup
+
+Validation event listeners are managed using an `AbortController`.
+
+When the dialog is destroyed or rebound, its listeners are removed.
+
+This prevents duplicate validation handlers and unintended event behavior.
+
+## 6. Submission handling
+
+The authentication dialog prevents default browser form navigation.
+
+Before accepting a submission, it verifies that:
+
+1. The dialog is open.
+2. The dialog is not in its closing animation.
+3. The submitted form belongs to the active authentication mode.
+4. Every required field passes validation.
+
+If submission is invalid, the corresponding errors are shown and the first invalid field receives focus.
+
+This final check is independent of the disabled submit button and also handles values changed programmatically without normal input events.
+
+During Feature 2, a valid submission displayed the existing placeholder:
+
+`Account sign-in will be available in a later update.`
+
+This was intentional.
+
+Feature 2 did not create Firebase users, authenticate accounts, or establish application sessions.
+
+## 7. Authentication mode changes and SPA routing
+
+Story 4 requires clearing form values when switching between Login and Registration.
+
+The implementation resets both forms only when the authentication mode actually changes.
+
+A reset clears:
+
+- Input values.
+- Touched-field state.
+- Validation error messages.
+- Invalid-field attributes.
+- Submit-button readiness.
+- Password visibility state.
+
+Authentication mode changes triggered through tabs, inline links, keyboard controls, direct URLs, or browser Back/Forward navigation share the same reset behavior.
+
+Selecting the already-active mode does not unnecessarily clear input values.
+
+Likewise, unrelated URL parameter updates do not reset the form if its authentication mode remains unchanged.
+
+### Focus and reset ordering
+
+Changing authentication modes can move focus away from an input and trigger a `blur` event.
+
+The implementation performs the form reset after the relevant focus movement.
+
+This prevents a late blur event from immediately restoring an error after the form was cleared.
+
+Closing the dialog also clears validation state while preserving the existing focus-restoration behavior.
+
+Passwords and form values are not stored in the URL, localStorage, or application logs.
+
+## 8. Accessibility
+
+The validation UI retains semantic labels, correct input types, required attributes, and appropriate autocomplete values.
+
+Inputs use `aria-describedby` to reference their hints and error messages.
+
+Error elements use:
+
+- `aria-live="polite"`
+- `aria-atomic="true"`
+
+The `aria-invalid` attribute changes according to the displayed validation result.
+
+This helps assistive technologies identify invalid fields.
+
+Errors are explained using text rather than color alone.
+
+Correcting input does not unexpectedly move focus, while invalid submission can focus the first invalid field.
+
+The existing form uses `novalidate` so native browser validation popups do not compete with the custom inline validation interface.
+
+## 9. SCSS implementation and Figma correction
+
+Validation feedback uses the project's existing SCSS tokens for error colors, spacing, and typography.
+
+The invalid input border uses:
+
+`tokens.$color-error`
+
+Additional feedback spacing and typography follow the existing design-token system.
+
+### Focused input appearance
+
+During manual browser review, the focused input styling was compared with the MiniGames Figma design.
+
+The original focused state displayed a prominent yellow outer shadow that did not match the intended design.
+
+The focus styling was corrected in `auth-dialog.scss`.
+
+The old focus-shadow behavior and its unused transition were removed.
+
+The focused input container now uses:
+
+```scss
+&:focus-within {
+  background-color: tokens.$color-surface;
+}
 ```
 
-`npm test` runs the complete Vitest suite once and exits. It fails if any assertion
-fails. Expect 191 passing tests for this exact snapshot.
+The existing input border, border radius, dimensions, spacing, and invalid-state border behavior were preserved.
 
-```bash
-npm test
-```
+The correction was committed as:
 
-`npm run test:coverage` runs the same suite with V8 measurement, prints the source
-coverage table, writes `coverage/index.html`, and fails below 80% statements.
+`e82722b style(auth): align input focus state with Figma`
 
-```bash
-npm run test:coverage
-```
+The layout continues to use the existing responsive dialog behavior, SCSS breakpoints, scrolling, and reduced-motion support.
 
-`npx --no -- vitest` uses the installed test runner without installing a missing
-package. `run` means one execution; the two paths select the new validation tests
-and dialog routing regressions. This focused run has 76 cases and is useful while
-editing; the full coverage command is still the final gate.
+No layout component was replaced with an image.
 
-```bash
-npx --no -- vitest run tests/auth-validation/ tests/dialog-routing/
-```
+## 10. Automated testing
 
-`lint` runs ESLint without rewriting files. `format:check` checks Prettier formatting.
-`typecheck:tests` checks TypeScript application/test/config files with no JS output;
-the `.mjs` DOM tests are linted and executed rather than TypeScript-checked.
-`typecheck:feedback` retains the earlier focused compiler check. `build` checks app
-types, builds production files under `dist/`, and creates the existing SPA fallback.
+Feature 2 extended the existing Feature 1 test suite.
 
-```bash
-npm run lint
-npm run format:check
-npm run typecheck:tests
-npm run typecheck:feedback
-npm run build
-```
+The implementation added 58 tests:
 
-`npm run dev` starts Vite's development server. Open the exact local URL it prints
-(including the configured `/Minigames/` base). Press Ctrl+C to stop the server.
+- 43 validation rule tests.
+- 14 authentication dialog DOM tests.
+- One additional dialog-routing test, with existing routing assertions also updated.
 
-```bash
-npm run dev
-```
+The tests cover valid and invalid values, input boundaries, real-time error clearing, password confirmation changes, disabled submissions, focus management, form resets, and browser history behavior.
 
-## Manual review to complete after import
+Existing Story 3 dialog-routing tests were updated to reflect the new Story 4 form-reset requirement.
 
-1. At mobile, tablet, and desktop widths, open Login. Verify hints and errors wrap,
-   the dialog scrolls when needed, and no horizontal overflow appears.
-2. Leave email empty, then type an invalid email. Correct it and enter `abcdef` as
-   the login password. The error clears and Login becomes enabled.
-3. Switch to Register. Fields should be empty, errors cleared, and Create Account
-   disabled. Try `CozyGamer_99`, then correct it to `CozyGamer99`.
-4. Enter a valid email, `Abcd1!`, and matching confirmation. Change the original
-   password to `Other2!`. Confirm that mismatch feedback appears immediately.
-5. Switch with tabs, inline links, keyboard controls, and Back/Forward. Actual mode
-   changes clear the form; unrelated query changes preserve it. Escape/backdrop
-   dismissal, opening/closing animations, and return focus should still work.
-6. Check keyboard navigation and screen-reader error announcements. Try your
-   browser/password manager's autofill. Valid submission must not claim to sign in:
-   Firebase is deliberately not connected in this feature.
+The application controllers themselves are tested rather than replacing their logic with fake implementations.
 
-## Official reference
+Network requests are mocked, and unexpected live requests are blocked by the shared testing setup.
 
-[RSS-QS-4-1-1: Auth Forms Real-time Validation](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/minigames/tasks/story-4/RSS-QS-4-1-1-auth-forms-realtime-validation.md)
-was fetched and checked on 6 October 2026. Future task changes require a new review;
-this document records the requirements and implementation for this delivery.
+### Feature 2 verification results
+
+| Metric                                |                Result |
+| ------------------------------------- | --------------------: |
+| Test files                            |             18 passed |
+| Tests                                 |        **191 passed** |
+| Failed tests                          |                     0 |
+| Statement coverage                    | **89% (1,393/1,565)** |
+| Branch coverage                       |    81.62% (844/1,034) |
+| Function coverage                     |      93.15% (286/307) |
+| Line coverage                         |  91.97% (1,273/1,384) |
+| Application TypeScript files included |                    48 |
+| Required aggregate statement coverage |                   80% |
+
+All 48 non-declaration source TypeScript files remained included in coverage measurement.
+
+The existing 80% aggregate statement threshold was retained.
+
+No executable application logic was deliberately excluded to improve coverage.
+
+## 11. Development commands and verification
+
+The following commands were used to verify the implementation:
+
+| Command                      | Purpose                                                            |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `npm ci`                     | Install project dependencies according to the lockfile.            |
+| `npm test`                   | Execute the complete Vitest test suite.                            |
+| `npm run test:coverage`      | Measure project-wide coverage and enforce the statement threshold. |
+| `npm run lint`               | Check code using ESLint.                                           |
+| `npm run format:check`       | Check formatting using Prettier.                                   |
+| `npm run typecheck:tests`    | Type-check application and test-related TypeScript files.          |
+| `npm run typecheck:feedback` | Run the existing focused feedback type check.                      |
+| `npm run build`              | Generate and verify the production build.                          |
+| `npm run dev`                | Run the application locally for manual browser verification.       |
+
+All automated checks passed.
+
+## 12. Manual browser verification
+
+The feature was manually checked in the local MiniGames application.
+
+Confirmed behavior included:
+
+- Required-field and invalid-format errors appearing during input.
+- Validation errors clearing when values were corrected.
+- Registration username restrictions.
+- Registration password strength requirements.
+- Exact password confirmation.
+- Immediate mismatch feedback after changing the original password.
+- Valid Login and Registration submissions displaying the expected placeholder message.
+- Figma focused-input styling correction.
+
+The manual review confirmed the core validation behavior.
+
+Automated DOM tests additionally verified form reset behavior, focus management, URL synchronization, and dialog lifecycle handling.
+
+Native screen-reader announcements, browser password-manager autofill timing, and every responsive layout variation were not independently established by the automated tests.
+
+## 13. Git history and integration
+
+Feature 2 was developed on the dedicated branch:
+
+`feature/auth-validation`
+
+It was based on Feature 1 commit:
+
+`a7e8ec1b1dd72eb7feb8238a937dbcd9ebb2ba22`
+
+The feature was integrated into `story-4` through **Pull Request #17**.
+
+The final feature branch included four commits, including the Figma focused-input styling correction.
+
+The PR was merged using a regular merge commit, preserving the original feature commits.
+
+**Merge commit:** `8a12e0d`
+
+No unrelated application features or prohibited frameworks were introduced.
+
+The final `story-4` → `story-3` Cross-Check PR must remain unmerged.
+
+## 14. Scope boundaries
+
+Feature 2 completed frontend validation behavior only.
+
+The following functionality was intentionally outside its scope:
+
+- Firebase SDK initialization.
+- Real Email/Password authentication.
+- Google OAuth.
+- Five-minute application-session management.
+- Authentication request locking.
+- User profiles.
+- Authenticated favorites.
+- Comment submission and comment likes.
