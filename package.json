@@ -1,7 +1,7 @@
 {
   "name": "minigames",
   "version": "1.0.0",
-  "description": "MiniGames \u2014 a responsive single-page web application built with TypeScript, Sass, and modern frontend development tools.",
+  "description": "MiniGames — a responsive single-page web application built with TypeScript, Sass, and modern frontend development tools.",
   "main": "index.js",
   "scripts": {
     "test:dialogs": "vitest run tests/dialog-routing/",
@@ -58,7 +58,8 @@
     "vitest": "5.0.3"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.3.0"
+    "@fontsource/inter": "^5.3.0",
+    "firebase": "12.19.0"
   },
   "engines": {
     "node": "^22.22.2 || ^24.15.0 || >=26.0.0"

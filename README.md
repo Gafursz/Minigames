@@ -6,8 +6,8 @@ The application is built with **TypeScript, Sass, and Vite** without JavaScript 
 
 Story 3 public API integration and routing are complete. Story 4 is in progress:
 Feature 1 adds Vitest and project-wide coverage. Feature 2 adds real-time Login and
-Registration validation. Firebase authentication and authenticated mutations are
-implemented in subsequent task branches.
+Registration validation. Feature 3 adds the Firebase SDK and configuration foundation.
+The real authentication flow and authenticated mutations follow in subsequent task branches.
 
 ## 🔗 Links
 
@@ -172,6 +172,13 @@ statement gate remains in place.
 Read [Feature 2: validation rules, UI behavior, and tests](docs/story-4/02-auth-validation.md)
 for the what/how/why guide and manual review steps. Valid input does not yet sign in;
 Firebase integration is a later feature.
+
+Read [Feature 3: Firebase setup and configuration](docs/story-4/03-firebase-foundation.md)
+to configure your personal Firebase Web app and enable Email/Password. Copy the
+provided `.env.example` to an ignored `.env.local` and fill your own project values.
+The SDK foundation is ready; personal Console/provider setup and live authentication
+verification remain required. The existing deploy workflow reads matching repository
+Actions variables. Nothing has been deployed by this feature.
 
 ## 🌿 Git Workflow
 
