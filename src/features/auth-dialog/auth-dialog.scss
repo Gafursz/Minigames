@@ -177,10 +177,9 @@
     border: tokens.$border-width-medium solid tokens.$color-on-primary;
     border-radius: tokens.$radius-md;
     background: tokens.$color-white;
-    transition: box-shadow auth.$duration-panel ease;
 
     &:focus-within {
-      box-shadow: auth.$focus-ring;
+      background-color: tokens.$color-surface;
     }
 
     &:has([aria-invalid='true']) {
