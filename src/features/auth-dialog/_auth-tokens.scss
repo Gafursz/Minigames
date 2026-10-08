@@ -11,6 +11,7 @@ $font-family-symbols: 'Auth Symbols';
 $shadow-button: 0 4px 0 tokens.$color-on-primary;
 $focus-ring: 0 0 0 3px tokens.$color-primary;
 $duration-panel: 180ms;
+$feedback-line-height: 1.4;
 
 // The original Google SVG is 118 × 120; preserve its root size and aspect ratio.
 $google-icon-scale: 0.2;

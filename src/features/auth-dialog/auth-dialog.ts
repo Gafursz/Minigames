@@ -1,6 +1,7 @@
 import googleIcon from './assets/google.svg';
 import { renderAuthPanel } from './auth-form';
 import type { AuthMode } from './auth-form';
+import { AuthFormValidation } from './auth-form-validation';
 
 export class AuthDialog {
   private element: HTMLDialogElement | undefined;
@@ -10,6 +11,7 @@ export class AuthDialog {
   private mode: AuthMode = 'login';
   private isClosing = false;
   private shouldRestoreFocus = true;
+  private readonly formValidation = new Map<AuthMode, AuthFormValidation>();
 
   constructor(
     private readonly onOpenChange: (isOpen: boolean) => void,
@@ -28,6 +30,7 @@ export class AuthDialog {
 
   private setMode(mode: AuthMode, shouldFocusTab = false): void {
     if (!this.element || this.isClosing) return;
+    const isModeChanged = mode !== this.mode;
     this.mode = mode;
     this.element.dataset.mode = mode;
     this.element.setAttribute('aria-labelledby', `auth-${mode}-title`);
@@ -40,13 +43,15 @@ export class AuthDialog {
     for (const panel of this.element.querySelectorAll<HTMLElement>('[role="tabpanel"]')) {
       panel.hidden = panel.id !== `auth-${mode}-panel`;
     }
+    // Moving focus may blur the old field. Reset afterwards so that blur cannot restore an error.
+    if (isModeChanged) this.resetForms();
     const status = this.element.querySelector<HTMLElement>('[role="status"]');
     if (status) status.textContent = '';
   }
 
   private resetForms(): void {
     if (!this.element) return;
-    for (const form of this.element.querySelectorAll('form')) form.reset();
+    for (const validation of this.formValidation.values()) validation.reset();
     const password = this.element.querySelector<HTMLInputElement>('#auth-login-password');
     if (password) password.type = 'password';
     const visibility = this.element.querySelector('.auth-dialog__visibility');
@@ -60,12 +65,12 @@ export class AuthDialog {
     this.element?.close();
     this.element?.classList.remove('is-closing');
     this.isClosing = false;
-    this.resetForms();
     document.body.classList.remove('has-open-auth');
     this.onOpenChange(false);
     if (shouldRestoreFocus && this.returnFocus?.isConnected) {
       this.returnFocus.focus({ preventScroll: true });
     }
+    this.resetForms();
     this.returnFocus = undefined;
   }
 
@@ -122,11 +127,17 @@ export class AuthDialog {
 
   public bindEvents(): void {
     this.controller?.abort();
+    for (const validation of this.formValidation.values()) validation.destroy();
+    this.formValidation.clear();
     this.controller = new AbortController();
     const { signal } = this.controller;
     const dialog = document.querySelector<HTMLDialogElement>('#auth-dialog');
     if (!dialog) return;
     this.element = dialog;
+    for (const mode of ['login', 'register'] as const) {
+      const form = dialog.querySelector<HTMLFormElement>(`#auth-${mode}-panel form`);
+      if (form) this.formValidation.set(mode, new AuthFormValidation(form, mode));
+    }
     dialog.addEventListener('click', (event) => this.handleClick(event), { signal });
     dialog.addEventListener(
       'cancel',
@@ -152,6 +163,14 @@ export class AuthDialog {
       'submit',
       (event) => {
         event.preventDefault();
+        const activeForm = dialog.querySelector(`#auth-${this.mode}-panel form`);
+        if (
+          this.isClosing ||
+          !dialog.open ||
+          event.target !== activeForm ||
+          !this.formValidation.get(this.mode)?.validateSubmission()
+        )
+          return;
         const status = dialog.querySelector<HTMLElement>('[role="status"]');
         if (status) status.textContent = 'Account sign-in will be available in a later update.';
       },
@@ -222,6 +241,8 @@ export class AuthDialog {
   public destroy(): void {
     this.controller?.abort();
     this.finishClose(false);
+    for (const validation of this.formValidation.values()) validation.destroy();
+    this.formValidation.clear();
     this.element = undefined;
   }
 }

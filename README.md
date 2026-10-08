@@ -5,8 +5,9 @@ MiniGames is a responsive single-page gaming application developed as part of th
 The application is built with **TypeScript, Sass, and Vite** without JavaScript or CSS frameworks.
 
 Story 3 public API integration and routing are complete. Story 4 is in progress:
-Feature 1 adds Vitest and project-wide coverage. Authentication and authenticated
-mutations are implemented in the subsequent task branches.
+Feature 1 adds Vitest and project-wide coverage. Feature 2 adds real-time Login and
+Registration validation. Firebase authentication and authenticated mutations are
+implemented in subsequent task branches.
 
 ## 🔗 Links
 
@@ -40,6 +41,8 @@ mutations are implemented in the subsequent task branches.
 - Login and registration dialogs
 - Login/Register switching
 - Password visibility controls
+- Real-time field validation, accessible inline errors, and disabled invalid submissions
+- Form reset on Login/Register changes, including browser history
 - Backdrop and Escape-key dismissal
 - Responsive desktop and mobile layouts
 
@@ -161,6 +164,15 @@ TypeScript files. This is a measured snapshot; rerun coverage as features change
 Read [Feature 1: what changed, how it works, and why](docs/story-4/01-test-foundation.md)
 for the migration details, coverage scope, commands, and remaining work.
 
+Feature 2 snapshot: **191 passing tests**, **89% statements**, **81.62% branches**,
+**93.15% functions**, and **91.97% lines** across all 48 non-declaration source
+TypeScript files. Coverage includes every application-logic file; the same 80%
+statement gate remains in place.
+
+Read [Feature 2: validation rules, UI behavior, and tests](docs/story-4/02-auth-validation.md)
+for the what/how/why guide and manual review steps. Valid input does not yet sign in;
+Firebase integration is a later feature.
+
 ## 🌿 Git Workflow
 
 Development follows the RS School story-based workflow:
@@ -171,6 +183,10 @@ related group on a separate feature branch and merge its task PR into `story-4`.
 Feature 1 uses `feature/test-foundation` → `story-4`. The final Story 4 Cross-Check
 PR targets `story-3` and **must remain unmerged**. Keep the earlier Story 3
 Cross-Check PR unmerged too.
+
+Feature 2 uses `feature/auth-validation` → `story-4` and depends on Feature 1.
+Its delivery was built from Feature 1's exact tip because that prerequisite had
+not yet been integrated on GitHub. Integrate Feature 1 before Feature 2.
 
 ## 👨‍💻 Author
 
