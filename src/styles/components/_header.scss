@@ -157,9 +157,27 @@
 }
 
 .header__mobile-actions .header__profile {
+  width: 100%;
   color: tokens.$color-white;
-}
 
+  .header__avatar,
+  .header__profile-name {
+    display: none;
+  }
+
+  .header__logout {
+    width: 100%;
+    padding: tokens.$btn-medium-y tokens.$btn-medium-x;
+    border: tokens.$border-width-medium solid tokens.$color-white;
+    border-radius: tokens.$radius-md;
+    background-color: transparent;
+    color: tokens.$color-white;
+    font-size: tokens.$font-size-body-small;
+    font-weight: 700;
+    line-height: 100%;
+    text-align: center;
+  }
+}
 @media (max-width: breakpoints.$breakpoint-mobile) {
   .header__actions .header__profile {
     display: none;
