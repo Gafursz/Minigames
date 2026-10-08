@@ -32,7 +32,7 @@ export class App {
     () => {
       this.router.updateQuery({ game: undefined });
     },
-    () => Boolean(this.requireSession()),
+    () => this.requireSession(),
   );
   private readonly authDialog = new AuthDialog(
     () => this.updateDialogPause(),
@@ -62,7 +62,7 @@ export class App {
       () => this.auth.logout(),
       (profile) => {
         updateHeaderProfile(this.root, profile);
-        this.gameDetails.setAuthenticated(Boolean(profile));
+        this.gameDetails.setAuthenticated(profile);
         if (profile) this.queueAuthGuard();
       },
       () =>
@@ -292,7 +292,7 @@ export class App {
     this.root.innerHTML = `${this.page.render()}${this.gameDetails.render()}${this.authDialog.render()}`;
     this.page.bindEvents();
     this.gameDetails.bindEvents();
-    this.gameDetails.setAuthenticated(Boolean(this.session.current));
+    this.gameDetails.setAuthenticated(this.session.current);
     this.authDialog.bindEvents();
     updateHeaderProfile(this.root, this.session.current);
     this.page.updateRoute?.(route);

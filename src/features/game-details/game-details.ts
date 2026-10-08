@@ -1,3 +1,5 @@
+import type { AuthProfile } from '../../auth/email-auth';
+import { FavoriteControl } from './favorite-control';
 import closeIcon from '../../assets/icons/close.svg';
 import { GameInfo } from '../../components/game-info';
 import { GameRecords } from '../../components/game-records';
@@ -16,7 +18,8 @@ export class GameDetails {
   private readonly comments: GameComments;
   private isSuspended = false;
   private suspendedFocus: HTMLElement | undefined;
-  private isAuthenticated = false;
+  private profile: AuthProfile | undefined;
+  private readonly favorite: FavoriteControl;
   private element: HTMLDialogElement | undefined;
   private feedback: ContentFeedback | undefined;
   private controller: AbortController | undefined;
@@ -30,9 +33,10 @@ export class GameDetails {
   constructor(
     private readonly onOpenChange: (isOpen: boolean) => void,
     private readonly onCloseRequest?: () => void,
-    private readonly canUseProtectedAction?: () => boolean,
+    private readonly requireSession?: () => AuthProfile | undefined,
   ) {
-    this.comments = new GameComments(canUseProtectedAction);
+    this.comments = new GameComments(requireSession ? () => Boolean(requireSession()) : undefined);
+    this.favorite = new FavoriteControl(requireSession);
   }
 
   private setTitle(text: string): void {
@@ -53,6 +57,7 @@ export class GameDetails {
     if (!slug || !this.feedback || !this.element?.open || this.isClosing) return;
     this.request?.abort();
     this.comments.destroy();
+    this.favorite.destroy();
     const request = new AbortController();
     this.request = request;
     const isCurrent = (): boolean => this.request === request && !request.signal.aborted;
@@ -63,7 +68,8 @@ export class GameDetails {
       return;
     }
     try {
-      const response = await getGameDetails(slug, request.signal);
+      const requestedEmail = this.profile?.email;
+      const response = await getGameDetails(slug, request.signal, requestedEmail);
       if (!isCurrent()) return;
       const game = readGameDetails(response, slug);
       if (!game) {
@@ -77,12 +83,21 @@ export class GameDetails {
             ${hero ? `<img class="game-details__cover" src="${escapeHtml(hero)}" alt="${escapeHtml(game.name)}" />` : '<div class="game-details__cover game-details__cover--placeholder" role="img" aria-label="Game image unavailable"></div>'}
           </div>
           <div class="game-details__body">
-            ${this.info.render(game, Boolean(this.canUseProtectedAction))}
+            ${this.info.render(game, Boolean(this.requireSession))}
             ${this.records.render(game.topRecords)}
             ${this.comments.render()}
           </div>`);
       this.comments.bindEvents(this.element, slug);
-      this.setAuthenticated(this.isAuthenticated);
+      this.comments.setAuthenticated(Boolean(this.profile));
+      this.favorite.bind(
+        this.element,
+        slug,
+        {
+          isFavorited: game.isLikedByCurrentUser,
+          likesCount: game.likesCount,
+        },
+        requestedEmail,
+      );
       if (isRetry) snackbar.show('Game details loaded successfully.', 'success');
     } catch (error) {
       if (!isCurrent()) return;
@@ -171,11 +186,6 @@ export class GameDetails {
     dialog.addEventListener(
       'click',
       (event) => {
-        if (event.target instanceof Element && event.target.closest('.game-details__favorite')) {
-          if (this.canUseProtectedAction?.())
-            snackbar.show('Favorites will be available in a later update.');
-          return;
-        }
         if (event.target !== dialog) return;
         const bounds = dialog.getBoundingClientRect();
         if (
@@ -225,24 +235,11 @@ export class GameDetails {
     this.onOpenChange(false);
   }
 
-  public setAuthenticated(isAuthenticated: boolean): void {
-    const shouldReset = this.isAuthenticated && !isAuthenticated;
-    this.isAuthenticated = isAuthenticated;
-    this.comments.setAuthenticated(isAuthenticated);
-    if (!this.element) {
-      return;
-    }
-
-    this.element.dataset.authenticated = String(isAuthenticated);
-    this.element
-      .querySelector('.game-details__favorite')
-      ?.setAttribute(
-        'title',
-        isAuthenticated
-          ? 'Favorites will be available in a later update.'
-          : 'Sign in to add favorites',
-      );
-    if (shouldReset) this.info.reset(this.element);
+  public setAuthenticated(profile: AuthProfile | undefined): void {
+    this.profile = profile;
+    this.comments.setAuthenticated(Boolean(profile));
+    this.favorite.setProfile(profile);
+    if (this.element) this.element.dataset.authenticated = String(Boolean(profile));
   }
 
   public close(shouldAnimate = true, shouldRestoreFocus = true): void {
@@ -250,6 +247,7 @@ export class GameDetails {
     if (this.isSuspended) shouldAnimate = false;
     this.request?.abort();
     this.comments.destroy();
+    this.favorite.destroy();
     this.shouldRestoreFocus = shouldRestoreFocus;
     if (!shouldAnimate) {
       this.finishClose(shouldRestoreFocus);
@@ -273,6 +271,7 @@ export class GameDetails {
     this.request?.abort();
     this.request = undefined;
     this.comments.destroy();
+    this.favorite.destroy();
     this.feedback?.destroy();
     this.feedback = undefined;
     this.finishClose(false);
