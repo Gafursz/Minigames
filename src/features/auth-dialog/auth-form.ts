@@ -112,7 +112,7 @@ export function renderAuthPanel(mode: AuthMode, googleIcon: string): string {
         <div class="auth-dialog__actions">
           <button class="auth-dialog__submit" type="submit" disabled>${isLogin ? 'Login' : 'Create Account'}</button>
           <div class="auth-dialog__divider" aria-hidden="true"><span>OR</span></div>
-          <button class="auth-dialog__google" type="button" data-auth-placeholder="Google sign-in will be available in a later update.">
+          <button class="auth-dialog__google" type="button" data-auth-google>
             <span class="auth-dialog__google-icon"><img src="${googleIcon}" alt="" /></span>
             <span>${isLogin ? 'Continue with Google' : 'Sign up with Google'}</span>
           </button>

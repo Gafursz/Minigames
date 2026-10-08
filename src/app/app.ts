@@ -10,7 +10,8 @@ import type { RouteState } from '../router/route';
 import { isRouterLink } from '../router/links';
 import { snackbar } from '../components/snackbar';
 import { emailAuth } from '../auth/email-auth';
-import type { EmailAuth } from '../auth/email-auth';
+import { signInWithGoogle } from '../auth/google-auth';
+import type { AuthProfile, EmailAuth } from '../auth/email-auth';
 import { AppSession, APP_SESSION_KEY } from '../auth/app-session';
 import type { AuthMode } from '../features/auth-dialog/auth-form';
 import type { AuthValues } from '../features/auth-dialog/auth-validation';
@@ -43,11 +44,13 @@ export class App {
       },
     },
     (mode, values) => this.authenticate(mode, values),
+    () => this.completeAuthentication(this.googleAuth),
   );
 
   public constructor(
     root: HTMLElement,
     private readonly auth: EmailAuth = emailAuth,
+    private readonly googleAuth: () => Promise<AuthProfile> = signInWithGoogle,
   ) {
     this.root = root;
     this.session = new AppSession(
@@ -134,14 +137,19 @@ export class App {
   }
 
   private async authenticate(mode: AuthMode, values: AuthValues): Promise<void> {
+    await this.completeAuthentication(() =>
+      mode === 'login'
+        ? this.auth.login(values.email, values.password)
+        : this.auth.register(values.username, values.email, values.password),
+    );
+  }
+
+  private async completeAuthentication(operation: () => Promise<AuthProfile>): Promise<void> {
     this.pendingAuthUrl = this.router.current.url.href;
     try {
       this.session.check();
       await this.session.readyForAuthentication();
-      const profile =
-        mode === 'login'
-          ? await this.auth.login(values.email, values.password)
-          : await this.auth.register(values.username, values.email, values.password);
+      const profile = await operation();
       if (this.controller.signal.aborted) {
         await this.auth.logout();
         throw new Error('Authentication view was destroyed.');
