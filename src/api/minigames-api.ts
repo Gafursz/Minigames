@@ -60,9 +60,14 @@ export async function getGameDetails(
 export async function getGameComments(
   slug: string,
   signal?: AbortSignal,
+  userEmail?: string,
 ): Promise<GameCommentsResponse> {
   return getJson<GameCommentsResponse>(`${getGamePath(slug)}/comments`, {
-    query: { limit: String(LATEST_COMMENTS_LIMIT), sort: 'newest' },
+    query: {
+      limit: String(LATEST_COMMENTS_LIMIT),
+      sort: 'newest',
+      ...(userEmail && { userEmail }),
+    },
     signal,
   });
 }
@@ -94,4 +99,28 @@ export async function toggleFavorite(
   )
     throw new TypeError('The server returned invalid favorite data.');
   return { isFavorited: data.isFavorited, likesCount: data.likesCount };
+}
+
+export async function submitGameComment(
+  slug: string,
+  userEmail: string,
+  authorName: string,
+  text: string,
+  signal?: AbortSignal,
+): Promise<void> {
+  if (userEmail.trim().length === 0 || authorName.length < 2 || authorName.length > 30)
+    throw new TypeError('Your profile needs a name of 2–30 characters before posting.');
+  const trimmed = text.trim();
+  if (trimmed.length === 0 || trimmed.length > 500)
+    throw new TypeError('Write a comment of 1–500 characters.');
+  await postJson<unknown>(
+    `${getGamePath(slug)}/comments`,
+    {
+      userEmail,
+      authorName,
+      text: trimmed,
+    },
+    signal,
+    201,
+  );
 }
