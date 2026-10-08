@@ -35,7 +35,7 @@ export class GameDetails {
     private readonly onCloseRequest?: () => void,
     private readonly requireSession?: () => AuthProfile | undefined,
   ) {
-    this.comments = new GameComments(requireSession ? () => Boolean(requireSession()) : undefined);
+    this.comments = new GameComments(requireSession);
     this.favorite = new FavoriteControl(requireSession);
   }
 
@@ -87,8 +87,8 @@ export class GameDetails {
             ${this.records.render(game.topRecords)}
             ${this.comments.render()}
           </div>`);
+      this.comments.setAuthenticated(this.profile);
       this.comments.bindEvents(this.element, slug);
-      this.comments.setAuthenticated(Boolean(this.profile));
       this.favorite.bind(
         this.element,
         slug,
@@ -237,7 +237,7 @@ export class GameDetails {
 
   public setAuthenticated(profile: AuthProfile | undefined): void {
     this.profile = profile;
-    this.comments.setAuthenticated(Boolean(profile));
+    this.comments.setAuthenticated(profile);
     this.favorite.setProfile(profile);
     if (this.element) this.element.dataset.authenticated = String(Boolean(profile));
   }
