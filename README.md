@@ -185,8 +185,8 @@ for SDK calls, pending controls, retry/success behavior, header state, session e
 logout, and the remaining manual checks. Its verification passed **230 tests**, with
 **89.70% statements** across all **54** source TypeScript files. Firebase Console
 configuration and a live sign-in check are still required; unit tests mock Firebase.
-Feature 5 now adds Google OAuth as described below. The full authenticated Auth
-URL/protected-action guards and game mutations remain later work.
+Feature 5 adds Google OAuth. Feature 6 completes Auth dialog guards and game
+context recovery; game mutation APIs remain later work.
 
 Read [Feature 5: Google sign-in](docs/story-4/05-google-auth.md) for the popup flow,
 cancellation/retry behavior, shared app session, and Firebase Google provider setup.
@@ -217,6 +217,10 @@ their delivery packages. Keep the final Cross-Check PR unmerged.
 Feature 5 uses `feature/google-auth` and depends on Feature 4's original tip.
 Import and integrate it after the preceding task PRs; preserve local edits through
 Git rather than overwriting your working folder with the complete source snapshot.
+
+Read [Feature 6: Auth guards and session recovery](docs/story-4/06-auth-guards.md)
+for URL/history rules, protected action hooks, and verification. Its branch
+`feature/auth-guards` depends on Feature 5; integrate the task PRs in order.
 
 ## 👨‍💻 Author
 
