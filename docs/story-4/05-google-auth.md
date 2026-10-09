@@ -109,7 +109,7 @@ npm run build
 
 ### Recorded verification results
 
-The latest completed pre-reconciliation coverage run reported **256 passing tests across 28 files**, with **92.32% aggregate statement coverage (1731/1875)**. This exceeds the Story 4 acceptance threshold of 80%.
+The latest completed pre-reconciliation coverage run reported **256 passing tests across 28 files**, with **92.26% aggregate statement coverage (1730/1875)**. This exceeds the Story 4 acceptance threshold of 80%.
 
 ESLint, Prettier, TypeScript test checking, production build, and Git whitespace checking also passed after the final UI and test improvements. During the subsequent merge of `story-4` into the feature branch, the Git commit hooks again passed ESLint and Prettier.
 
