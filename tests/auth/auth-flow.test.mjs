@@ -160,14 +160,14 @@ test('stored profile restores without extending its time and focus detects expir
   });
   expect(document.querySelector('[data-profile-name]').textContent).toBe('<b>Alex Player</b>');
   expect(document.querySelector('[data-profile-name] b')).toBeNull();
+
   const photo = document.querySelector('[data-profile-photo]');
   const initials = document.querySelector('[data-profile-initials]');
-  photo.dispatchEvent(new window.Event('load'));
-  expect(photo.hidden).toBe(false);
-  expect(initials.hidden).toBe(true);
-  photo.dispatchEvent(new window.Event('error'));
+
   expect(photo.hidden).toBe(true);
+  expect(photo.getAttribute('src')).toBeNull();
   expect(initials.hidden).toBe(false);
+  expect(initials.textContent).toBe('BP');
   window.dispatchEvent(new window.Event('focus'));
   expect(JSON.parse(localStorage.getItem(APP_SESSION_KEY)).authenticatedAt).toBe(authenticatedAt);
   expect(auth.logout).not.toHaveBeenCalled();
@@ -255,7 +255,10 @@ for (const mode of ['login', 'register']) {
       authenticatedAt: expect.any(Number),
     });
     expect(document.querySelector('[data-header-profile]').hidden).toBe(false);
-    expect(document.querySelector('[data-profile-photo]').src).toBe('https://example.com/me.jpg');
+    expect(document.querySelector('[data-profile-photo]').hidden).toBe(true);
+    expect(document.querySelector('[data-profile-photo]').getAttribute('src')).toBeNull();
+    expect(document.querySelector('[data-profile-initials]').hidden).toBe(false);
+    expect(document.querySelector('[data-profile-initials]').textContent).toBe('A');
     expect(document.querySelector('.snackbar__message').textContent).toBe(
       'You are signed in with Google.',
     );
