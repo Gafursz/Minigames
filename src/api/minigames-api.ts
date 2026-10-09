@@ -7,7 +7,7 @@ import type {
   LibraryQuery,
 } from '../types/api';
 import type { LeaderboardData } from '../types/leaderboard-player';
-import { getJson } from './http-client.ts';
+import { getJson, postJson } from './http-client.ts';
 
 export const LIBRARY_PAGE_SIZE = 6;
 export const LATEST_COMMENTS_LIMIT = 3;
@@ -49,8 +49,12 @@ export async function getLibraryGames(
 export async function getGameDetails(
   slug: string,
   signal?: AbortSignal,
+  userEmail?: string,
 ): Promise<GameDetailsResponse> {
-  return getJson<GameDetailsResponse>(getGamePath(slug), { signal });
+  return getJson<GameDetailsResponse>(getGamePath(slug), {
+    signal,
+    ...(userEmail && { query: { userEmail } }),
+  });
 }
 
 export async function getGameComments(
@@ -61,4 +65,33 @@ export async function getGameComments(
     query: { limit: String(LATEST_COMMENTS_LIMIT), sort: 'newest' },
     signal,
   });
+}
+
+export interface FavoriteState {
+  isFavorited: boolean;
+  likesCount: number;
+}
+
+export async function toggleFavorite(
+  slug: string,
+  userEmail: string,
+  signal?: AbortSignal,
+): Promise<FavoriteState> {
+  if (!userEmail.trim()) throw new TypeError('A favorite requires a user email.');
+  const response = await postJson<unknown>(`${getGamePath(slug)}/favorite`, { userEmail }, signal);
+  if (typeof response !== 'object' || response === null || !('data' in response))
+    throw new TypeError('The server returned invalid favorite data.');
+  const data = response.data;
+  if (
+    typeof data !== 'object' ||
+    data === null ||
+    !('isFavorited' in data) ||
+    typeof data.isFavorited !== 'boolean' ||
+    !('likesCount' in data) ||
+    typeof data.likesCount !== 'number' ||
+    !Number.isSafeInteger(data.likesCount) ||
+    data.likesCount < 0
+  )
+    throw new TypeError('The server returned invalid favorite data.');
+  return { isFavorited: data.isFavorited, likesCount: data.likesCount };
 }

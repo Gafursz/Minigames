@@ -186,7 +186,8 @@ logout, and the remaining manual checks. Its verification passed **230 tests**, 
 **89.70% statements** across all **54** source TypeScript files. Firebase Console
 configuration and a live sign-in check are still required; unit tests mock Firebase.
 Feature 5 adds Google OAuth. Feature 6 completes Auth dialog guards and game
-context recovery; game mutation APIs remain later work.
+context recovery. Feature 7 adds server-driven favorites; comment mutations remain
+later work.
 
 Read [Feature 5: Google sign-in](docs/story-4/05-google-auth.md) for the popup flow,
 cancellation/retry behavior, shared app session, and Firebase Google provider setup.
@@ -221,6 +222,10 @@ Git rather than overwriting your working folder with the complete source snapsho
 Read [Feature 6: Auth guards and session recovery](docs/story-4/06-auth-guards.md)
 for URL/history rules, protected action hooks, and verification. Its branch
 `feature/auth-guards` depends on Feature 5; integrate the task PRs in order.
+
+Read [Feature 7: Favorites API](docs/story-4/07-favorites-api.md) for personalized
+state, request locking, failure recovery, and tests. `feature/favorites-api` depends
+on Feature 6 and targets `story-4`.
 
 ## 👨‍💻 Author
 
