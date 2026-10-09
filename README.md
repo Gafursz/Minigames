@@ -185,8 +185,14 @@ for SDK calls, pending controls, retry/success behavior, header state, session e
 logout, and the remaining manual checks. Its verification passed **230 tests**, with
 **89.70% statements** across all **54** source TypeScript files. Firebase Console
 configuration and a live sign-in check are still required; unit tests mock Firebase.
-Google OAuth, the full authenticated Auth URL/protected-action guards, and game
-mutations remain later work.
+Feature 5 now adds Google OAuth as described below. The full authenticated Auth
+URL/protected-action guards and game mutations remain later work.
+
+Read [Feature 5: Google sign-in](docs/story-4/05-google-auth.md) for the popup flow,
+cancellation/retry behavior, shared app session, and Firebase Google provider setup.
+Its snapshot passes **239 tests**, with **89.73% statements** across all **55** source
+TypeScript files. Google provider activation and real browser sign-in are still
+required; automated tests mock the provider boundary.
 
 ## 🌿 Git Workflow
 
@@ -207,6 +213,10 @@ Feature 3 uses `feature/firebase-auth`; Feature 4 uses `feature/email-password-a
 These are dependent task branches built from the previous feature's exact tip.
 Integrate their task PRs into `story-4` in order. No push or PR merge is claimed by
 their delivery packages. Keep the final Cross-Check PR unmerged.
+
+Feature 5 uses `feature/google-auth` and depends on Feature 4's original tip.
+Import and integrate it after the preceding task PRs; preserve local edits through
+Git rather than overwriting your working folder with the complete source snapshot.
 
 ## 👨‍💻 Author
 

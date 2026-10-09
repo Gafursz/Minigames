@@ -3,6 +3,13 @@ import { RegistrationProfileError } from './email-auth';
 import { SessionStorageError } from './app-session';
 
 const messages: Record<string, string> = {
+  'auth/popup-closed-by-user': 'Google sign-in was canceled. You can try again.',
+  'auth/cancelled-popup-request': 'Google sign-in was interrupted. Please try again.',
+  'auth/popup-blocked': 'Allow pop-ups for this site, then try Google sign-in again.',
+  'auth/unauthorized-domain':
+    'Google sign-in is unavailable on this domain. Contact the site owner.',
+  'auth/account-exists-with-different-credential':
+    'This email already uses another sign-in method. Please use that method to log in.',
   'auth/invalid-credential': 'The email or password is incorrect. Please try again.',
   'auth/wrong-password': 'The email or password is incorrect. Please try again.',
   'auth/user-not-found': 'The email or password is incorrect. Please try again.',

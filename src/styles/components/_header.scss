@@ -147,16 +147,20 @@
 }
 
 .header__logout {
-  padding: tokens.$size-1;
+  padding: tokens.$btn-medium-y tokens.$btn-medium-x;
   border: tokens.$border-width-medium solid currentColor;
   border-radius: tokens.$radius-md;
   background: transparent;
   color: inherit;
-  font: inherit;
+  font-family: inherit;
+  font-size: tokens.$font-size-label-large;
+  font-weight: 700;
+  line-height: 100%;
   cursor: pointer;
 }
 
-.header__mobile-actions .header__profile {
+.header__mobile-actions .header__profile:not([hidden]) {
+  display: flex;
   width: 100%;
   color: tokens.$color-white;
 
@@ -172,12 +176,17 @@
     border-radius: tokens.$radius-md;
     background-color: transparent;
     color: tokens.$color-white;
-    font-size: tokens.$font-size-body-small;
+    font-size: tokens.$font-size-label-large;
     font-weight: 700;
     line-height: 100%;
     text-align: center;
   }
 }
+
+.header__mobile-actions [hidden] {
+  display: none;
+}
+
 @media (max-width: breakpoints.$breakpoint-mobile) {
   .header__actions .header__profile {
     display: none;
@@ -363,9 +372,6 @@
 }
 
 @media (max-width: breakpoints.$breakpoint-wide) {
-  .header__actions .header__profile-name {
-    max-width: tokens.$size-9;
-  }
   .header {
     height: tokens.$home-header-height-tablet;
     padding: tokens.$size-2 tokens.$size-5;
@@ -389,7 +395,7 @@
   }
 }
 
-@media (max-width: breakpoints.$breakpoint-tablet) {
+@media (max-width: breakpoints.$breakpoint-desktop) {
   .header__nav {
     width: 100%;
     margin: 0;
@@ -400,6 +406,11 @@
   }
 
   .header__login {
+    display: none;
+  }
+
+  .header__actions .header__profile-name,
+  .header__actions .header__avatar {
     display: none;
   }
 

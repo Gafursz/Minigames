@@ -38,7 +38,8 @@ async function setup(context, mode = 'login', savedSession) {
     register: vi.fn().mockResolvedValue(profile),
     logout: vi.fn().mockResolvedValue(),
   };
-  const app = new App(document.querySelector('#app'), auth);
+  const google = vi.fn().mockResolvedValue({ ...profile, avatarUrl: 'https://example.com/me.jpg' });
+  const app = new App(document.querySelector('#app'), auth, google);
   context.onTestFinished(() => app.destroy());
   app.render();
   await nextTurn();
@@ -56,7 +57,7 @@ async function setup(context, mode = 'login', savedSession) {
       .dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
   };
   const url = () => new URL(window.location.href);
-  return { app, window, document, auth, localStorage, fill, submit, url };
+  return { app, window, document, auth, google, localStorage, fill, submit, url };
 }
 
 test('pending login locks actions, prevents duplicate submission and dismissal, and keeps the auth route', async (context) => {
@@ -159,14 +160,14 @@ test('stored profile restores without extending its time and focus detects expir
   });
   expect(document.querySelector('[data-profile-name]').textContent).toBe('<b>Alex Player</b>');
   expect(document.querySelector('[data-profile-name] b')).toBeNull();
+
   const photo = document.querySelector('[data-profile-photo]');
   const initials = document.querySelector('[data-profile-initials]');
-  photo.dispatchEvent(new window.Event('load'));
-  expect(photo.hidden).toBe(false);
-  expect(initials.hidden).toBe(true);
-  photo.dispatchEvent(new window.Event('error'));
+
   expect(photo.hidden).toBe(true);
+  expect(photo.getAttribute('src')).toBeNull();
   expect(initials.hidden).toBe(false);
+  expect(initials.textContent).toBe('BP');
   window.dispatchEvent(new window.Event('focus'));
   expect(JSON.parse(localStorage.getItem(APP_SESSION_KEY)).authenticatedAt).toBe(authenticatedAt);
   expect(auth.logout).not.toHaveBeenCalled();
@@ -218,3 +219,71 @@ test('a late authentication result after app cleanup does not restore UI or pers
   expect(document.querySelector('.snackbar')).toBeNull();
   expect(auth.logout).toHaveBeenCalledTimes(2);
 });
+
+for (const mode of ['login', 'register']) {
+  test(`Google works from ${mode} without email form values and shares pending/session behavior`, async (context) => {
+    const { document, window, google, auth, localStorage, submit, url } = await setup(
+      context,
+      mode,
+    );
+    const pending = Promise.withResolvers();
+    google.mockReturnValue(pending.promise);
+    const dialog = document.querySelector('#auth-dialog');
+    const button = dialog.querySelector(`#auth-${mode}-panel [data-auth-google]`);
+    button.click();
+    button.click();
+    submit();
+    dialog.dispatchEvent(new window.Event('cancel', { cancelable: true }));
+    dialog.dispatchEvent(new window.MouseEvent('click', { bubbles: true, clientX: -1 }));
+    dialog.querySelector('a[data-auth-switch]').click();
+    await nextTurn();
+    expect(google).toHaveBeenCalledOnce();
+    expect(auth.login).not.toHaveBeenCalled();
+    expect(auth.register).not.toHaveBeenCalled();
+    expect(dialog.open).toBe(true);
+    expect(dialog.dataset.mode).toBe(mode);
+    for (const control of dialog.querySelectorAll('input, button'))
+      expect(control.disabled).toBe(true);
+    expect(dialog.querySelector('.auth-dialog__status').textContent).toBe('Connecting to Google…');
+    pending.resolve({ ...profile, avatarUrl: 'https://example.com/me.jpg' });
+    await nextTurn();
+    expect(dialog.open).toBe(false);
+    expect(url().searchParams.has('auth')).toBe(false);
+    expect(JSON.parse(localStorage.getItem(APP_SESSION_KEY))).toEqual({
+      ...profile,
+      avatarUrl: 'https://example.com/me.jpg',
+      authenticatedAt: expect.any(Number),
+    });
+    expect(document.querySelector('[data-header-profile]').hidden).toBe(false);
+    expect(document.querySelector('[data-profile-photo]').hidden).toBe(true);
+    expect(document.querySelector('[data-profile-photo]').getAttribute('src')).toBeNull();
+    expect(document.querySelector('[data-profile-initials]').hidden).toBe(false);
+    expect(document.querySelector('[data-profile-initials]').textContent).toBe('A');
+    expect(document.querySelector('.snackbar__message').textContent).toBe(
+      'You are signed in with Google.',
+    );
+  });
+}
+
+for (const [code, message] of [
+  ['auth/popup-closed-by-user', 'canceled'],
+  ['auth/popup-blocked', 'Allow pop-ups'],
+  ['auth/network-request-failed', 'connection'],
+]) {
+  test(`Google ${code} preserves inputs, unlocks actions, and allows retry`, async (context) => {
+    const { document, google, localStorage, fill } = await setup(context);
+    fill({ email: profile.email, password: 'abcdef' });
+    google.mockRejectedValueOnce({ code });
+    document.querySelector('#auth-login-panel [data-auth-google]').click();
+    await nextTurn();
+    expect(document.querySelector('#auth-dialog').open).toBe(true);
+    expect(document.querySelector('#auth-login-email').value).toBe(profile.email);
+    expect(document.querySelector('#auth-login-panel [type="submit"]').disabled).toBe(false);
+    expect(document.querySelector('.auth-dialog__status').textContent).toContain(message);
+    expect(localStorage.getItem(APP_SESSION_KEY)).toBeNull();
+    document.querySelector('#auth-login-panel [data-auth-google]').click();
+    await nextTurn();
+    expect(google).toHaveBeenCalledTimes(2);
+    expect(document.querySelector('#auth-dialog').open).toBe(false);
+  });
+}

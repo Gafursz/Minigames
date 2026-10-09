@@ -23,6 +23,7 @@ export class AuthDialog {
     private readonly onOpenChange: (isOpen: boolean) => void,
     private readonly actions?: { close: () => void; setMode: (mode: AuthMode) => void },
     private readonly authenticate?: (mode: AuthMode, values: AuthValues) => Promise<void>,
+    private readonly authenticateGoogle?: () => Promise<void>,
   ) {}
 
   private setPending(isPending: boolean): void {
@@ -63,14 +64,29 @@ export class AuthDialog {
       if (status) status.textContent = 'Account sign-in will be available in a later update.';
       return;
     }
-    const version = ++this.requestVersion;
     const values = validation.getValues();
     const mode = this.mode;
+    const authenticate = this.authenticate;
+    await this.runAuthentication(
+      () => authenticate(mode, values),
+      mode === 'login' ? 'Signing in…' : 'Creating account…',
+      mode === 'login' ? 'You are signed in.' : 'Your account is ready. You are signed in.',
+    );
+  }
+
+  private async runAuthentication(
+    operation: () => Promise<void>,
+    pendingMessage: string,
+    successMessage: string,
+  ): Promise<void> {
+    if (!this.element?.open || this.isClosing || this.isSubmitting) return;
+    const status = this.element.querySelector<HTMLElement>('.auth-dialog__status');
+    const version = ++this.requestVersion;
     snackbar.dismiss();
     this.setPending(true);
-    if (status) status.textContent = mode === 'login' ? 'Signing in…' : 'Creating account…';
+    if (status) status.textContent = pendingMessage;
     try {
-      await this.authenticate(mode, values);
+      await operation();
     } catch (error) {
       if (version !== this.requestVersion) return;
       this.setPending(false);
@@ -83,9 +99,7 @@ export class AuthDialog {
     this.setPending(false);
     this.close(false);
     this.requestClose();
-    snackbar.show(
-      mode === 'login' ? 'You are signed in.' : 'Your account is ready. You are signed in.',
-    );
+    snackbar.show(successMessage);
   }
 
   private requestMode(mode: AuthMode): void {
@@ -174,6 +188,16 @@ export class AuthDialog {
       password.type = isVisible ? 'text' : 'password';
       visibility.setAttribute('aria-pressed', String(isVisible));
       visibility.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+      return;
+    }
+    if (target.closest('[data-auth-google]')) {
+      if (target.closest('[role="tabpanel"]')?.id !== `auth-${this.mode}-panel`) return;
+      if (this.authenticateGoogle)
+        void this.runAuthentication(
+          this.authenticateGoogle,
+          'Connecting to Google…',
+          'You are signed in with Google.',
+        );
       return;
     }
     const placeholder = target.closest<HTMLElement>('[data-auth-placeholder]');
