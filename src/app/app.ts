@@ -32,6 +32,7 @@ export class App {
     () => {
       this.router.updateQuery({ game: undefined });
     },
+    () => Boolean(this.requireSession()),
   );
   private readonly authDialog = new AuthDialog(
     () => this.updateDialogPause(),
@@ -40,11 +41,14 @@ export class App {
         this.router.updateQuery({ auth: undefined });
       },
       setMode: (mode) => {
-        this.router.updateQuery({ auth: mode, game: undefined });
+        this.router.updateQuery({ auth: mode });
       },
     },
     (mode, values) => this.authenticate(mode, values),
     () => this.completeAuthentication(this.googleAuth),
+    (isPending) => {
+      if (!isPending) this.queueAuthGuard();
+    },
   );
 
   public constructor(
@@ -56,16 +60,32 @@ export class App {
     this.session = new AppSession(
       () => root.ownerDocument.defaultView?.localStorage,
       () => this.auth.logout(),
-      (profile) => updateHeaderProfile(this.root, profile),
+      (profile) => {
+        updateHeaderProfile(this.root, profile);
+        this.gameDetails.setAuthenticated(Boolean(profile));
+        if (profile) this.queueAuthGuard();
+      },
       () =>
         queueMicrotask(() => {
           if (!this.controller.signal.aborted)
             snackbar.show('Your session expired. Please sign in again.', 'error');
         }),
+      () => {
+        if (!this.controller.signal.aborted)
+          snackbar.show(
+            'You are signed out locally, but provider sign-out failed. Please try again later.',
+            'error',
+          );
+      },
     );
-    this.router = new Router(import.meta.env.BASE_URL, (route, reason) => {
-      this.renderRoute(route, reason);
-    });
+    this.router = new Router(
+      import.meta.env.BASE_URL,
+      (route, reason) => {
+        this.renderRoute(route, reason);
+      },
+      globalThis,
+      (url) => this.guardAuthUrl(url),
+    );
 
     this.root.addEventListener(
       'click',
@@ -111,7 +131,6 @@ export class App {
         this.dialogTrigger = authTrigger;
         this.router.updateQuery({
           auth: authTrigger.dataset.authOpen === 'register' ? 'register' : 'login',
-          game: undefined,
         });
       },
       { signal: this.controller.signal },
@@ -134,6 +153,28 @@ export class App {
       },
       { signal: this.controller.signal },
     );
+  }
+
+  private queueAuthGuard(): void {
+    queueMicrotask(() => {
+      if (
+        !this.controller.signal.aborted &&
+        !this.authDialog.isPending &&
+        this.session.current &&
+        new URL(globalThis.location.href).searchParams.has('auth')
+      )
+        this.router.navigate(globalThis.location.href, true);
+    });
+  }
+
+  private guardAuthUrl(url: URL): URL | undefined {
+    const session = this.session.check();
+    if (!session || this.authDialog.isPending || !url.searchParams.has('auth')) return undefined;
+    url.searchParams.delete('auth');
+    queueMicrotask(() => {
+      if (!this.controller.signal.aborted) snackbar.show('You are already signed in.');
+    });
+    return url;
   }
 
   private async authenticate(mode: AuthMode, values: AuthValues): Promise<void> {
@@ -172,7 +213,7 @@ export class App {
   private syncDialogs(route: RouteState): void {
     const dialog = route.dialog;
     const key = dialog
-      ? `${dialog.kind}:${dialog.kind === 'game' ? dialog.slug : dialog.mode}`
+      ? `${dialog.kind}:${dialog.kind === 'game' ? dialog.slug : `${dialog.mode}:${route.url.searchParams.get('game') ?? ''}`}`
       : undefined;
     if (key === this.dialogKey) {
       this.dialogTrigger = undefined;
@@ -190,7 +231,12 @@ export class App {
       this.authDialog.close(false, false);
       this.gameDetails.open(dialog.slug, trigger);
     } else if (dialog?.kind === 'auth') {
-      this.gameDetails.close(false, false);
+      const game = route.url.searchParams.get('game');
+      if (game) {
+        this.authDialog.close(false, false);
+        this.gameDetails.open(game);
+        this.gameDetails.suspend();
+      } else this.gameDetails.close(false, false);
       this.authDialog.open(dialog.mode, trigger);
     } else {
       this.gameDetails.close();
@@ -246,6 +292,7 @@ export class App {
     this.root.innerHTML = `${this.page.render()}${this.gameDetails.render()}${this.authDialog.render()}`;
     this.page.bindEvents();
     this.gameDetails.bindEvents();
+    this.gameDetails.setAuthenticated(Boolean(this.session.current));
     this.authDialog.bindEvents();
     updateHeaderProfile(this.root, this.session.current);
     this.page.updateRoute?.(route);
@@ -259,6 +306,13 @@ export class App {
       }
     }
     if (reason === 'navigate') globalThis.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }
+
+  public requireSession(): AuthProfile | undefined {
+    const profile = this.session.check();
+    if (profile) return profile;
+    this.router.updateQuery({ auth: 'login' });
+    return undefined;
   }
 
   public render(): void {

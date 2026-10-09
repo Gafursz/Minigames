@@ -24,6 +24,7 @@ export class AuthDialog {
     private readonly actions?: { close: () => void; setMode: (mode: AuthMode) => void },
     private readonly authenticate?: (mode: AuthMode, values: AuthValues) => Promise<void>,
     private readonly authenticateGoogle?: () => Promise<void>,
+    private readonly onPendingChange?: (isPending: boolean) => void,
   ) {}
 
   private setPending(isPending: boolean): void {
@@ -45,6 +46,7 @@ export class AuthDialog {
       link.setAttribute('aria-disabled', String(isPending));
     }
     for (const validation of this.formValidation.values()) validation.setLocked(isPending);
+    this.onPendingChange?.(isPending);
   }
 
   private async submit(event: Event): Promise<void> {

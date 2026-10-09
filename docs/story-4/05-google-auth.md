@@ -2,7 +2,7 @@
 
 ## Delivery and scope
 
-**Branch:** `feature/google-auth`  
+**Branch:** `feature/google-auth`
 **Prerequisite:** Feature 4 (`6c798eb90fb6cf347637ea9189de08309bdaa509`)
 
 Feature 5 integrates Firebase Google sign-in into the MiniGames application. Users can authenticate from both the Login and Registration views using Firebase's popup flow. Google authentication shares the existing request locks, error feedback, application session controller, profile display, logout, and five-minute session lifetime with Email/Password authentication.

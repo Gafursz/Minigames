@@ -21,14 +21,22 @@ export class Router {
     base: string,
     onChange: (route: RouteState, reason: NavigationReason) => void,
     environment: RouterEnvironment = globalThis,
+    private readonly guard?: (url: URL) => URL | undefined,
   ) {
     this.base = normalizeBase(base);
     this.onChange = onChange;
     this.environment = environment;
   }
 
+  private resolve(url: URL): { route: RouteState; isGuarded: boolean } {
+    const guarded = this.guard?.(new URL(url.href));
+    const route = readRoute(guarded ?? url, this.base);
+    if (guarded) route.url = guarded;
+    return { route, isGuarded: Boolean(guarded) };
+  }
+
   private publish(reason: NavigationReason): void {
-    const route = this.current;
+    const { route } = this.resolve(new URL(this.environment.location.href));
     if (route.url.href !== this.environment.location.href) {
       this.environment.history.replaceState(this.environment.history.state, '', route.url.href);
     }
@@ -60,17 +68,22 @@ export class Router {
       return false;
     }
 
-    const next = readRoute(url, this.base).url;
+    const { route, isGuarded } = this.resolve(url);
+    const next = route.url;
     if (next.href === this.environment.location.href) return false;
-    if (shouldReplace) this.environment.history.replaceState({}, '', next.href);
+    if (shouldReplace || isGuarded) this.environment.history.replaceState({}, '', next.href);
     else this.environment.history.pushState({}, '', next.href);
     // pushState does not dispatch popstate, so render this navigation explicitly.
-    this.publish('navigate');
+    if (isGuarded) this.onChange(route, 'navigate');
+    else this.publish('navigate');
     return true;
   }
 
   public updateQuery(changes: QueryChanges, shouldReplace = false): boolean {
-    return this.navigate(withQuery(this.current.url, changes), shouldReplace);
+    return this.navigate(
+      withQuery(new URL(this.environment.location.href), changes),
+      shouldReplace,
+    );
   }
 
   public destroy(): void {

@@ -13,7 +13,10 @@ import { readGameDetails } from './game-data';
 export class GameDetails {
   private readonly info = new GameInfo();
   private readonly records = new GameRecords();
-  private readonly comments = new GameComments();
+  private readonly comments: GameComments;
+  private isSuspended = false;
+  private suspendedFocus: HTMLElement | undefined;
+  private isAuthenticated = false;
   private element: HTMLDialogElement | undefined;
   private feedback: ContentFeedback | undefined;
   private controller: AbortController | undefined;
@@ -27,7 +30,10 @@ export class GameDetails {
   constructor(
     private readonly onOpenChange: (isOpen: boolean) => void,
     private readonly onCloseRequest?: () => void,
-  ) {}
+    private readonly canUseProtectedAction?: () => boolean,
+  ) {
+    this.comments = new GameComments(canUseProtectedAction);
+  }
 
   private setTitle(text: string): void {
     const title = this.element?.querySelector('#game-details-title');
@@ -71,11 +77,12 @@ export class GameDetails {
             ${hero ? `<img class="game-details__cover" src="${escapeHtml(hero)}" alt="${escapeHtml(game.name)}" />` : '<div class="game-details__cover game-details__cover--placeholder" role="img" aria-label="Game image unavailable"></div>'}
           </div>
           <div class="game-details__body">
-            ${this.info.render(game)}
+            ${this.info.render(game, Boolean(this.canUseProtectedAction))}
             ${this.records.render(game.topRecords)}
             ${this.comments.render()}
           </div>`);
       this.comments.bindEvents(this.element, slug);
+      this.setAuthenticated(this.isAuthenticated);
       if (isRetry) snackbar.show('Game details loaded successfully.', 'success');
     } catch (error) {
       if (!isCurrent()) return;
@@ -110,6 +117,8 @@ export class GameDetails {
     this.element?.classList.remove('is-closing');
     this.isClosing = false;
     this.slug = undefined;
+    this.isSuspended = false;
+    this.suspendedFocus = undefined;
     document.body.classList.remove('has-open-dialog');
     this.onOpenChange(false);
     if (shouldRestoreFocus && this.returnFocus?.isConnected)
@@ -162,6 +171,11 @@ export class GameDetails {
     dialog.addEventListener(
       'click',
       (event) => {
+        if (event.target instanceof Element && event.target.closest('.game-details__favorite')) {
+          if (this.canUseProtectedAction?.())
+            snackbar.show('Favorites will be available in a later update.');
+          return;
+        }
         if (event.target !== dialog) return;
         const bounds = dialog.getBoundingClientRect();
         if (
@@ -178,7 +192,9 @@ export class GameDetails {
 
   public open(slug: string, trigger?: HTMLElement): void {
     if (!this.element) return;
-    const shouldLoad = !this.element.open || this.isClosing || slug !== this.slug;
+    const isResuming = this.isSuspended && slug === this.slug;
+    const shouldLoad = (!this.element.open && !isResuming) || this.isClosing || slug !== this.slug;
+    this.isSuspended = false;
     globalThis.clearTimeout(this.closeTimer);
     this.closeTimer = undefined;
     this.isClosing = false;
@@ -187,18 +203,51 @@ export class GameDetails {
     this.slug = slug;
     if (!this.element.open) {
       this.element.showModal();
-      this.element.scrollTop = 0;
+      if (!isResuming) this.element.scrollTop = 0;
       this.element
         .querySelector<HTMLButtonElement>('.game-details__close')
         ?.focus({ preventScroll: true });
       document.body.classList.add('has-open-dialog');
       this.onOpenChange(true);
     }
+    if (isResuming && this.suspendedFocus?.isConnected)
+      this.suspendedFocus.focus({ preventScroll: true });
     if (shouldLoad) void this.load();
   }
 
-  public close(shouldAnimate = true, shouldRestoreFocus = true): void {
+  public suspend(): void {
     if (!this.element?.open) return;
+    this.suspendedFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
+    this.isSuspended = true;
+    this.element.close();
+    document.body.classList.remove('has-open-dialog');
+    this.onOpenChange(false);
+  }
+
+  public setAuthenticated(isAuthenticated: boolean): void {
+    const shouldReset = this.isAuthenticated && !isAuthenticated;
+    this.isAuthenticated = isAuthenticated;
+    this.comments.setAuthenticated(isAuthenticated);
+    if (!this.element) {
+      return;
+    }
+
+    this.element.dataset.authenticated = String(isAuthenticated);
+    this.element
+      .querySelector('.game-details__favorite')
+      ?.setAttribute(
+        'title',
+        isAuthenticated
+          ? 'Favorites will be available in a later update.'
+          : 'Sign in to add favorites',
+      );
+    if (shouldReset) this.info.reset(this.element);
+  }
+
+  public close(shouldAnimate = true, shouldRestoreFocus = true): void {
+    if (!this.element || (!this.element.open && !this.isSuspended)) return;
+    if (this.isSuspended) shouldAnimate = false;
     this.request?.abort();
     this.comments.destroy();
     this.shouldRestoreFocus = shouldRestoreFocus;

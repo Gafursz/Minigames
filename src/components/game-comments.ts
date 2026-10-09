@@ -15,6 +15,10 @@ export class GameComments {
   private feedback: ContentFeedback | undefined;
   private heading: HTMLElement | undefined;
   private slug: string | undefined;
+  private dialog: HTMLDialogElement | undefined;
+  private isAuthenticated = false;
+
+  constructor(private readonly canUseProtectedAction?: () => boolean) {}
 
   private renderComment(comment: GameComment, index: number): string {
     return `<li><article class="game-comment">
@@ -26,7 +30,7 @@ export class GameComments {
         <time class="game-comment__date" datetime="${escapeHtml(comment.createdAt)}">${formatRelativeTime(comment.createdAt)}</time>
       </header>
       <p class="game-comment__text">${escapeHtml(comment.text)}</p>
-      <button class="game-comment__like" type="button" disabled title="Sign in to like comments" aria-label="${comment.likesCount} likes">
+      <button class="game-comment__like" type="button" ${this.canUseProtectedAction ? '' : 'disabled'} title="Sign in to like comments" aria-label="${comment.likesCount} likes">
         <img src="${heartIcon}" alt="" /><span>${comment.likesCount}</span>
       </button>
     </article></li>`;
@@ -54,6 +58,7 @@ export class GameComments {
           `<ol class="game-comments__list">${response.data.map((comment, index) => this.renderComment(comment, index)).join('')}</ol>`,
         );
       }
+      this.setAuthenticated(this.isAuthenticated);
       if (isRetry) snackbar.show('Comments loaded successfully.', 'success');
     } catch (error) {
       if (!isCurrent()) return;
@@ -76,7 +81,7 @@ export class GameComments {
         <span class="game-comments__avatar" aria-hidden="true">U</span>
         <label class="visually-hidden" for="game-comment">Write a comment</label>
         <textarea class="game-comments__input" id="game-comment" name="comment" rows="1" placeholder="Sign in to post a comment" aria-describedby="game-comment-hint"></textarea>
-        <button class="game-comments__submit" type="submit" disabled aria-label="Sign in to submit a comment"><img src="${sendIcon}" alt="" /></button>
+        <button class="game-comments__submit" type="submit" ${this.canUseProtectedAction ? '' : 'disabled'} aria-label="Submit a comment"><img src="${sendIcon}" alt="" /></button>
       </form>
       <p class="game-comments__hint" id="game-comment-hint">Sign in to post or like comments.</p>
       <div class="game-comments__content" aria-busy="true"></div>
@@ -88,6 +93,7 @@ export class GameComments {
     const root = dialog.querySelector<HTMLElement>('.game-comments__content');
     if (!root) return;
     this.slug = slug;
+    this.dialog = dialog;
     this.feedback = new ContentFeedback(root);
     this.heading = dialog.querySelector<HTMLElement>('.game-comments__title') ?? undefined;
     this.controller = new AbortController();
@@ -109,11 +115,48 @@ export class GameComments {
       'submit',
       (event) => {
         event.preventDefault();
-        snackbar.show('Sign in to post a comment.', 'error');
+        if (!this.canUseProtectedAction) snackbar.show('Sign in to post a comment.', 'error');
+        else if (this.canUseProtectedAction())
+          snackbar.show('Comment posting will be available in a later update.');
+      },
+      { signal },
+    );
+    dialog.addEventListener(
+      'click',
+      (event) => {
+        if (
+          event.target instanceof Element &&
+          event.target.closest('.game-comment__like') &&
+          this.canUseProtectedAction?.()
+        )
+          snackbar.show('Comment likes will be available in a later update.');
       },
       { signal },
     );
     void this.load();
+  }
+
+  public setAuthenticated(isAuthenticated: boolean): void {
+    this.isAuthenticated = isAuthenticated;
+    const input = this.dialog?.querySelector<HTMLTextAreaElement>('.game-comments__input');
+    if (input) {
+      input.placeholder = isAuthenticated ? 'Write a comment' : 'Sign in to post a comment';
+    }
+    const hint = this.dialog?.querySelector('.game-comments__hint');
+    if (hint)
+      hint.textContent = isAuthenticated
+        ? 'Comment posting and likes will be available in a later update.'
+        : 'Sign in to post or like comments.';
+    const buttons = this.dialog?.querySelectorAll('.game-comment__like') ?? [];
+    for (const button of buttons) {
+      button.setAttribute(
+        'title',
+        isAuthenticated
+          ? 'Comment likes will be available in a later update.'
+          : 'Sign in to like comments',
+      );
+      if (!isAuthenticated) button.setAttribute('aria-pressed', 'false');
+    }
   }
 
   public destroy(): void {
@@ -123,6 +166,7 @@ export class GameComments {
     this.feedback?.destroy();
     this.feedback = undefined;
     this.heading = undefined;
+    this.dialog = undefined;
     this.slug = undefined;
   }
 }
