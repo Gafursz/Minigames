@@ -2,126 +2,94 @@
 
 ## Delivery and scope
 
-Branch: `feature/google-auth`. Prerequisite: Feature 4 at
-`6c798eb90fb6cf347637ea9189de08309bdaa509`.
+**Branch:** `feature/google-auth`  
+**Prerequisite:** Feature 4 (`6c798eb90fb6cf347637ea9189de08309bdaa509`)
 
-Google sign-in now works through Firebase's popup API from both Login and
-Registration. It uses the same pending locks, error feedback, five-minute app
-session, profile header, logout, and expiration behavior as Email/Password.
+Feature 5 integrates Firebase Google sign-in into the MiniGames application. Users can authenticate from both the Login and Registration views using Firebase's popup flow. Google authentication shares the existing request locks, error feedback, application session controller, profile display, logout, and five-minute session lifetime with Email/Password authentication.
 
-**The code is ready; your Google provider configuration and live account test are
-still required.** No personal Firebase settings or authenticated Console access
-were available. This delivery does not claim the provider was enabled, a real
-Google account was signed in, or a deployment was performed.
+The Google provider has been enabled in the project's Firebase Console, and the relevant development and GitHub Pages hostnames have been authorized. **Real Google sign-in and explicit logout were manually verified.** Google-specific five-minute expiration, reload persistence, and the full range of popup failure scenarios still require separate live-browser verification; their implementation is exercised by automated tests.
 
-On 8 October 2026, public `story-4` was at
-`db9bbabf92a525d9a9c2e17db9387cc280547898`, including Feature 1 through PR #16.
-Features 2–4 were not yet integrated there. Feature 5 therefore starts from the
-exact prepared Feature 4 tip and must be integrated after those task PRs.
+Features 1–4 are already integrated into `story-4` at commit `c08151e`. Feature 5 was reconciled with that branch while preserving the prepared feature commits. The Feature 5 task pull request into `story-4` has **not yet** been opened or merged.
 
 ## What changed and why
 
-| File                                      | Change and purpose                                                                                                                           |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/auth/google-auth.ts`                 | Creates a Google provider, requests an account chooser, opens Firebase's popup, and returns only the allowed profile fields.                 |
-| `src/auth/auth-error.ts`                  | Adds useful messages for canceled, interrupted, blocked, unauthorized-domain, and conflicting-provider attempts.                             |
-| `src/features/auth-dialog/auth-form.ts`   | Replaces the Google placeholder action with a real `data-auth-google` control in both form variants.                                         |
-| `src/features/auth-dialog/auth-dialog.ts` | Shares one pending/success/error runner between email and Google requests. Google does not require valid email-form fields.                  |
-| `src/app/app.ts`                          | Shares session creation and cleanup between providers; accepts an injectable Google operation for tests.                                     |
-| `tests/auth/google-auth.test.ts`          | Tests the SDK boundary, account chooser, minimal profile, cancellation/retry, missing email, and setup failure.                              |
-| `tests/auth/auth-flow.test.mjs`           | Tests both form variants, locks, cancellation, retry, session persistence, profile rendering, and URL cleanup with a mocked Google boundary. |
+| File                                        | Change and purpose                                                                                                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/auth/google-auth.ts`                   | Configures `GoogleAuthProvider`, requests account selection, calls Firebase's popup sign-in method, and returns the limited profile data needed by the application. |
+| `src/auth/auth-error.ts`                    | Converts common Firebase failures into understandable messages, including cancellation, blocked popups, unauthorized domains, and conflicting providers.            |
+| `src/features/auth-dialog/auth-form.ts`     | Provides working Google authentication controls in Login and Registration.                                                                                          |
+| `src/features/auth-dialog/auth-dialog.ts`   | Reuses pending, success, and error handling for email and Google requests; Google authentication does not depend on the email form's field validity.                |
+| `src/app/app.ts`                            | Reuses session creation and cleanup across providers and allows the Google operation to be injected for tests.                                                      |
+| `src/components/header-profile.ts`          | Renders the authenticated name, initials-based avatar, and logout control. Initials use the first and last words of a multiword name.                               |
+| `src/styles/components/_header.scss`        | Implements the agreed responsive authenticated header and full-width logout controls in compact navigation.                                                         |
+| `src/features/auth-dialog/auth-dialog.scss` | Preserves the corrected authentication input-focus appearance.                                                                                                      |
+| `tests/auth/google-auth.test.ts`            | Tests the SDK boundary, account selection, cancellation and retry, missing email, and setup failures.                                                               |
+| `tests/auth/auth-flow.test.mjs`             | Tests both auth views, locking, cancellation, session persistence, profile rendering, and URL cleanup using a mocked Google operation.                              |
+| `tests/auth/header-profile.test.ts`         | Verifies initials and authenticated profile presentation.                                                                                                           |
+| `tests/slider/slider-gestures.test.ts`      | Adds gesture-behavior regression tests.                                                                                                                             |
+| `tests/utils/horizontal-drag.test.ts`       | Adds horizontal-drag utility tests.                                                                                                                                 |
 
-No new package, framework, external router, or SCSS convention was introduced. The
-existing Firebase dependency and disabled-control styling are reused. Feature 5
-does not modify SCSS. Preserve any focus-style changes you make in your Windows
-checkout: use the bundle and task PR process, rather than copying this package's
-complete source snapshot over your local files.
+No new framework, external routing library, Google-specific dependency, or SCSS convention was introduced. The existing Firebase dependency, session architecture, and styling tokens are reused.
 
-## How the request works
+### Responsive header behavior
 
-1. Click “Continue with Google” or “Sign up with Google”. Empty or invalid email-form
-   fields do not block this independent sign-in method.
-2. The dialog immediately locks inputs, tabs, email Submit, Google buttons, and
-   other auth actions. It displays “Connecting to Google…”. Escape and backdrop
-   dismissal remain blocked while the operation is pending.
-3. The application waits for any earlier identity cleanup, then calls
-   `signInWithGoogle()`. Firebase initialization is reused from Feature 3.
-4. `GoogleAuthProvider` with `prompt: 'select_account'` requests account selection.
-   `signInWithPopup()` performs the provider operation. A popup flow keeps the
-   current SPA URL, filters, and dialog state available without redirect recovery.
-5. On success, only `displayName`, `email`, and optional `avatarUrl` are returned.
-   No OAuth access token, Firebase token, or password is extracted into app storage.
-6. The existing session controller saves the profile and the new successful-auth
-   timestamp. The header updates, the dialog closes, the router removes `auth`,
-   and a success Snackbar appears. Expiration remains fixed at five minutes.
+- **Desktop (above 1024px):** Displays the authenticated user's full name, initials-based avatar, and Log out button in that order. Google profile photographs are not displayed.
+- **Tablet (481–1024px):** Keeps Log out and the hamburger control in the top header; hides the name and avatar there. The expanded authenticated menu provides a full-width outlined Log out button.
+- **Mobile (480px and below):** Shows the hamburger control in the top header. The expanded authenticated menu contains the full-width outlined Log out button. Guest navigation continues to show the appropriate Login and Sign Up actions.
 
-If Google returns no email, the service requests sign-out and rejects the result;
-it cannot invent an email or create an invalid session. Missing name/photo values
-use the existing header fallback behavior. Storage failure and late results after
-application teardown follow the same safe guest-state behavior as email login.
+The header respects the HTML `hidden` state so guest and authenticated controls are not displayed together.
 
-## Failure and cancellation
+## How Google authentication works
 
-Closing the provider popup is a canceled request. The app keeps the Auth dialog
-open, shows an understandable message, preserves the email-form values, and
-unlocks controls. It does not retry automatically. A user can try Google again or
-switch to Email/Password.
+1. The user selects **Continue with Google** or **Sign up with Google**. Invalid or empty Email/Password fields do not prevent this independent action.
+2. The authentication dialog enters its pending state. Inputs, switches, submission buttons, and other authentication actions are locked; the dialog displays **Connecting to Google…**. Escape and backdrop dismissal are blocked while the request is pending.
+3. The application waits for required identity cleanup, then calls `signInWithGoogle()` using the Firebase initialization shared with Feature 3.
+4. `GoogleAuthProvider` requests account selection through `prompt: 'select_account'`. `signInWithPopup()` handles the identity-provider interaction without replacing the SPA route.
+5. After successful authentication, only `displayName`, `email`, and the optional `avatarUrl` profile field are returned to the application. OAuth tokens, Firebase access tokens, and passwords are not stored in the application session.
+6. The existing application session controller stores the permitted profile fields and successful-authentication timestamp. The header updates, the dialog closes, the `auth` URL state is removed, and a success Snackbar appears. The app-session lifetime remains fixed at five minutes.
 
-Blocked popups explain that popups must be allowed for this site. An unauthorized
-domain explains that site configuration needs attention. An email already linked
-to another provider asks the user to use that sign-in method; this feature does not
-silently link accounts. Raw Firebase error messages are not displayed.
+If Firebase returns no email, the Google service attempts sign-out and rejects the result rather than constructing an invalid application session. Missing display names use the existing profile fallback behavior. The header uses initials instead of Google profile photographs. Storage failures and late authentication results after application teardown follow the established guest-state cleanup path.
 
-Firebase initialization and prior sign-out may need time on the first attempt.
-If browser popup policy blocks that attempt, allow popups and retry after setup
-finishes. Actual popup behavior must be checked in the browsers used for review.
-This feature does not add a redirect fallback.
+## Error handling and cancellation
 
-## Enable Google in your own Firebase project
+Closing the Google popup is treated as cancellation. The application keeps the authentication dialog open, displays an understandable message, preserves entered email-form values, and unlocks controls once Firebase settles the request. It does not automatically retry; the user may try Google again or switch to Email/Password.
 
-1. Complete Feature 3's web-app configuration using your own four environment
-   values. Reuse the same Firebase project as Email/Password.
-2. Open Firebase Console → Authentication → Sign-in method. Enable **Google**,
-   select the project's support email, and save.
-3. In Authentication settings, review **Authorized domains**. Include the actual
-   development and deployed hosts you use, for example `localhost` and
-   `gafursz.github.io`. Enter hostnames, not `/Minigames/` paths or full URLs.
-4. For deployment, keep the four matching Vite settings in the existing Actions
-   variables. Rebuild after configuration changes. No additional app-session token
-   setting or Google client secret belongs in this frontend.
-5. Verify actual Google account selection, cancellation, and successful sign-in in
-   a browser. Tests with mocked provider calls cannot verify your Console settings.
+Blocked popups, unauthorized domains, and accounts linked to another provider receive explanatory messages rather than raw Firebase errors. Account linking and redirect-based authentication are outside Feature 5's scope.
 
-## Commands explained before use
+Firebase initialization and previous sign-out operations can introduce a delay on the first attempt. Closing the popup may also take several seconds to resolve as Firebase detects cancellation. Cross-browser handling of these cases should be checked manually.
 
-Follow `START-HERE.md` to import the branch after Feature 4 is integrated.
-From the repository root, `npm ci` installs exact lockfile versions, replacing
-`node_modules` without changing source. No new Google-specific package is needed.
+## Firebase configuration
+
+Feature 5 uses the existing Firebase project and frontend environment settings established in Feature 3.
+
+1. In **Firebase Console → Authentication → Sign-in method**, enable **Google** and select the project's support email.
+2. In **Authentication → Settings → Authorized domains**, include the hostnames used for development and deployment, such as `localhost` and `gafursz.github.io`. Use hostnames rather than full URLs or `/Minigames/` paths.
+3. Keep the four matching Vite environment values in the local ignored `.env.local` file and the GitHub Actions configuration used for deployment. Restart or rebuild when environment values change.
+4. Do not put a Google client secret, OAuth access token, or application session secret in frontend source code.
+
+Google provider activation, authorized hostname configuration, successful real-account sign-in, and logout were verified locally. A successful deployed-site Google sign-in is **not yet confirmed**.
+
+## Development and verification commands
+
+Run commands from the repository root. These are reference instructions, not operations that have to be repeated solely to read this document.
 
 ```bash
 npm ci
 ```
 
-Use your existing ignored `.env.local`; do not overwrite it. If it does not exist,
-`cp` copies the example below, and `-n` prevents replacing an existing destination.
-Fill the four settings with values from your own Firebase web app.
+`npm ci` installs the versions pinned by `package-lock.json` and replaces `node_modules`. It does not edit application source files. No extra Google-authentication package is required.
 
 ```bash
 cp -n .env.example .env.local
 ```
 
-`npm run dev` starts Vite. Open its printed URL, including `/Minigames/`. Restart
-after changing environment values. Ctrl+C stops the server.
+If `.env.local` does not exist, `cp` copies the template and `-n` avoids overwriting an existing file. Populate the copied file with the Firebase web application's actual public configuration values. Never commit personal secrets or environment files that should remain ignored.
 
 ```bash
 npm run dev
 ```
 
-`npm test` runs the existing Vitest suite once. `test:coverage` measures that suite
-and enforces the unchanged 80% aggregate statement threshold. `lint` checks ESLint;
-`format:check` checks formatting without editing files. `typecheck:tests` checks
-TypeScript without emitting JS; `build` writes the production app and SPA fallback
-under `dist/`. These checks mock Firebase and public network boundaries.
+Starts the Vite development server. Visit the URL printed by Vite, including the project's `/Minigames/` base path where applicable. Stop it with Ctrl+C.
 
 ```bash
 npm test
@@ -132,45 +100,52 @@ npm run typecheck:tests
 npm run build
 ```
 
-The delivery's `verification.json`, raw logs, and HTML coverage report contain the
-measured results. The existing test suite is extended; there is no separate testing
-framework or new application-logic exclusion to inflate coverage.
+- `npm test` runs the Vitest suite once.
+- `npm run test:coverage` runs the coverage suite and checks the required aggregate statement-coverage threshold of at least 80%.
+- `npm run lint` runs ESLint.
+- `npm run format:check` checks Prettier formatting without changing files.
+- `npm run typecheck:tests` runs TypeScript's test configuration without emitting JavaScript.
+- `npm run build` creates the production output in `dist/` and runs the SPA fallback postbuild script.
 
-The final run passed **239 tests in 26 files**, with zero failures, skips, or todos.
-All **55** non-declaration source TypeScript files are included. Aggregate coverage:
-**89.73% statements** (1679/1871), **82.65% branches** (1015/1228), **93.38%
-functions** (339/363), and **92.83% lines** (1542/1661). Lint, formatting,
-TypeScript checks, and the production build pass. Native browser popup behavior
-and real Google account authorization remain manual checks.
+### Recorded verification results
 
-## Browser checks after setup
+The latest completed pre-reconciliation coverage run reported **256 passing tests across 28 files**, with **92.32% aggregate statement coverage (1731/1875)**. This exceeds the Story 4 acceptance threshold of 80%.
 
-- Try Google from both Login and Registration with the form fields empty.
-- Keep the provider popup open: verify pending controls, Escape/backdrop protection,
-  and prevention of another request. Cancel and verify recovery without a reload.
-- Sign in, inspect the header name/photo fallback and success Snackbar, then reload.
-  The stored authentication time must remain unchanged.
-- Wait for the same five-minute expiry used by email login. Check guest reset and
-  Firebase sign-out. Also verify explicit logout.
-- Block popups, retry after allowing them, and check mobile/desktop browsers.
+ESLint, Prettier, TypeScript test checking, production build, and Git whitespace checking also passed after the final UI and test improvements. During the subsequent merge of `story-4` into the feature branch, the Git commit hooks again passed ESLint and Prettier.
 
-## Remaining work and integration
+**Before opening the Feature 5 pull request, rerun the test and coverage commands on the reconciled branch** so the final verification explicitly covers merge commit `7bfc85e` and any follow-up documentation changes. Automated Firebase interactions use mocks; passing tests do not replace a live Firebase configuration check.
 
-The ZIP includes full source, exact changed files, an incremental Git bundle, a
-guarded importer, a task PR draft, and verification evidence. Import instructions
-explain each command before asking you to run it. Nothing was pushed, merged,
-deployed, or imported into your Windows folder by this delivery.
+## Browser verification status
 
-Commit identities use `Gafursz <gafurjon.sh@gmail.com>` and actual creation times.
-Integrate task PRs into `story-4` in order, preserving their prerequisite commit
-identities. Keep the final `story-4` → `story-3` Cross-Check PR unmerged.
+**Verified manually:**
 
-The complete authenticated Auth URL/protected-action guards and the favorites,
-comment submission, and comment-like mutations remain later features. They are
-not implemented by this Google sign-in task.
+- Firebase Google provider enabled and relevant hostnames authorized.
+- Successful sign-in using a real Google account.
+- Authenticated header populated with the user's display name and initials.
+- Explicit logout returning the application to guest state.
+- Responsive header behavior reviewed at desktop, tablet, and mobile breakpoints.
 
-## References checked on 8 October 2026
+**Still requires specific manual verification:**
 
-- [Official Google OAuth task](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/minigames/tasks/story-4/RSS-QS-4-1-4-google-oauth.md)
-- [Firebase Google sign-in documentation](https://firebase.google.com/docs/auth/web/google-signin)
-- [Feature 4 session and email flow](04-email-password-auth.md)
+- Five-minute expiration after Google sign-in, including Firebase sign-out and return to guest state.
+- Successful account selection initiated independently from both Login and Registration.
+- Reload persistence without extending the initial five-minute session.
+- Popup cancellation, delayed error recovery, pending input locks, and retry after cancellation.
+- Blocked-popup and unauthorized-domain failure messages in the target browsers.
+- Successful authentication on the deployed GitHub Pages site.
+
+## Integration and remaining work
+
+Feature 5 was imported into `feature/google-auth` after Feature 4. The responsive UI and test improvements were committed as `cafaebb` (`fix(auth): align profile UI with Figma and expand tests`). The feature branch was reconciled with the current `story-4` history by merge commit `7bfc85e` (`chore: merge story-4 into google-auth`). Its original feature commits have not been squashed or rebased.
+
+The next steps are to finish documentation verification, run post-merge checks, push `feature/google-auth`, and open a task PR targeting `story-4`. Merge that task PR according to the RS School workflow, preserving commit history. Subsequent features should use their own task branches.
+
+**The final `story-4` → `story-3` Cross-Check pull request must remain unmerged.**
+
+Full authenticated route/action guards, favorites toggling, comment submission, and comment likes belong to later Story 4 features; they are not claimed as part of Feature 5.
+
+## References
+
+- [RS School — Google OAuth task](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/minigames/tasks/story-4/RSS-QS-4-1-4-google-oauth.md)
+- [Firebase — Authenticate using Google with JavaScript](https://firebase.google.com/docs/auth/web/google-signin)
+- [Feature 4 — Email/Password authentication](04-email-password-auth.md)
