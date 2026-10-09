@@ -124,3 +124,38 @@ export async function submitGameComment(
     201,
   );
 }
+
+export interface CommentLikeState {
+  isLikedByCurrentUser: boolean;
+  likesCount: number;
+}
+
+export async function toggleCommentLike(
+  commentId: string,
+  userEmail: string,
+  signal?: AbortSignal,
+): Promise<CommentLikeState> {
+  if (!/^[a-zA-Z0-9_-]+$/.test(commentId) || userEmail.trim().length === 0)
+    throw new TypeError('A comment like requires a valid comment ID and user email.');
+  const response = await postJson<unknown>(
+    `comments/${encodeURIComponent(commentId)}/like`,
+    { userEmail },
+    signal,
+    200,
+  );
+  if (typeof response !== 'object' || response === null || !('data' in response))
+    throw new TypeError('The server returned invalid comment like data.');
+  const data = response.data;
+  if (
+    typeof data !== 'object' ||
+    data === null ||
+    !('isLikedByCurrentUser' in data) ||
+    typeof data.isLikedByCurrentUser !== 'boolean' ||
+    !('likesCount' in data) ||
+    typeof data.likesCount !== 'number' ||
+    !Number.isSafeInteger(data.likesCount) ||
+    data.likesCount < 0
+  )
+    throw new TypeError('The server returned invalid comment like data.');
+  return { isLikedByCurrentUser: data.isLikedByCurrentUser, likesCount: data.likesCount };
+}
