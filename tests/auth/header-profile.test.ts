@@ -11,7 +11,8 @@ test('profile names use displayName, email local part, then a generic fallback',
 
 test.each([
   ['Alex', 'A'],
-  [' Alex   Smith Jones ', 'AS'],
+  ['Gafurjon Sharipov', 'GS'],
+  [' Alex   Smith Jones ', 'AJ'],
   ['!alex 9lives', 'A9'],
   ['Мария Иванова', 'МИ'],
   ['张 伟', '张伟'],
