@@ -5,20 +5,28 @@ export function getProfileName(profile: AuthProfile): string {
 }
 
 export function getProfileInitials(name: string): string {
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((word) => word.match(/[\p{L}\p{N}]/u)?.[0].toLocaleUpperCase() ?? '')
-      .join('') || '?'
-  );
+  const words = name.trim().split(/\s+/).filter(Boolean);
+
+  if (words.length === 0) return '?';
+
+  const first = words[0]?.match(/[\p{L}\p{N}]/u)?.[0] ?? '';
+
+  if (words.length === 1) {
+    return first.toLocaleUpperCase() || '?';
+  }
+
+  const last = words.at(-1)?.match(/[\p{L}\p{N}]/u)?.[0] ?? '';
+
+  return (first + last).toLocaleUpperCase() || '?';
 }
 
 export function renderHeaderProfile(): string {
   return `<div class="header__profile" data-header-profile hidden>
-    <span class="header__avatar"><span data-profile-initials aria-hidden="true"></span><img data-profile-photo alt="" hidden /></span>
     <span class="header__profile-name" data-profile-name></span>
+    <span class="header__avatar">
+      <span data-profile-initials aria-hidden="true"></span>
+      <img data-profile-photo alt="" hidden />
+    </span>
     <button class="header__logout" type="button" data-auth-logout>Log out</button>
   </div>`;
 }
@@ -37,6 +45,5 @@ export function updateHeaderProfile(root: HTMLElement, profile: AuthProfile | un
     initials.hidden = false;
     photo.hidden = true;
     photo.removeAttribute('src');
-    if (profile?.avatarUrl && /^https?:\/\//.test(profile.avatarUrl)) photo.src = profile.avatarUrl;
   }
 }
