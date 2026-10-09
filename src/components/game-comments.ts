@@ -1,9 +1,10 @@
 import type { AuthProfile } from '../auth/email-auth';
 import sendIcon from '../assets/icons/send-comment.svg';
 import heartIcon from '../assets/icons/comment-heart.svg';
+import activeHeartIcon from '../assets/icons/comment-heart-active.svg';
 import { escapeHtml } from '../utils/game';
 import { formatRelativeTime } from '../utils/relative-time';
-import { getGameComments, submitGameComment } from '../api/minigames-api';
+import { getGameComments, submitGameComment, toggleCommentLike } from '../api/minigames-api';
 import { ApiError } from '../api/http-client';
 import { readGameComments } from '../features/game-details/game-data';
 import { ContentFeedback } from './content-feedback';
@@ -19,6 +20,7 @@ export class GameComments {
   private dialog: HTMLDialogElement | undefined;
   private profile: AuthProfile | undefined;
   private submission: AbortController | undefined;
+  private readonly likeRequests = new Map<string, AbortController>();
   private readonly avatarColors = new Map<string, number>();
 
   constructor(private readonly requireSession?: () => AuthProfile | undefined) {}
@@ -39,8 +41,8 @@ export class GameComments {
         <time class="game-comment__date" datetime="${escapeHtml(comment.createdAt)}">${formatRelativeTime(comment.createdAt)}</time>
       </header>
       <p class="game-comment__text"></p>
-      <button class="game-comment__like" type="button" ${this.requireSession ? '' : 'disabled'} title="Sign in to like comments" aria-label="${comment.likesCount} likes">
-        <img src="${heartIcon}" alt="" /><span>${comment.likesCount}</span>
+      <button class="game-comment__like" data-comment-id="${escapeHtml(comment.commentId)}" data-likes-count="${comment.likesCount}" aria-pressed="${Boolean(this.profile) && comment.isLikedByCurrentUser}" type="button" ${this.requireSession ? '' : 'disabled'} title="Sign in to like comments" aria-label="${comment.likesCount} likes">
+        <img src="${this.profile && comment.isLikedByCurrentUser ? activeHeartIcon : heartIcon}" alt="" /><span>${comment.likesCount}</span>
       </button>
     </article></li>`;
   }
@@ -48,6 +50,7 @@ export class GameComments {
   private async load(isRetry = false): Promise<void> {
     if (!this.feedback || !this.slug || this.controller?.signal.aborted) return;
     this.request?.abort();
+    this.cancelLikes();
     const request = new AbortController();
     this.request = request;
     const isCurrent = (): boolean => this.request === request && !request.signal.aborted;
@@ -125,15 +128,75 @@ export class GameComments {
         : 'Sign in to post or like comments.';
       if (isPending) hint.textContent = 'Sending comment…';
     }
-    const likes = this.dialog?.querySelectorAll('.game-comment__like') ?? [];
-    for (const like of likes) {
-      like.setAttribute(
-        'title',
-        isAuthenticated
-          ? 'Comment likes will be available in a later update.'
-          : 'Sign in to like comments',
+    const likes = this.dialog?.querySelectorAll<HTMLButtonElement>('.game-comment__like') ?? [];
+    for (const like of likes) this.paintLike(like);
+  }
+
+  private cancelLikes(): void {
+    for (const request of this.likeRequests.values()) request.abort();
+    this.likeRequests.clear();
+  }
+
+  private paintLike(button: HTMLButtonElement): void {
+    const isPending = this.likeRequests.has(button.dataset.commentId ?? '');
+    const isLiked = Boolean(this.profile) && button.getAttribute('aria-pressed') === 'true';
+    const count = button.dataset.likesCount ?? '0';
+    let action = isLiked ? 'Unlike comment' : 'Like comment';
+    if (!this.profile) action = 'Sign in to like comments';
+    if (button.dataset.retryLike) action = 'Retry comment like status';
+    if (isPending) action = 'Updating comment like…';
+    button.disabled = isPending || !this.requireSession;
+    button.setAttribute('aria-busy', String(isPending));
+    button.setAttribute('aria-pressed', String(isLiked));
+    button.setAttribute('aria-label', `${action}. ${count} likes`);
+    button.title = action;
+    const icon = button.querySelector('img');
+    if (icon) icon.src = isLiked ? activeHeartIcon : heartIcon;
+    const label = button.querySelector('span');
+    if (label) label.textContent = isPending ? '…' : count;
+  }
+
+  private async likeComment(button: HTMLButtonElement): Promise<void> {
+    const id = button.dataset.commentId;
+    if (!id || this.likeRequests.has(id)) return;
+    const profile = this.requireSession?.();
+    if (!profile) {
+      snackbar.show('Please sign in to like comments.', 'error');
+      return;
+    }
+    if (button.dataset.retryLike) {
+      await this.load(true);
+      return;
+    }
+    const request = new AbortController();
+    this.likeRequests.set(id, request);
+    this.paintLike(button);
+    const isCurrent = (): boolean =>
+      this.likeRequests.get(id) === request &&
+      !request.signal.aborted &&
+      this.profile?.email === profile.email &&
+      button.isConnected;
+    try {
+      const state = await toggleCommentLike(id, profile.email, request.signal);
+      if (!isCurrent()) return;
+      button.dataset.likesCount = String(state.likesCount);
+      button.setAttribute('aria-pressed', String(state.isLikedByCurrentUser));
+      snackbar.show(
+        state.isLikedByCurrentUser ? 'Comment liked.' : 'Comment like removed.',
+        'success',
       );
-      if (!isAuthenticated) like.setAttribute('aria-pressed', 'false');
+    } catch {
+      if (!isCurrent()) return;
+      button.dataset.retryLike = 'true';
+      snackbar.show(
+        'Comment like could not be confirmed. Click again to reload its status before trying another toggle.',
+        'error',
+      );
+    } finally {
+      if (isCurrent()) {
+        this.likeRequests.delete(id);
+        this.paintLike(button);
+      }
     }
   }
 
@@ -254,12 +317,11 @@ export class GameComments {
     dialog.addEventListener(
       'click',
       (event) => {
-        if (
-          event.target instanceof Element &&
-          event.target.closest('.game-comment__like') &&
-          this.requireSession?.()
-        )
-          snackbar.show('Comment likes will be available in a later update.');
+        const button =
+          event.target instanceof Element
+            ? event.target.closest<HTMLButtonElement>('.game-comment__like')
+            : undefined;
+        if (button && dialog.contains(button)) void this.likeComment(button);
       },
       { signal },
     );
@@ -280,6 +342,7 @@ export class GameComments {
 
   public destroy(): void {
     this.controller?.abort();
+    this.cancelLikes();
     this.request?.abort();
     this.submission?.abort();
     this.submission = undefined;

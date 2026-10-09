@@ -187,7 +187,7 @@ logout, and the remaining manual checks. Its verification passed **230 tests**, 
 configuration and a live sign-in check are still required; unit tests mock Firebase.
 Feature 5 adds Google OAuth. Feature 6 completes Auth dialog guards and game
 context recovery. Feature 7 adds server-driven favorites, and Feature 8 adds comment
-submission and avatars. Comment likes remain later work.
+submission and avatars. Feature 9 adds server-confirmed comment likes.
 
 Read [Feature 5: Google sign-in](docs/story-4/05-google-auth.md) for the popup flow,
 cancellation/retry behavior, shared app session, and Firebase Google provider setup.
@@ -230,6 +230,10 @@ on Feature 6 and targets `story-4`.
 Read [Feature 8: Comment submission and avatars](docs/story-4/08-comment-submission.md)
 for API submission, keyboard behavior, failure recovery, and stable avatar colors.
 `feature/comment-submission` depends on Feature 7 and targets `story-4`.
+
+Read [Feature 9: Comment likes](docs/story-4/09-comment-likes.md) for personalized
+state, per-comment request locks, failure reconciliation, and final manual checks.
+`feature/comment-likes` depends on Feature 8 and targets `story-4`.
 
 ## 👨‍💻 Author
 
