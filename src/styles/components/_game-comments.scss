@@ -210,3 +210,8 @@
 .game-comments__input[aria-invalid='true'] {
   border-color: tokens.$color-error;
 }
+
+.game-comment__like[aria-busy='true'] {
+  opacity: tokens.$opacity-disabled;
+  cursor: progress;
+}
