@@ -165,7 +165,7 @@ test('stored profile restores without extending its time and focus detects expir
   const initials = document.querySelector('[data-profile-initials]');
 
   expect(photo.hidden).toBe(true);
-  expect(photo.getAttribute('src')).toBeNull();
+  expect(photo.getAttribute('src')).toBe('https://example.com/avatar.jpg');
   expect(initials.hidden).toBe(false);
   expect(initials.textContent).toBe('BP');
   window.dispatchEvent(new window.Event('focus'));
@@ -255,9 +255,29 @@ for (const mode of ['login', 'register']) {
       authenticatedAt: expect.any(Number),
     });
     expect(document.querySelector('[data-header-profile]').hidden).toBe(false);
-    expect(document.querySelector('[data-profile-photo]').hidden).toBe(true);
-    expect(document.querySelector('[data-profile-photo]').getAttribute('src')).toBeNull();
-    expect(document.querySelector('[data-profile-initials]').hidden).toBe(false);
+    const photo = document.querySelector('[data-profile-photo]');
+    const initials = document.querySelector('[data-profile-initials]');
+
+    expect(photo.getAttribute('src')).toBe('https://example.com/me.jpg');
+
+    // Initials remain visible until the image loads successfully.
+    expect(photo.hidden).toBe(true);
+    expect(initials.hidden).toBe(false);
+
+    Object.defineProperties(photo, {
+      complete: { configurable: true, value: true },
+      naturalWidth: { configurable: true, value: 100 },
+    });
+
+    photo.dispatchEvent(new photo.ownerDocument.defaultView.Event('load'));
+
+    expect(photo.hidden).toBe(false);
+    expect(initials.hidden).toBe(true);
+
+    photo.dispatchEvent(new photo.ownerDocument.defaultView.Event('error'));
+
+    expect(photo.hidden).toBe(true);
+    expect(initials.hidden).toBe(false);
     expect(document.querySelector('[data-profile-initials]').textContent).toBe('A');
     expect(document.querySelector('.snackbar__message').textContent).toBe(
       'You are signed in with Google.',

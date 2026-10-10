@@ -120,16 +120,19 @@ export class Header {
     for (const profile of document.querySelectorAll('[data-header-profile]')) {
       const photo = profile.querySelector<HTMLImageElement>('[data-profile-photo]');
       const initials = profile.querySelector<HTMLElement>('[data-profile-initials]');
+
       if (!photo || !initials) continue;
-      photo.addEventListener(
-        'load',
-        () => {
-          const hasPhoto = Boolean(photo.getAttribute('src'));
-          photo.hidden = !hasPhoto;
-          initials.hidden = hasPhoto;
-        },
-        { signal },
-      );
+
+      const updateAvatar = (): void => {
+        const hasValidPhoto =
+          Boolean(photo.getAttribute('src')) && photo.complete && photo.naturalWidth > 0;
+
+        photo.hidden = !hasValidPhoto;
+        initials.hidden = hasValidPhoto;
+      };
+
+      photo.addEventListener('load', updateAvatar, { signal });
+
       photo.addEventListener(
         'error',
         () => {
@@ -138,6 +141,8 @@ export class Header {
         },
         { signal },
       );
+
+      updateAvatar();
     }
     const burgerButton = document.querySelector<HTMLButtonElement>('.header__burger');
     const mobileMenu = document.querySelector<HTMLElement>('.header__mobile-menu');

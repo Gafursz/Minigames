@@ -46,6 +46,25 @@ The real authentication flow and authenticated mutations follow in subsequent ta
 - Backdrop and Escape-key dismissal
 - Responsive desktop and mobile layouts
 
+### Application Session Management
+
+MiniGames uses Firebase Authentication for user identity and maintains a separate client-side application session.
+
+**localStorage key:** `minigames:gafursz:app-session`
+
+The application session stores:
+
+- `displayName` — the authenticated user's display name.
+- `email` — the authenticated user's email address.
+- `avatarUrl` — optional profile-photo URL.
+- `authenticatedAt` — the timestamp when the application session was established, expressed in milliseconds since the Unix epoch.
+
+**Session lifetime:** 5 minutes (300,000 milliseconds) from the original `authenticatedAt` timestamp.
+
+Refreshing the browser does not restart or extend the five-minute session. When the session expires, MiniGames returns to guest mode, clears the application session, and attempts Firebase provider sign-out.
+
+Authenticated actions, including favorites, comment submission, and comment likes, require a valid application session.
+
 ## 🛠️ Tech Stack
 
 - TypeScript
