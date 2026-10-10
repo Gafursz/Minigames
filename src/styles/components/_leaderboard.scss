@@ -36,7 +36,7 @@
   height: tokens.$size-4;
   flex-shrink: 0;
   background-color: tokens.$color-primary;
-  border: 1.5px solid tokens.$color-on-primary;
+  border: tokens.$border-width-thin solid tokens.$color-on-primary;
   border-radius: tokens.$radius-sm;
 }
 
@@ -45,7 +45,7 @@
   color: tokens.$color-on-primary;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-xl;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 100%;
 }
 
@@ -59,7 +59,7 @@
   width: 100%;
   overflow: hidden;
   background-color: tokens.$color-white;
-  border: 2.5px solid tokens.$color-on-primary;
+  border: tokens.$border-width-card solid tokens.$color-on-primary;
   border-spacing: 0;
   border-radius: tokens.$radius-lg;
   box-shadow: 6px 6px 0 tokens.$color-on-primary;
@@ -114,13 +114,13 @@
   height: tokens.$size-9;
   color: tokens.$color-on-primary;
   font-size: tokens.$font-size-body-small;
-  font-weight: 600;
+  font-weight: tokens.$font-weight-semibold;
   line-height: 100%;
 }
 
 .leaderboard__row td {
   padding: tokens.$size-2 tokens.$size-3;
-  border-bottom: 1px solid tokens.$color-outline;
+  border-bottom: tokens.$border-width-small solid tokens.$color-outline;
   vertical-align: middle;
 }
 
@@ -141,7 +141,7 @@
 .leaderboard__rank {
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-label-large;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 100%;
   white-space: nowrap;
 }
@@ -165,10 +165,10 @@
   align-items: center;
   justify-content: center;
   margin-right: tokens.$size-1;
-  border: 1px solid tokens.$color-on-primary;
+  border: tokens.$border-width-small solid tokens.$color-on-primary;
   border-radius: 50%;
   font-size: tokens.$font-size-body-small;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 1;
 }
 
@@ -196,7 +196,7 @@
   display: inline-block;
   max-width: 100%;
   overflow: hidden;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   text-overflow: ellipsis;
   vertical-align: middle;
   white-space: nowrap;
@@ -205,13 +205,13 @@
 //  Games / Score
 
 .leaderboard__cell {
-  font-weight: 600;
+  font-weight: tokens.$font-weight-semibold;
 }
 
 //  Streak
 
 .leaderboard__streak {
-  font-weight: 600;
+  font-weight: tokens.$font-weight-semibold;
   white-space: nowrap;
 }
 
@@ -233,10 +233,10 @@
   padding: tokens.$size-05 tokens.$size-1;
   overflow: hidden;
   color: tokens.$color-on-primary;
-  border: 1px solid tokens.$color-on-primary;
+  border: tokens.$border-width-small solid tokens.$color-on-primary;
   border-radius: tokens.$radius-lg;
   font-size: tokens.$font-size-body-small;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 100%;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -352,7 +352,7 @@
     width: 100%;
     height: auto;
     min-width: 0;
-    border-width: 2.5px;
+    border-width: tokens.$border-width-card;
     border-radius: tokens.$radius-lg;
     table-layout: fixed;
     box-shadow: 4px 4px 0 tokens.$color-on-primary;

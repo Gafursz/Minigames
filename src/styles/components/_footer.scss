@@ -49,7 +49,7 @@
   color: tokens.$color-white;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-headline-small;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 100%;
 }
 
@@ -59,7 +59,7 @@
   color: tokens.$color-on-footer;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-body-small;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
   line-height: 150%;
 }
 
@@ -83,7 +83,7 @@
   color: tokens.$color-white;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-title-xx-small;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 100%;
 }
 
@@ -100,7 +100,7 @@
   color: tokens.$color-on-footer;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-body-small;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
   line-height: 150%;
   text-decoration: none;
 }
@@ -139,7 +139,7 @@
   align-items: center;
   gap: tokens.$size-3;
   padding-top: tokens.$size-3;
-  border-top: 1px solid tokens.$color-footer-lowest;
+  border-top: tokens.$border-width-small solid tokens.$color-footer-lowest;
 }
 
 .footer__copyright {
@@ -147,7 +147,7 @@
   color: tokens.$color-on-footer;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-body-small;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
   line-height: 100%;
 }
 
@@ -158,7 +158,7 @@
   color: tokens.$color-on-footer;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-body-small;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
   text-decoration: none;
 }
 
@@ -178,7 +178,7 @@
   }
 
   .footer__social-link:hover {
-    outline: 2px solid tokens.$color-primary;
+    outline: tokens.$border-width-medium solid tokens.$color-primary;
   }
 }
 
@@ -193,7 +193,7 @@
   color: tokens.$color-on-footer;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-body-small;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
 }
 
 //  Tablet — 768px and below

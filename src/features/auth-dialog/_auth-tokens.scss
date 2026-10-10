@@ -1,15 +1,20 @@
 @use '../../styles/tokens';
 
 $width: 26.25rem;
-$border-width: 3px;
+$border-width: tokens.$border-width-auth;
+
 $padding: calc(tokens.$size-4 - $border-width);
 $mobile-padding: calc(tokens.$size-3 - $border-width);
+
 $submit-height: 3.25rem;
 $google-height: 3.125rem;
 $icon-size: 1.25rem;
+
 $font-family-symbols: 'Auth Symbols';
+
 $shadow-button: 0 4px 0 tokens.$color-on-primary;
-$focus-ring: 0 0 0 3px tokens.$color-primary;
+$focus-ring: 0 0 0 tokens.$focus-ring-spread tokens.$color-primary;
+
 $duration-panel: 180ms;
 $feedback-line-height: 1.4;
 

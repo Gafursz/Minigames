@@ -6,7 +6,7 @@
   font-family: 'Auth Symbols';
   src: url('./assets/auth-symbols.ttf') format('truetype');
   font-style: normal;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
   font-display: block;
 }
 

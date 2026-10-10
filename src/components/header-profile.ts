@@ -15,9 +15,9 @@ export function getProfileInitials(name: string): string {
     return first.toLocaleUpperCase() || '?';
   }
 
-  const last = words.at(-1)?.match(/[\p{L}\p{N}]/u)?.[0] ?? '';
+  const second = words[1]?.match(/[\p{L}\p{N}]/u)?.[0] ?? '';
 
-  return (first + last).toLocaleUpperCase() || '?';
+  return (first + second).toLocaleUpperCase() || '?';
 }
 
 export function renderHeaderProfile(): string {
@@ -42,8 +42,21 @@ export function updateHeaderProfile(root: HTMLElement, profile: AuthProfile | un
     if (!name || !initials || !photo) continue;
     name.textContent = profile ? getProfileName(profile) : '';
     initials.textContent = profile ? getProfileInitials(name.textContent) : '';
+
     initials.hidden = false;
     photo.hidden = true;
-    photo.removeAttribute('src');
+
+    const avatarUrl = profile?.avatarUrl?.trim();
+
+    if (avatarUrl) {
+      photo.src = avatarUrl;
+
+      if (photo.complete && photo.naturalWidth > 0) {
+        photo.hidden = false;
+        initials.hidden = true;
+      }
+    } else {
+      photo.removeAttribute('src');
+    }
   }
 }

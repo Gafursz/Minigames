@@ -11,7 +11,7 @@
   gap: tokens.$size-5;
   padding: tokens.$size-5 tokens.$size-15;
   background-color: tokens.$color-background;
-  border-bottom: 1px solid tokens.$color-outline;
+  border-bottom: tokens.$border-width-small solid tokens.$color-outline;
 }
 
 .developer-section__illustration {
@@ -50,7 +50,7 @@
   color: tokens.$color-on-primary;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-xl;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 120%;
   letter-spacing: 0;
 }
@@ -61,7 +61,7 @@
   color: tokens.$color-text;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-body-large;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
   line-height: 150%;
   letter-spacing: 0;
 }
@@ -77,9 +77,9 @@
   color: tokens.$color-on-primary;
   background-color: tokens.$color-primary;
   border: tokens.$border-width-medium solid tokens.$color-on-primary;
-  border-radius: 12px;
+  border-radius: tokens.$radius-medium;
   font-family: tokens.$font-family-base;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   text-decoration: none;
   box-shadow: 0 10px 20px -10px rgb(0 0 0 / 10%);
 }
@@ -96,13 +96,13 @@
   color: tokens.$color-text;
   font-family: tokens.$font-family-base;
   font-size: tokens.$font-size-body-small;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
   line-height: 150%;
 }
 
 .developer-section__email {
   color: tokens.$color-tertiary;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   text-decoration: underline;
 }
 
