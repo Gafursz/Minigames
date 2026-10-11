@@ -27,7 +27,7 @@
 
 .footer__about {
   display: flex;
-  max-width: 400px;
+  max-width: tokens.$footer-content-max-width;
   flex-direction: column;
   gap: tokens.$size-3;
 }

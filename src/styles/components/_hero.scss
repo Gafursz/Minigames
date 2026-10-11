@@ -43,7 +43,7 @@
   align-items: flex-start;
 
   width: 100%;
-  max-width: 40rem;
+  max-width: tokens.$hero-content-max-width-desktop;
 
   gap: tokens.$size-3;
   padding: tokens.$size-6;
@@ -103,7 +103,7 @@
   }
 
   .hero__content {
-    max-width: 30rem;
+    max-width: tokens.$hero-content-max-width-responsive;
     gap: tokens.$size-2;
     padding: tokens.$size-3;
 
@@ -140,7 +140,7 @@
   }
 
   .hero__content {
-    max-width: 30rem;
+    max-width: tokens.$hero-content-max-width-responsive;
 
     border-width: tokens.$border-width-medium;
     border-radius: tokens.$radius-md;
