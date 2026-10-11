@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { URL } from 'node:url';
 import { once } from 'node:events';
 import { setImmediate as nextTurn } from 'node:timers/promises';
-import { bundleModule } from '../helpers/bundle.mjs';
 import { createBrowserDom } from '../helpers/browser-dom.mjs';
 
 const catalog = (defaultSlug = 'all') => ({
@@ -37,18 +36,19 @@ const games = (data) => ({
 });
 
 async function setup(context, path = '/Minigames/library') {
-  const { App } = await bundleModule(context, 'src/app/app.ts');
+  const { App } = await import('../../src/app/app.ts');
   let app;
-  context.after(() => app?.destroy());
+
   const window = createBrowserDom(context, '<div id="app"></div>', path);
+  context.onTestFinished(() => app?.destroy());
   const oldNode = Object.getOwnPropertyDescriptor(globalThis, 'Node');
   Object.defineProperty(globalThis, 'Node', { configurable: true, value: window.Node });
-  context.after(() => {
+  context.onTestFinished(() => {
     if (oldNode) Object.defineProperty(globalThis, 'Node', oldNode);
     else Reflect.deleteProperty(globalThis, 'Node');
   });
   const calls = [];
-  context.mock.method(globalThis, 'fetch', (target, options) => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((target, options) => {
     const url = new URL(target);
     if (url.pathname.includes('/games/')) {
       return Promise.resolve(

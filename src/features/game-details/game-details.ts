@@ -1,3 +1,5 @@
+import type { AuthProfile } from '../../auth/email-auth';
+import { FavoriteControl } from './favorite-control';
 import closeIcon from '../../assets/icons/close.svg';
 import { GameInfo } from '../../components/game-info';
 import { GameRecords } from '../../components/game-records';
@@ -13,7 +15,11 @@ import { readGameDetails } from './game-data';
 export class GameDetails {
   private readonly info = new GameInfo();
   private readonly records = new GameRecords();
-  private readonly comments = new GameComments();
+  private readonly comments: GameComments;
+  private isSuspended = false;
+  private suspendedFocus: HTMLElement | undefined;
+  private profile: AuthProfile | undefined;
+  private readonly favorite: FavoriteControl;
   private element: HTMLDialogElement | undefined;
   private feedback: ContentFeedback | undefined;
   private controller: AbortController | undefined;
@@ -27,7 +33,11 @@ export class GameDetails {
   constructor(
     private readonly onOpenChange: (isOpen: boolean) => void,
     private readonly onCloseRequest?: () => void,
-  ) {}
+    private readonly requireSession?: () => AuthProfile | undefined,
+  ) {
+    this.comments = new GameComments(requireSession);
+    this.favorite = new FavoriteControl(requireSession);
+  }
 
   private setTitle(text: string): void {
     const title = this.element?.querySelector('#game-details-title');
@@ -47,6 +57,7 @@ export class GameDetails {
     if (!slug || !this.feedback || !this.element?.open || this.isClosing) return;
     this.request?.abort();
     this.comments.destroy();
+    this.favorite.destroy();
     const request = new AbortController();
     this.request = request;
     const isCurrent = (): boolean => this.request === request && !request.signal.aborted;
@@ -57,7 +68,8 @@ export class GameDetails {
       return;
     }
     try {
-      const response = await getGameDetails(slug, request.signal);
+      const requestedEmail = this.profile?.email;
+      const response = await getGameDetails(slug, request.signal, requestedEmail);
       if (!isCurrent()) return;
       const game = readGameDetails(response, slug);
       if (!game) {
@@ -71,11 +83,21 @@ export class GameDetails {
             ${hero ? `<img class="game-details__cover" src="${escapeHtml(hero)}" alt="${escapeHtml(game.name)}" />` : '<div class="game-details__cover game-details__cover--placeholder" role="img" aria-label="Game image unavailable"></div>'}
           </div>
           <div class="game-details__body">
-            ${this.info.render(game)}
+            ${this.info.render(game, Boolean(this.requireSession))}
             ${this.records.render(game.topRecords)}
             ${this.comments.render()}
           </div>`);
+      this.comments.setAuthenticated(this.profile);
       this.comments.bindEvents(this.element, slug);
+      this.favorite.bind(
+        this.element,
+        slug,
+        {
+          isFavorited: game.isLikedByCurrentUser,
+          likesCount: game.likesCount,
+        },
+        requestedEmail,
+      );
       if (isRetry) snackbar.show('Game details loaded successfully.', 'success');
     } catch (error) {
       if (!isCurrent()) return;
@@ -110,6 +132,8 @@ export class GameDetails {
     this.element?.classList.remove('is-closing');
     this.isClosing = false;
     this.slug = undefined;
+    this.isSuspended = false;
+    this.suspendedFocus = undefined;
     document.body.classList.remove('has-open-dialog');
     this.onOpenChange(false);
     if (shouldRestoreFocus && this.returnFocus?.isConnected)
@@ -178,7 +202,9 @@ export class GameDetails {
 
   public open(slug: string, trigger?: HTMLElement): void {
     if (!this.element) return;
-    const shouldLoad = !this.element.open || this.isClosing || slug !== this.slug;
+    const isResuming = this.isSuspended && slug === this.slug;
+    const shouldLoad = (!this.element.open && !isResuming) || this.isClosing || slug !== this.slug;
+    this.isSuspended = false;
     globalThis.clearTimeout(this.closeTimer);
     this.closeTimer = undefined;
     this.isClosing = false;
@@ -187,20 +213,41 @@ export class GameDetails {
     this.slug = slug;
     if (!this.element.open) {
       this.element.showModal();
-      this.element.scrollTop = 0;
+      if (!isResuming) this.element.scrollTop = 0;
       this.element
         .querySelector<HTMLButtonElement>('.game-details__close')
         ?.focus({ preventScroll: true });
       document.body.classList.add('has-open-dialog');
       this.onOpenChange(true);
     }
+    if (isResuming && this.suspendedFocus?.isConnected)
+      this.suspendedFocus.focus({ preventScroll: true });
     if (shouldLoad) void this.load();
   }
 
-  public close(shouldAnimate = true, shouldRestoreFocus = true): void {
+  public suspend(): void {
     if (!this.element?.open) return;
+    this.suspendedFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
+    this.isSuspended = true;
+    this.element.close();
+    document.body.classList.remove('has-open-dialog');
+    this.onOpenChange(false);
+  }
+
+  public setAuthenticated(profile: AuthProfile | undefined): void {
+    this.profile = profile;
+    this.comments.setAuthenticated(profile);
+    this.favorite.setProfile(profile);
+    if (this.element) this.element.dataset.authenticated = String(Boolean(profile));
+  }
+
+  public close(shouldAnimate = true, shouldRestoreFocus = true): void {
+    if (!this.element || (!this.element.open && !this.isSuspended)) return;
+    if (this.isSuspended) shouldAnimate = false;
     this.request?.abort();
     this.comments.destroy();
+    this.favorite.destroy();
     this.shouldRestoreFocus = shouldRestoreFocus;
     if (!shouldAnimate) {
       this.finishClose(shouldRestoreFocus);
@@ -224,6 +271,7 @@ export class GameDetails {
     this.request?.abort();
     this.request = undefined;
     this.comments.destroy();
+    this.favorite.destroy();
     this.feedback?.destroy();
     this.feedback = undefined;
     this.finishClose(false);

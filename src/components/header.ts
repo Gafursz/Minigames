@@ -1,5 +1,6 @@
 import { appHref } from '../router/links';
 import logoIcon from '../assets/icons/logo-icon.svg';
+import { renderHeaderProfile } from './header-profile';
 export class Header {
   private controller: AbortController | undefined;
 
@@ -37,6 +38,7 @@ export class Header {
             </li>
           </ul>
           <div class="header__actions">
+  ${renderHeaderProfile()}
   <button class="header__login" type="button" data-auth-open="login">
     Login
   </button>
@@ -97,6 +99,7 @@ export class Header {
   </li>
 </ul>
 <div class="header__mobile-actions">
+  ${renderHeaderProfile()}
   <button class="header__mobile-login" type="button" data-auth-open="login">
     Log in
   </button>
@@ -114,6 +117,33 @@ export class Header {
     this.controller?.abort();
     this.controller = new AbortController();
     const { signal } = this.controller;
+    for (const profile of document.querySelectorAll('[data-header-profile]')) {
+      const photo = profile.querySelector<HTMLImageElement>('[data-profile-photo]');
+      const initials = profile.querySelector<HTMLElement>('[data-profile-initials]');
+
+      if (!photo || !initials) continue;
+
+      const updateAvatar = (): void => {
+        const hasValidPhoto =
+          Boolean(photo.getAttribute('src')) && photo.complete && photo.naturalWidth > 0;
+
+        photo.hidden = !hasValidPhoto;
+        initials.hidden = hasValidPhoto;
+      };
+
+      photo.addEventListener('load', updateAvatar, { signal });
+
+      photo.addEventListener(
+        'error',
+        () => {
+          photo.hidden = true;
+          initials.hidden = false;
+        },
+        { signal },
+      );
+
+      updateAvatar();
+    }
     const burgerButton = document.querySelector<HTMLButtonElement>('.header__burger');
     const mobileMenu = document.querySelector<HTMLElement>('.header__mobile-menu');
     const closeButton = document.querySelector<HTMLButtonElement>('.header__mobile-close');

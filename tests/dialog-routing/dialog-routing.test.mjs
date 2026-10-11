@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { once } from 'node:events';
 import { URL } from 'node:url';
 import { setImmediate as nextTurn } from 'node:timers/promises';
-import { bundleModule } from '../helpers/bundle.mjs';
 import { createBrowserDom } from '../helpers/browser-dom.mjs';
 
 const game = (slug) => ({
@@ -30,21 +29,22 @@ const detail = (slug) => ({
   },
 });
 async function setup(context, path = '/Minigames/library', shouldHoldDetails = false) {
-  const modules = await bundleModule(context, 'tests/dialog-routing/entry.ts');
+  const modules = await import('./entry.ts');
   let app;
-  context.after(() => app?.destroy());
+
   const window = createBrowserDom(context, '<div id="app"></div>', path);
+  context.onTestFinished(() => app?.destroy());
   for (const name of ['Node', 'KeyboardEvent']) {
     const descriptor = Object.getOwnPropertyDescriptor(globalThis, name);
     Object.defineProperty(globalThis, name, { configurable: true, value: window[name] });
-    context.after(() => {
+    context.onTestFinished(() => {
       if (descriptor) Object.defineProperty(globalThis, name, descriptor);
       else Reflect.deleteProperty(globalThis, name);
     });
   }
-  const pauses = context.mock.method(modules.Slider.prototype, 'setDialogOpen');
+  const pauses = vi.spyOn(modules.Slider.prototype, 'setDialogOpen');
   const calls = [];
-  context.mock.method(globalThis, 'fetch', (target, options) => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((target, options) => {
     const url = new URL(target);
     const call = { url, options };
     calls.push(call);
@@ -216,19 +216,36 @@ test('auth tabs, inline links, keyboard controls, and history share the same mod
   const auth = document.querySelector('#auth-dialog');
   const email = auth.querySelector('#auth-login-email');
   email.value = 'learner@example.com';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
   auth.querySelector('#auth-register-tab').click();
   assert.equal(url().searchParams.get('auth'), 'register');
+  assert.equal(email.value, '');
   auth.querySelector(':scope #auth-register-panel [data-auth-switch="login"]').click();
   assert.equal(url().searchParams.get('auth'), 'login');
-  assert.equal(email.value, 'learner@example.com');
+  // Story 4 deliberately replaces Story 3's mode-switch value-preservation behavior.
+  assert.equal(email.value, '');
   auth
     .querySelector('#auth-login-tab')
     .dispatchEvent(new window.KeyboardEvent('keydown', { key: 'End', bubbles: true }));
   assert.equal(url().searchParams.get('auth'), 'register');
+  const username = auth.querySelector('#auth-register-username');
+  username.value = 'lowercase';
+  username.dispatchEvent(new window.Event('input', { bubbles: true }));
+  assert.equal(username.getAttribute('aria-invalid'), 'true');
   await navigateHistory('back');
   assert.equal(auth.dataset.mode, 'login');
+  assert.equal(username.value, '');
+  assert.equal(username.getAttribute('aria-invalid'), 'false');
+  email.value = 'bad-email';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
+  assert.equal(email.getAttribute('aria-invalid'), 'true');
   await navigateHistory('forward');
   assert.equal(auth.dataset.mode, 'register');
+  assert.equal(email.value, '');
+  assert.equal(email.getAttribute('aria-invalid'), 'false');
+  for (const submit of auth.querySelectorAll('[type="submit"]')) assert.ok(submit.disabled);
+  for (const error of auth.querySelectorAll('.auth-dialog__error'))
+    assert.equal(error.textContent, '');
   assert.ok(auth.open);
   assert.ok(!url().href.includes('learner'));
 });
@@ -297,13 +314,50 @@ test('duplicate dialog state does not refetch games or add a history entry', asy
 });
 
 test('unrelated URL changes keep auth input focus and values', async (context) => {
-  const { document, setUrl } = await setup(context, '/Minigames/library?category=all&auth=login');
+  const { document, window, setUrl } = await setup(
+    context,
+    '/Minigames/library?category=all&auth=login',
+  );
   const email = document.querySelector('#auth-login-email');
-  email.value = 'learner@example.com';
+  const error = document.querySelector('#auth-login-email-error');
+  email.value = 'bad-email';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
   email.focus();
   await setUrl('/Minigames/library?category=all&auth=login&utm_source=test');
   assert.equal(document.activeElement, email);
+  assert.equal(email.value, 'bad-email');
+  assert.match(error.textContent, /valid email/);
+  email.value = 'learner@example.com';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
+  const password = document.querySelector('#auth-login-password');
+  password.value = 'abcdef';
+  password.dispatchEvent(new window.Event('input', { bubbles: true }));
+  await setUrl('/Minigames/library?category=puzzle&auth=login&utm_source=test');
+  assert.equal(document.activeElement, email);
   assert.equal(email.value, 'learner@example.com');
+  assert.equal(error.textContent, '');
+  assert.equal(document.querySelector('#auth-login-panel [type="submit"]').disabled, false);
+});
+
+test('direct URL mode changes reset both forms and their inline errors', async (context) => {
+  const { document, window, setUrl } = await setup(context, '/Minigames/library?auth=register');
+  const username = document.querySelector('#auth-register-username');
+  username.value = 'bad_name';
+  username.dispatchEvent(new window.Event('change', { bubbles: true }));
+  username.focus();
+  assert.equal(username.getAttribute('aria-invalid'), 'true');
+  await setUrl('/Minigames/library?auth=login');
+  assert.equal(username.value, '');
+  assert.equal(document.querySelector('#auth-register-username-error').textContent, '');
+  const email = document.querySelector('#auth-login-email');
+  email.value = 'invalid';
+  email.dispatchEvent(new window.Event('input', { bubbles: true }));
+  email.focus();
+  await setUrl('/Minigames/library?auth=register');
+  assert.equal(email.value, '');
+  assert.equal(document.querySelector('#auth-login-email-error').textContent, '');
+  assert.equal(document.querySelector('#auth-register-panel [type="submit"]').disabled, true);
+  assert.ok(document.querySelector('#auth-dialog').open);
 });
 
 test('missing and malformed game URLs show modal not-found states over Library', async (context) => {
@@ -333,15 +387,15 @@ test('unknown paths keep the dedicated 404 and return Home through the SPA', asy
   assert.equal(document.title, 'MiniGames — Home');
 });
 
-test('conflicting auth/game parameters normalize to exactly one auth dialog', async (context) => {
+test('auth/game parameters retain recovery context with exactly one active dialog', async (context) => {
   const { document, url, detailsCalls } = await setup(
     context,
     '/Minigames/library?category=all&game=alpha&auth=register',
   );
   assert.equal(document.querySelectorAll('dialog[open]').length, 1);
   assert.ok(document.querySelector('#auth-dialog').open);
-  assert.ok(!url().searchParams.has('game'));
-  assert.equal(detailsCalls().length, 0);
+  assert.equal(url().searchParams.get('game'), 'alpha');
+  assert.equal(detailsCalls().length, 1);
 });
 
 test('rapid game URL changes cancel old requests and render only the latest slug', async (context) => {
@@ -405,12 +459,12 @@ test('switching dialog types keeps only one modal and Home remains paused', asyn
     context,
     '/Minigames/?auth=login',
   );
-  assert.equal(pauses.mock.calls.at(-1).arguments[0], true);
+  assert.equal(pauses.mock.calls.at(-1)[0], true);
   await setUrl('/Minigames/?game=alpha');
   assert.equal(document.querySelectorAll('dialog[open]').length, 1);
   assert.ok(document.querySelector('#game-details').open);
   assert.ok(!document.body.classList.contains('has-open-auth'));
-  assert.equal(pauses.mock.calls.at(-1).arguments[0], true);
+  assert.equal(pauses.mock.calls.at(-1)[0], true);
   await setUrl('/Minigames/?auth=register');
   assert.equal(document.querySelectorAll('dialog[open]').length, 1);
   assert.ok(!document.body.classList.contains('has-open-dialog'));
@@ -418,7 +472,7 @@ test('switching dialog types keeps only one modal and Home remains paused', asyn
     .querySelector('#auth-dialog')
     .dispatchEvent(new window.Event('cancel', { cancelable: true }));
   finishExits();
-  assert.equal(pauses.mock.calls.at(-1).arguments[0], false);
+  assert.equal(pauses.mock.calls.at(-1)[0], false);
 });
 
 test('page navigation aborts dialog loading and Back restores the previous base page and modal', async (context) => {

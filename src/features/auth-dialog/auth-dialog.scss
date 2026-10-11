@@ -6,7 +6,7 @@
   font-family: 'Auth Symbols';
   src: url('./assets/auth-symbols.ttf') format('truetype');
   font-style: normal;
-  font-weight: 400;
+  font-weight: tokens.$font-weight-regular;
   font-display: block;
 }
 
@@ -136,8 +136,34 @@
   }
 
   &__label {
+    margin-bottom: tokens.$size-1;
     font-weight: tokens.$font-weight-bold;
     cursor: pointer;
+  }
+
+  &__field {
+    gap: 0;
+  }
+
+  &__hint,
+  &__error {
+    margin: 0;
+    font-size: tokens.$font-size-label-medium;
+    line-height: auth.$feedback-line-height;
+    overflow-wrap: anywhere;
+  }
+
+  &__hint,
+  &__error:not(:empty) {
+    margin-top: tokens.$size-05;
+  }
+
+  &__hint {
+    color: tokens.$color-text;
+  }
+
+  &__error {
+    color: tokens.$color-error;
   }
 
   &__control {
@@ -151,10 +177,13 @@
     border: tokens.$border-width-medium solid tokens.$color-on-primary;
     border-radius: tokens.$radius-md;
     background: tokens.$color-white;
-    transition: box-shadow auth.$duration-panel ease;
 
     &:focus-within {
-      box-shadow: auth.$focus-ring;
+      background-color: tokens.$color-surface;
+    }
+
+    &:has([aria-invalid='true']) {
+      border-color: tokens.$color-error;
     }
   }
 
@@ -178,7 +207,7 @@
 
     &:disabled {
       cursor: not-allowed;
-      opacity: 0.5;
+      opacity: tokens.$opacity-disabled;
     }
   }
 
@@ -253,7 +282,7 @@
       transform auth.$duration-panel ease;
 
     &:disabled {
-      opacity: 0.5;
+      opacity: tokens.$opacity-disabled;
       cursor: not-allowed;
     }
   }
@@ -322,6 +351,11 @@
     outline: tokens.$border-width-medium solid tokens.$color-tertiary;
     outline-offset: tokens.$size-05;
   }
+
+  :where(button:disabled, a[aria-disabled='true']) {
+    cursor: not-allowed;
+    opacity: tokens.$opacity-disabled;
+  }
 }
 
 @media (hover: hover) {
@@ -330,12 +364,12 @@
   }
 
   .auth-dialog__google:hover:not(:disabled),
-  .auth-dialog__tab[aria-selected='false']:hover {
+  .auth-dialog__tab[aria-selected='false']:hover:not(:disabled) {
     background: tokens.$color-surface;
   }
 
-  .auth-dialog__link:hover,
-  .auth-dialog__visibility:hover {
+  .auth-dialog__link:hover:not(:disabled, [aria-disabled='true']),
+  .auth-dialog__visibility:hover:not(:disabled) {
     color: tokens.$color-tertiary;
   }
 }

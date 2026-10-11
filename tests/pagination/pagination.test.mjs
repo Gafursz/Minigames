@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { once } from 'node:events';
 import { URL } from 'node:url';
 import { setImmediate as nextTurn } from 'node:timers/promises';
-import { bundleModule } from '../helpers/bundle.mjs';
 import { createBrowserDom } from '../helpers/browser-dom.mjs';
 
 const game = (name) => ({
@@ -27,10 +26,11 @@ const response = (page, totalPages, data = [game(`page-${page}`)]) => ({
   },
 });
 async function setup(context, path = '/Minigames/library', isDesktop = false) {
-  const { App } = await bundleModule(context, 'src/app/app.ts');
+  const { App } = await import('../../src/app/app.ts');
   let app;
-  context.after(() => app?.destroy());
+
   const window = createBrowserDom(context, '<div id="app"></div>', path);
+  context.onTestFinished(() => app?.destroy());
   const { document } = window;
   let resize;
   let disconnected = 0;
@@ -48,7 +48,7 @@ async function setup(context, path = '/Minigames/library', isDesktop = false) {
     },
   });
   const calls = [];
-  context.mock.method(globalThis, 'fetch', (target, options) => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((target, options) => {
     const url = new URL(target);
     if (url.pathname.endsWith('/leaderboard') || url.searchParams.has('featured'))
       return Promise.resolve(globalThis.Response.json({ data: [], meta: {} }));

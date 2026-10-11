@@ -17,7 +17,7 @@ export function createDom(context, markup = '<div id="region"></div>') {
     });
   }
 
-  context.after(() => {
+  context.onTestFinished(() => {
     dom.window.close();
     for (const [name, descriptor] of originals) {
       if (descriptor) Object.defineProperty(globalThis, name, descriptor);

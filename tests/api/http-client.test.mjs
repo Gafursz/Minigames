@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, vi } from 'vitest';
 import { ApiError, getJson, isAbortError } from '../../src/api/http-client.ts';
 
-test('returns server data and sends a public GET with encoded query parameters', async (context) => {
+test('returns server data and sends a public GET with encoded query parameters', async () => {
   const body = { data: [], meta: { totalItems: 0 } };
   const controller = new globalThis.AbortController();
-  const fetchMock = context.mock.method(globalThis, 'fetch', async () =>
-    globalThis.Response.json(body),
-  );
+  const fetchMock = vi
+    .spyOn(globalThis, 'fetch')
+    .mockImplementation(async () => globalThis.Response.json(body));
 
   const result = await getJson('games', {
     query: { category: 'a & b', page: '2' },
@@ -15,7 +15,7 @@ test('returns server data and sends a public GET with encoded query parameters',
   });
 
   assert.deepEqual(result, body);
-  const [url, options] = fetchMock.mock.calls[0].arguments;
+  const [url, options] = fetchMock.mock.calls[0];
   assert.equal(url.origin, 'https://faxb76kxra.execute-api.eu-central-1.amazonaws.com');
   assert.equal(url.pathname, '/api/games');
   assert.equal(url.searchParams.get('category'), 'a & b');
@@ -27,8 +27,8 @@ test('returns server data and sends a public GET with encoded query parameters',
   assert.equal(options.body, undefined);
 });
 
-test('preserves a 404 and its server message for the Game Not Found state', async (context) => {
-  context.mock.method(globalThis, 'fetch', async () =>
+test('preserves a 404 and its server message for the Game Not Found state', async () => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async () =>
     globalThis.Response.json({ error: 'Game not found: missing-game' }, { status: 404 }),
   );
 
@@ -41,13 +41,15 @@ test('preserves a 404 and its server message for the Game Not Found state', asyn
   });
 });
 
-test('preserves the rate-limit status and message without automatic retries', async (context) => {
-  const fetchMock = context.mock.method(globalThis, 'fetch', async () =>
-    globalThis.Response.json(
-      { error: 'Rate limit exceeded. Try again in 42 seconds' },
-      { status: 429 },
-    ),
-  );
+test('preserves the rate-limit status and message without automatic retries', async () => {
+  const fetchMock = vi
+    .spyOn(globalThis, 'fetch')
+    .mockImplementation(async () =>
+      globalThis.Response.json(
+        { error: 'Rate limit exceeded. Try again in 42 seconds' },
+        { status: 429 },
+      ),
+    );
 
   await assert.rejects(getJson('categories'), {
     name: 'ApiError',
@@ -55,13 +57,11 @@ test('preserves the rate-limit status and message without automatic retries', as
     status: 429,
     message: 'Rate limit exceeded. Try again in 42 seconds',
   });
-  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(fetchMock.mock.calls.length, 1);
 });
 
-test('keeps the HTTP status when an error response is HTML rather than JSON', async (context) => {
-  context.mock.method(
-    globalThis,
-    'fetch',
+test('keeps the HTTP status when an error response is HTML rather than JSON', async () => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation(
     async () => new globalThis.Response('<h1>Bad Gateway</h1>', { status: 502 }),
   );
 
@@ -73,11 +73,11 @@ test('keeps the HTTP status when an error response is HTML rather than JSON', as
   });
 });
 
-test('uses a readable fallback for a missing or unusable server error message', async (context) => {
-  const fetchMock = context.mock.method(globalThis, 'fetch');
+test('uses a readable fallback for a missing or unusable server error message', async () => {
+  const fetchMock = vi.spyOn(globalThis, 'fetch');
 
   for (const body of ['{}', '{"error":42}', '{"error":"  "}', 'null']) {
-    fetchMock.mock.mockImplementation(async () => new globalThis.Response(body, { status: 500 }));
+    fetchMock.mockImplementation(async () => new globalThis.Response(body, { status: 500 }));
 
     await assert.rejects(getJson('games'), {
       kind: 'http',
@@ -87,9 +87,9 @@ test('uses a readable fallback for a missing or unusable server error message', 
   }
 });
 
-test('reports a connection failure separately from an HTTP error', async (context) => {
+test('reports a connection failure separately from an HTTP error', async () => {
   const cause = new TypeError('Failed to fetch');
-  context.mock.method(globalThis, 'fetch', async () => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
     throw cause;
   });
 
@@ -102,10 +102,8 @@ test('reports a connection failure separately from an HTTP error', async (contex
   });
 });
 
-test('reports invalid JSON in a successful response as unreadable data', async (context) => {
-  context.mock.method(
-    globalThis,
-    'fetch',
+test('reports invalid JSON in a successful response as unreadable data', async () => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation(
     async () => new globalThis.Response('not valid JSON', { status: 200 }),
   );
 
@@ -116,11 +114,9 @@ test('reports invalid JSON in a successful response as unreadable data', async (
   });
 });
 
-test('cancels an in-flight request without converting cancellation to an API error', async (context) => {
+test('cancels an in-flight request without converting cancellation to an API error', async () => {
   const controller = new globalThis.AbortController();
-  context.mock.method(
-    globalThis,
-    'fetch',
+  vi.spyOn(globalThis, 'fetch').mockImplementation(
     (_url, { signal }) =>
       new Promise((_resolve, reject) => {
         signal.addEventListener('abort', () => reject(signal.reason), { once: true });
@@ -138,17 +134,17 @@ test('cancels an in-flight request without converting cancellation to an API err
   });
 });
 
-test('preserves cancellation while reading either a success or an HTTP error body', async (context) => {
-  const fetchMock = context.mock.method(globalThis, 'fetch');
+test('preserves cancellation while reading either a success or an HTTP error body', async () => {
+  const fetchMock = vi.spyOn(globalThis, 'fetch');
 
   for (const status of [200, 500]) {
     const controller = new globalThis.AbortController();
     const response = new globalThis.Response('{}', { status });
-    context.mock.method(response, 'json', async () => {
+    vi.spyOn(response, 'json').mockImplementation(async () => {
       controller.abort();
       throw controller.signal.reason;
     });
-    fetchMock.mock.mockImplementation(async () => response);
+    fetchMock.mockImplementation(async () => response);
 
     await assert.rejects(getJson('games', { signal: controller.signal }), (error) => {
       assert.equal(error, controller.signal.reason);
@@ -157,11 +153,11 @@ test('preserves cancellation while reading either a success or an HTTP error bod
   }
 });
 
-test('preserves a custom abort reason and handles an already-cancelled signal', async (context) => {
+test('preserves a custom abort reason and handles an already-cancelled signal', async () => {
   const controller = new globalThis.AbortController();
   const reason = new Error('Navigated to another page');
   controller.abort(reason);
-  context.mock.method(globalThis, 'fetch', async (_url, { signal }) => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async (_url, { signal }) => {
     signal.throwIfAborted();
   });
 

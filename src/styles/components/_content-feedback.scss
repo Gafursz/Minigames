@@ -92,7 +92,7 @@
   .content-feedback__image {
     display: block;
     width: 100%;
-    max-width: 420px;
+    max-width: tokens.$feedback-content-max-width;
     height: auto;
     margin: 0 auto tokens.$size-3;
     object-fit: contain;

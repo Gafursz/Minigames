@@ -30,7 +30,7 @@
 .slider__container {
   display: flex;
   width: 100%;
-  max-width: 1760px;
+  max-width: tokens.$container-max-width;
   height: 100%;
   flex-direction: column;
   gap: tokens.$size-5;
@@ -40,9 +40,9 @@
 
 .slider__error-image {
   display: block;
-  width: min(100%, 560px);
+  width: min(100%, tokens.$slider-error-image-max-width);
   height: auto;
-  max-height: 300px;
+  max-height: tokens.$slider-error-image-max-height;
   margin: tokens.$size-3 auto 0;
   object-fit: contain;
 }
@@ -53,7 +53,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 48px;
+  min-height: tokens.$slider-control-size;
 }
 
 .slider__title {
@@ -63,7 +63,7 @@
   margin: 0;
   color: tokens.$color-on-primary;
   font-size: tokens.$font-size-xl;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 1;
 }
 
@@ -72,7 +72,7 @@
   height: tokens.$size-4;
   flex-shrink: 0;
   background-color: tokens.$color-primary;
-  border: 1.5px solid tokens.$color-on-primary;
+  border: tokens.$border-width-thin solid tokens.$color-on-primary;
   border-radius: tokens.$radius-sm;
 }
 
@@ -88,12 +88,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: tokens.$slider-control-size;
+  height: tokens.$slider-control-size;
   padding: 0;
   color: tokens.$color-on-primary;
   background-color: tokens.$color-white;
-  border: 2px solid tokens.$color-on-primary;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
   border-radius: 50%;
   font: inherit;
   cursor: pointer;
@@ -136,7 +136,7 @@
   --slide-start: calc((100% - var(--slide-center)) / 2);
   position: relative;
   width: 100%;
-  height: 388px;
+  height: tokens.$slider-track-height-desktop;
   overflow: hidden;
 }
 
@@ -145,7 +145,7 @@
   top: 0;
   left: var(--slide-start);
   width: var(--slide-center);
-  height: 384px;
+  height: tokens.$slider-card-height-desktop;
   min-width: 0;
   transition:
     left tokens.$duration-slider ease,
@@ -197,8 +197,8 @@
   height: 100%;
   overflow: hidden;
   border: tokens.$border-width-card solid tokens.$color-on-primary;
-  border-radius: 24px;
-  box-shadow: 4px 4px 0 tokens.$color-on-primary;
+  border-radius: tokens.$radius-extra-large;
+  box-shadow: tokens.$shadow-game-card;
 }
 
 .game-card__image {
@@ -228,8 +228,8 @@
 .game-card__title {
   margin: 0;
   overflow: hidden;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: tokens.$font-size-title-xxx-small;
+  font-weight: tokens.$font-weight-bold;
   line-height: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -312,17 +312,17 @@
   }
 
   .slider__track {
-    height: clamp(206px, calc(127.76px + 20.87vw), 288px);
+    height: clamp(206px, calc(127.76px + 20.87vw), tokens.$slider-track-height-tablet);
 
     padding-inline: clamp(tokens.$size-05, calc(0.18px + 1.02vw), tokens.$size-1);
   }
 
   .slider__item {
-    height: clamp(200px, calc(123.66px + 20.36vw), 280px);
+    height: clamp(200px, calc(123.66px + 20.36vw), tokens.$slider-card-height-tablet);
   }
 
   .game-card {
-    border-radius: 16px;
+    border-radius: tokens.$radius-lg;
   }
 }
 
@@ -342,12 +342,12 @@
   }
 
   .slider__track {
-    height: 288px;
+    height: tokens.$slider-track-height-tablet;
     padding-inline: tokens.$size-1;
   }
 
   .slider__item {
-    height: 280px;
+    height: tokens.$slider-card-height-tablet;
   }
 }
 

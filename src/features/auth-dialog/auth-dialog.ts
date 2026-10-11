@@ -1,6 +1,10 @@
 import googleIcon from './assets/google.svg';
 import { renderAuthPanel } from './auth-form';
 import type { AuthMode } from './auth-form';
+import { AuthFormValidation } from './auth-form-validation';
+import type { AuthValues } from './auth-validation';
+import { getAuthErrorMessage } from '../../auth/auth-error';
+import { snackbar } from '../../components/snackbar';
 
 export class AuthDialog {
   private element: HTMLDialogElement | undefined;
@@ -10,24 +14,111 @@ export class AuthDialog {
   private mode: AuthMode = 'login';
   private isClosing = false;
   private shouldRestoreFocus = true;
+  private readonly formValidation = new Map<AuthMode, AuthFormValidation>();
+  private isSubmitting = false;
+  private requestVersion = 0;
+  private readonly disabledControls = new Map<HTMLInputElement | HTMLButtonElement, boolean>();
 
   constructor(
     private readonly onOpenChange: (isOpen: boolean) => void,
     private readonly actions?: { close: () => void; setMode: (mode: AuthMode) => void },
+    private readonly authenticate?: (mode: AuthMode, values: AuthValues) => Promise<void>,
+    private readonly authenticateGoogle?: () => Promise<void>,
+    private readonly onPendingChange?: (isPending: boolean) => void,
   ) {}
 
+  private setPending(isPending: boolean): void {
+    this.isSubmitting = isPending;
+    if (!this.element) return;
+    this.element.dataset.pending = String(isPending);
+    if (isPending) {
+      for (const control of this.element.querySelectorAll<HTMLInputElement | HTMLButtonElement>(
+        'input, button',
+      )) {
+        this.disabledControls.set(control, control.disabled);
+        control.disabled = true;
+      }
+    } else {
+      for (const [control, disabled] of this.disabledControls) control.disabled = disabled;
+      this.disabledControls.clear();
+    }
+    for (const link of this.element.querySelectorAll('[data-auth-switch]')) {
+      link.setAttribute('aria-disabled', String(isPending));
+    }
+    for (const validation of this.formValidation.values()) validation.setLocked(isPending);
+    this.onPendingChange?.(isPending);
+  }
+
+  private async submit(event: Event): Promise<void> {
+    event.preventDefault();
+    const dialog = this.element;
+    const validation = this.formValidation.get(this.mode);
+    if (
+      !dialog?.open ||
+      this.isClosing ||
+      this.isSubmitting ||
+      event.target !== dialog.querySelector(`#auth-${this.mode}-panel form`) ||
+      !validation?.validateSubmission()
+    )
+      return;
+    const status = dialog.querySelector<HTMLElement>('.auth-dialog__status');
+    if (!this.authenticate) {
+      if (status) status.textContent = 'Account sign-in will be available in a later update.';
+      return;
+    }
+    const values = validation.getValues();
+    const mode = this.mode;
+    const authenticate = this.authenticate;
+    await this.runAuthentication(
+      () => authenticate(mode, values),
+      mode === 'login' ? 'Signing in…' : 'Creating account…',
+      mode === 'login' ? 'You are signed in.' : 'Your account is ready. You are signed in.',
+    );
+  }
+
+  private async runAuthentication(
+    operation: () => Promise<void>,
+    pendingMessage: string,
+    successMessage: string,
+  ): Promise<void> {
+    if (!this.element?.open || this.isClosing || this.isSubmitting) return;
+    const status = this.element.querySelector<HTMLElement>('.auth-dialog__status');
+    const version = ++this.requestVersion;
+    snackbar.dismiss();
+    this.setPending(true);
+    if (status) status.textContent = pendingMessage;
+    try {
+      await operation();
+    } catch (error) {
+      if (version !== this.requestVersion) return;
+      this.setPending(false);
+      const message = getAuthErrorMessage(error);
+      if (status) status.textContent = message;
+      snackbar.show(message, 'error');
+      return;
+    }
+    if (version !== this.requestVersion) return;
+    this.setPending(false);
+    this.close(false);
+    this.requestClose();
+    snackbar.show(successMessage);
+  }
+
   private requestMode(mode: AuthMode): void {
+    if (this.isSubmitting) return;
     if (this.actions) this.actions.setMode(mode);
     else this.setMode(mode, true);
   }
 
   private requestClose(): void {
+    if (this.isSubmitting) return;
     if (this.actions) this.actions.close();
     else this.close();
   }
 
   private setMode(mode: AuthMode, shouldFocusTab = false): void {
-    if (!this.element || this.isClosing) return;
+    if (!this.element || this.isClosing || this.isSubmitting) return;
+    const isModeChanged = mode !== this.mode;
     this.mode = mode;
     this.element.dataset.mode = mode;
     this.element.setAttribute('aria-labelledby', `auth-${mode}-title`);
@@ -40,13 +131,15 @@ export class AuthDialog {
     for (const panel of this.element.querySelectorAll<HTMLElement>('[role="tabpanel"]')) {
       panel.hidden = panel.id !== `auth-${mode}-panel`;
     }
+    // Moving focus may blur the old field. Reset afterwards so that blur cannot restore an error.
+    if (isModeChanged) this.resetForms();
     const status = this.element.querySelector<HTMLElement>('[role="status"]');
     if (status) status.textContent = '';
   }
 
   private resetForms(): void {
     if (!this.element) return;
-    for (const form of this.element.querySelectorAll('form')) form.reset();
+    for (const validation of this.formValidation.values()) validation.reset();
     const password = this.element.querySelector<HTMLInputElement>('#auth-login-password');
     if (password) password.type = 'password';
     const visibility = this.element.querySelector('.auth-dialog__visibility');
@@ -60,16 +153,26 @@ export class AuthDialog {
     this.element?.close();
     this.element?.classList.remove('is-closing');
     this.isClosing = false;
-    this.resetForms();
     document.body.classList.remove('has-open-auth');
     this.onOpenChange(false);
     if (shouldRestoreFocus && this.returnFocus?.isConnected) {
-      this.returnFocus.focus({ preventScroll: true });
+      if (this.returnFocus.closest('[hidden]')) {
+        const heading = document.querySelector<HTMLElement>('main h1');
+        if (heading) {
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+        }
+      } else this.returnFocus.focus({ preventScroll: true });
     }
+    this.resetForms();
     this.returnFocus = undefined;
   }
 
   private handleClick(event: MouseEvent): void {
+    if (this.isSubmitting) {
+      event.preventDefault();
+      return;
+    }
     if (!this.element || this.isClosing) return;
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -89,6 +192,16 @@ export class AuthDialog {
       visibility.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
       return;
     }
+    if (target.closest('[data-auth-google]')) {
+      if (target.closest('[role="tabpanel"]')?.id !== `auth-${this.mode}-panel`) return;
+      if (this.authenticateGoogle)
+        void this.runAuthentication(
+          this.authenticateGoogle,
+          'Connecting to Google…',
+          'You are signed in with Google.',
+        );
+      return;
+    }
     const placeholder = target.closest<HTMLElement>('[data-auth-placeholder]');
     if (placeholder) {
       const status = this.element.querySelector<HTMLElement>('[role="status"]');
@@ -104,6 +217,10 @@ export class AuthDialog {
       event.clientY > bounds.bottom
     )
       this.requestClose();
+  }
+
+  public get isPending(): boolean {
+    return this.isSubmitting;
   }
 
   public render(): string {
@@ -122,11 +239,17 @@ export class AuthDialog {
 
   public bindEvents(): void {
     this.controller?.abort();
+    for (const validation of this.formValidation.values()) validation.destroy();
+    this.formValidation.clear();
     this.controller = new AbortController();
     const { signal } = this.controller;
     const dialog = document.querySelector<HTMLDialogElement>('#auth-dialog');
     if (!dialog) return;
     this.element = dialog;
+    for (const mode of ['login', 'register'] as const) {
+      const form = dialog.querySelector<HTMLFormElement>(`#auth-${mode}-panel form`);
+      if (form) this.formValidation.set(mode, new AuthFormValidation(form, mode));
+    }
     dialog.addEventListener('click', (event) => this.handleClick(event), { signal });
     dialog.addEventListener(
       'cancel',
@@ -151,15 +274,17 @@ export class AuthDialog {
     dialog.addEventListener(
       'submit',
       (event) => {
-        event.preventDefault();
-        const status = dialog.querySelector<HTMLElement>('[role="status"]');
-        if (status) status.textContent = 'Account sign-in will be available in a later update.';
+        void this.submit(event);
       },
       { signal },
     );
     dialog.querySelector('[role="tablist"]')?.addEventListener(
       'keydown',
       (event) => {
+        if (this.isSubmitting) {
+          event.preventDefault();
+          return;
+        }
         if (
           !(event instanceof KeyboardEvent) ||
           !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)
@@ -177,6 +302,7 @@ export class AuthDialog {
   }
 
   public open(mode: AuthMode, trigger?: HTMLElement): void {
+    if (this.isSubmitting) return;
     if (!this.element || (document.querySelector('dialog[open]') && !this.element.open)) return;
     globalThis.clearTimeout(this.closeTimer);
     this.closeTimer = undefined;
@@ -200,7 +326,7 @@ export class AuthDialog {
   }
 
   public close(shouldAnimate = true, shouldRestoreFocus = true): void {
-    if (!this.element?.open) return;
+    if (!this.element?.open || this.isSubmitting) return;
     this.shouldRestoreFocus = shouldRestoreFocus;
     if (!shouldAnimate) {
       this.finishClose(shouldRestoreFocus);
@@ -220,8 +346,12 @@ export class AuthDialog {
   }
 
   public destroy(): void {
+    this.requestVersion++;
+    this.setPending(false);
     this.controller?.abort();
     this.finishClose(false);
+    for (const validation of this.formValidation.values()) validation.destroy();
+    this.formValidation.clear();
     this.element = undefined;
   }
 }

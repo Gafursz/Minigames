@@ -31,7 +31,7 @@
   align-items: center;
 
   width: 100%;
-  max-width: 1760px;
+  max-width: tokens.$container-max-width;
   height: 100%;
   margin-inline: auto;
   padding-inline: tokens.$size-5;
@@ -43,22 +43,22 @@
   align-items: flex-start;
 
   width: 100%;
-  max-width: 40rem;
+  max-width: tokens.$hero-content-max-width-desktop;
 
   gap: tokens.$size-3;
   padding: tokens.$size-6;
 
   background-color: tokens.$color-background;
-  border: 3px solid tokens.$color-on-primary;
-  border-radius: 24px;
-  box-shadow: 8px 8px 0 tokens.$color-on-primary;
+  border: tokens.$border-width-thick solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-extra-large;
+  box-shadow: tokens.$shadow-hero-desktop;
 }
 
 .hero__title {
   margin: 0;
   color: tokens.$color-on-primary;
   font-size: tokens.$font-size-display-large;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 110%;
 }
 
@@ -66,7 +66,7 @@
   margin: 0;
   color: tokens.$color-text;
   font-size: tokens.$font-size-body-large;
-  font-weight: 500;
+  font-weight: tokens.$font-weight-medium;
   line-height: 150%;
 }
 
@@ -85,7 +85,7 @@
   border-radius: tokens.$radius-md;
 
   font-size: tokens.$font-size-body-large;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 100%;
   text-decoration: none;
   cursor: pointer;
@@ -103,13 +103,13 @@
   }
 
   .hero__content {
-    max-width: 30rem;
+    max-width: tokens.$hero-content-max-width-responsive;
     gap: tokens.$size-2;
     padding: tokens.$size-3;
 
-    border-width: 2.5px;
-    border-radius: 16px;
-    box-shadow: 6px 6px 0 tokens.$color-on-primary;
+    border-width: tokens.$border-width-card;
+    border-radius: tokens.$radius-lg;
+    box-shadow: tokens.$shadow-hero-tablet;
   }
 
   .hero__title {
@@ -140,11 +140,11 @@
   }
 
   .hero__content {
-    max-width: 30rem;
+    max-width: tokens.$hero-content-max-width-responsive;
 
-    border-width: 2px;
+    border-width: tokens.$border-width-medium;
     border-radius: tokens.$radius-md;
-    box-shadow: 4px 4px 0 tokens.$color-on-primary;
+    box-shadow: tokens.$shadow-hero-mobile;
   }
 
   .hero__title {

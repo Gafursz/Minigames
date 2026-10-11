@@ -12,7 +12,7 @@ export function renderGameStats(game: Pick<Game, 'rating' | 'likesCount'>): stri
       </span>
       <span class="game-stats__likes">
         <span class="game-stats__meta-icon"><img src="${heartIcon}" alt="" /></span>
-        <span class="visually-hidden">Likes: </span>${escapeHtml(formatLikesCount(game.likesCount))}
+        <span class="visually-hidden">Likes: </span><span data-game-likes-count>${escapeHtml(formatLikesCount(game.likesCount))}</span>
       </span>
     </div>
   `;

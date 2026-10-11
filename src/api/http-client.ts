@@ -38,7 +38,12 @@ function getErrorMessage(body: unknown, status: number): string {
     : `The request failed (HTTP ${status}). Please try again.`;
 }
 
-export async function getJson<T>(path: string, options: GetOptions = {}): Promise<T> {
+async function requestJson<T>(
+  path: string,
+  options: GetOptions,
+  body?: Record<string, string>,
+  expectedStatus?: number,
+): Promise<T> {
   const { query, signal } = options;
   const url = new URL(path, API_BASE_URL);
 
@@ -48,8 +53,9 @@ export async function getJson<T>(path: string, options: GetOptions = {}): Promis
 
   try {
     response = await fetch(url, {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
+      method: body ? 'POST' : 'GET',
+      headers: { Accept: 'application/json', ...(body && { 'Content-Type': 'application/json' }) },
+      ...(body && { body: JSON.stringify(body) }),
       credentials: 'omit',
       signal,
     });
@@ -78,6 +84,12 @@ export async function getJson<T>(path: string, options: GetOptions = {}): Promis
     });
   }
 
+  if (expectedStatus !== undefined && response.status !== expectedStatus)
+    throw new ApiError('The server returned an unexpected success status.', {
+      kind: 'invalid-response',
+      status: response.status,
+    });
+
   try {
     return (await response.json()) as T;
   } catch (error) {
@@ -89,4 +101,17 @@ export async function getJson<T>(path: string, options: GetOptions = {}): Promis
       cause: error,
     });
   }
+}
+
+export function getJson<T>(path: string, options: GetOptions = {}): Promise<T> {
+  return requestJson<T>(path, options);
+}
+
+export function postJson<T>(
+  path: string,
+  body: Record<string, string>,
+  signal?: AbortSignal,
+  expectedStatus?: number,
+): Promise<T> {
+  return requestJson<T>(path, { signal }, body, expectedStatus);
 }
