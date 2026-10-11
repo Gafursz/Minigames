@@ -158,6 +158,12 @@ $shadow-leaderboard-desktop: 6px 6px 0 $color-on-primary;
 $shadow-leaderboard-responsive: 4px 4px 0 $color-on-primary;
 $shadow-card: 4px 4px 0 $color-on-primary;
 
+$shadow-developer-card:
+  0 14px 30px -10px rgb(0 0 0 / 8%),
+  0 2px 8px -4px rgb(0 0 0 / 4%);
+
+$shadow-developer-button: 0 10px 20px -10px rgb(0 0 0 / 10%);
+
 $library-image-height-mobile: 10rem;
 $library-card-height-tablet: 9.5rem;
 $library-card-height-desktop: 12.5rem;
@@ -186,6 +192,21 @@ $slider-info-min-width: 288px;
 $slider-control-size: 48px;
 $slider-track-height-desktop: 388px;
 $slider-card-height-desktop: 384px;
+// Slider feedback and responsive dimensions
+$slider-error-image-max-width: 560px;
+$slider-error-image-max-height: 300px;
+$slider-track-height-tablet: 288px;
+$slider-card-height-tablet: 280px;
+
+// Developer section dimensions
+$developer-illustration-width: 680px;
+$developer-illustration-height: 480px;
+$developer-button-min-width: 189px;
+$developer-button-min-height: 56px;
+$developer-icon-size: 16px;
+
+// Shared feedback dimensions
+$feedback-content-max-width: 420px;
 
 // Shared API content feedback
 $duration-skeleton: 1400ms;

@@ -15,8 +15,8 @@
 }
 
 .developer-section__illustration {
-  flex: 0 0 680px;
-  height: 480px;
+  flex: 0 0 tokens.$developer-illustration-width;
+  height: tokens.$developer-illustration-height;
   overflow: hidden;
   border-radius: tokens.$size-3;
 }
@@ -39,9 +39,7 @@
   background-color: tokens.$color-white;
   border: tokens.$border-width-medium solid tokens.$color-on-primary;
   border-radius: tokens.$size-3;
-  box-shadow:
-    0 14px 30px -10px rgb(0 0 0 / 8%),
-    0 2px 8px -4px rgb(0 0 0 / 4%);
+  box-shadow: tokens.$shadow-developer-card;
 }
 
 .developer-section__title {
@@ -71,8 +69,8 @@
   align-items: center;
   justify-content: center;
   gap: tokens.$size-1;
-  min-width: 189px;
-  min-height: 56px;
+  min-width: tokens.$developer-button-min-width;
+  min-height: tokens.$developer-button-min-height;
   padding: tokens.$btn-large-y tokens.$btn-large-x;
   color: tokens.$color-on-primary;
   background-color: tokens.$color-primary;
@@ -81,13 +79,13 @@
   font-family: tokens.$font-family-base;
   font-weight: tokens.$font-weight-bold;
   text-decoration: none;
-  box-shadow: 0 10px 20px -10px rgb(0 0 0 / 10%);
+  box-shadow: tokens.$shadow-developer-button;
 }
 
 .developer-section__button-icon {
   display: block;
-  width: 16px;
-  height: 16px;
+  width: tokens.$developer-icon-size;
+  height: tokens.$developer-icon-size;
   flex-shrink: 0;
 }
 

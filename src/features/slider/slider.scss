@@ -40,9 +40,9 @@
 
 .slider__error-image {
   display: block;
-  width: min(100%, 560px);
+  width: min(100%, tokens.$slider-error-image-max-width);
   height: auto;
-  max-height: 300px;
+  max-height: tokens.$slider-error-image-max-height;
   margin: tokens.$size-3 auto 0;
   object-fit: contain;
 }
@@ -53,7 +53,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 48px;
+  min-height: tokens.$slider-control-size;
 }
 
 .slider__title {
@@ -312,13 +312,13 @@
   }
 
   .slider__track {
-    height: clamp(206px, calc(127.76px + 20.87vw), 288px);
+    height: clamp(206px, calc(127.76px + 20.87vw), tokens.$slider-track-height-tablet);
 
     padding-inline: clamp(tokens.$size-05, calc(0.18px + 1.02vw), tokens.$size-1);
   }
 
   .slider__item {
-    height: clamp(200px, calc(123.66px + 20.36vw), 280px);
+    height: clamp(200px, calc(123.66px + 20.36vw), tokens.$slider-card-height-tablet);
   }
 
   .game-card {
@@ -342,12 +342,12 @@
   }
 
   .slider__track {
-    height: 288px;
+    height: tokens.$slider-track-height-tablet;
     padding-inline: tokens.$size-1;
   }
 
   .slider__item {
-    height: 280px;
+    height: tokens.$slider-card-height-tablet;
   }
 }
 
