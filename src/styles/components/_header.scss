@@ -225,13 +225,13 @@
   justify-content: center;
   width: tokens.$size-4;
   height: tokens.$size-4;
-  padding: 0.25rem 0.375rem;
+  padding: tokens.$mobile-close-padding-y tokens.$mobile-close-padding-x;
   color: tokens.$color-on-footer;
   background-color: tokens.$color-footer-low;
   border: 0;
   border-radius: tokens.$radius-md;
   font: inherit;
-  font-size: 1.5rem;
+  font-size: tokens.$font-size-display-small;
   cursor: pointer;
 }
 
@@ -283,7 +283,7 @@
   font-size: tokens.$font-size-headline-small;
   font-weight: tokens.$font-weight-bold;
   line-height: 100%;
-  letter-spacing: -0.05em;
+  letter-spacing: tokens.$mobile-logo-letter-spacing;
   text-decoration: none;
 }
 

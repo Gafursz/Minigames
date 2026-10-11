@@ -16,7 +16,7 @@
 .leaderboard-section__container {
   display: flex;
   width: 100%;
-  max-width: 1760px;
+  max-width: tokens.$container-max-width;
   height: 100%;
   flex-direction: column;
   gap: tokens.$size-5;
@@ -62,7 +62,7 @@
   border: tokens.$border-width-card solid tokens.$color-on-primary;
   border-spacing: 0;
   border-radius: tokens.$radius-lg;
-  box-shadow: 6px 6px 0 tokens.$color-on-primary;
+  box-shadow: tokens.$shadow-leaderboard-desktop;
   table-layout: fixed;
 }
 
@@ -71,14 +71,14 @@
   color: tokens.$color-white;
   background-color: tokens.$color-tertiary;
   font-size: tokens.$font-size-body-small;
-  font-weight: 800;
+  font-weight: tokens.$font-weight-extra-bold;
   line-height: 100%;
   text-transform: uppercase;
 }
 
 .leaderboard__header th {
   padding: 0 tokens.$size-3;
-  font-weight: 800;
+  font-weight: tokens.$font-weight-extra-bold;
   text-align: left;
 }
 
@@ -266,7 +266,7 @@
     width: 100%;
     min-width: 0;
     table-layout: fixed;
-    box-shadow: 4px 4px 0 tokens.$color-on-primary;
+    box-shadow: tokens.$shadow-leaderboard-responsive;
   }
 
   .leaderboard__header {
@@ -355,7 +355,7 @@
     border-width: tokens.$border-width-card;
     border-radius: tokens.$radius-lg;
     table-layout: fixed;
-    box-shadow: 4px 4px 0 tokens.$color-on-primary;
+    box-shadow: tokens.$shadow-leaderboard-responsive;
   }
 
   .leaderboard__header {

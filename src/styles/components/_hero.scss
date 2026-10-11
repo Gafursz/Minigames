@@ -31,7 +31,7 @@
   align-items: center;
 
   width: 100%;
-  max-width: 1760px;
+  max-width: tokens.$container-max-width;
   height: 100%;
   margin-inline: auto;
   padding-inline: tokens.$size-5;
@@ -51,7 +51,7 @@
   background-color: tokens.$color-background;
   border: tokens.$border-width-thick solid tokens.$color-on-primary;
   border-radius: tokens.$radius-extra-large;
-  box-shadow: 8px 8px 0 tokens.$color-on-primary;
+  box-shadow: tokens.$shadow-hero-desktop;
 }
 
 .hero__title {
@@ -109,7 +109,7 @@
 
     border-width: tokens.$border-width-card;
     border-radius: tokens.$radius-lg;
-    box-shadow: 6px 6px 0 tokens.$color-on-primary;
+    box-shadow: tokens.$shadow-hero-tablet;
   }
 
   .hero__title {
@@ -144,7 +144,7 @@
 
     border-width: tokens.$border-width-medium;
     border-radius: tokens.$radius-md;
-    box-shadow: 4px 4px 0 tokens.$color-on-primary;
+    box-shadow: tokens.$shadow-hero-mobile;
   }
 
   .hero__title {

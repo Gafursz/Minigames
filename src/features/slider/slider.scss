@@ -30,7 +30,7 @@
 .slider__container {
   display: flex;
   width: 100%;
-  max-width: 1760px;
+  max-width: tokens.$container-max-width;
   height: 100%;
   flex-direction: column;
   gap: tokens.$size-5;
@@ -63,7 +63,7 @@
   margin: 0;
   color: tokens.$color-on-primary;
   font-size: tokens.$font-size-xl;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 1;
 }
 
@@ -88,8 +88,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: tokens.$slider-control-size;
+  height: tokens.$slider-control-size;
   padding: 0;
   color: tokens.$color-on-primary;
   background-color: tokens.$color-white;
@@ -136,7 +136,7 @@
   --slide-start: calc((100% - var(--slide-center)) / 2);
   position: relative;
   width: 100%;
-  height: 388px;
+  height: tokens.$slider-track-height-desktop;
   overflow: hidden;
 }
 
@@ -145,7 +145,7 @@
   top: 0;
   left: var(--slide-start);
   width: var(--slide-center);
-  height: 384px;
+  height: tokens.$slider-card-height-desktop;
   min-width: 0;
   transition:
     left tokens.$duration-slider ease,
@@ -198,7 +198,7 @@
   overflow: hidden;
   border: tokens.$border-width-card solid tokens.$color-on-primary;
   border-radius: tokens.$radius-extra-large;
-  box-shadow: 4px 4px 0 tokens.$color-on-primary;
+  box-shadow: tokens.$shadow-game-card;
 }
 
 .game-card__image {
@@ -229,7 +229,7 @@
   margin: 0;
   overflow: hidden;
   font-size: tokens.$font-size-title-xxx-small;
-  font-weight: 700;
+  font-weight: tokens.$font-weight-bold;
   line-height: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
