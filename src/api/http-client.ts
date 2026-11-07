@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 export const API_BASE_URL = 'https://faxb76kxra.execute-api.eu-central-1.amazonaws.com/api/';
 
 type ApiErrorKind = 'http' | 'network' | 'invalid-response';
@@ -35,7 +36,7 @@ function getErrorMessage(body: unknown, status: number): string {
     typeof body.error === 'string' &&
     body.error.trim().length > 0
     ? body.error
-    : `The request failed (HTTP ${status}). Please try again.`;
+    : t('The request failed (HTTP {status}). Please try again.', { status });
 }
 
 async function requestJson<T>(
@@ -62,7 +63,7 @@ async function requestJson<T>(
   } catch (error) {
     if (signal?.aborted || isAbortError(error)) throw error;
 
-    throw new ApiError('Unable to reach the server. Check your connection and try again.', {
+    throw new ApiError(t('Unable to reach the server. Check your connection and try again.'), {
       kind: 'network',
       cause: error,
     });
@@ -85,7 +86,7 @@ async function requestJson<T>(
   }
 
   if (expectedStatus !== undefined && response.status !== expectedStatus)
-    throw new ApiError('The server returned an unexpected success status.', {
+    throw new ApiError(t('The server returned an unexpected success status.'), {
       kind: 'invalid-response',
       status: response.status,
     });
@@ -95,7 +96,7 @@ async function requestJson<T>(
   } catch (error) {
     if (signal?.aborted || isAbortError(error)) throw error;
 
-    throw new ApiError('The server returned unreadable data. Please try again.', {
+    throw new ApiError(t('The server returned unreadable data. Please try again.'), {
       kind: 'invalid-response',
       status: response.status,
       cause: error,

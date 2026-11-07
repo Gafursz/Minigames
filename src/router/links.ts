@@ -1,6 +1,6 @@
 import { getAppPath, pageHref } from './route.ts';
 
-export function appHref(page: 'home' | 'library'): string {
+export function appHref(page: 'home' | 'library' | 'profile'): string {
   return pageHref(page, import.meta.env.BASE_URL);
 }
 

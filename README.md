@@ -1,265 +1,130 @@
-# 🎮 MiniGames — Story 4
+# 🎮 MiniGames — User Profile & Achievements
 
-MiniGames is a responsive single-page gaming application developed as part of the **RS School Qualifying Stage**.
+A responsive, framework-free single-page application for discovering games, browsing details, saving favorites, and joining discussions. Built with **TypeScript, Sass, and Vite** for the **RS School Qualifying Stage**.
 
-The application is built with **TypeScript, Sass, and Vite** without JavaScript or CSS frameworks.
+The **Creative Extension** adds a personal profile with activity statistics, achievements, recent history, and customization.
 
-Story 3 public API integration and routing are complete. Story 4 is in progress:
-Feature 1 adds Vitest and project-wide coverage. Feature 2 adds real-time Login and
-Registration validation. Feature 3 adds the Firebase SDK and configuration foundation.
-The real authentication flow and authenticated mutations follow in subsequent task branches.
+**Repository:** [Gafursz/Minigames](https://github.com/Gafursz/Minigames) · **Extension branch:** `creative-extension`
+**Assignment:** [RS School — MiniGames Creative Extension](https://github.com/rolling-scopes-school/qualifying-stage/blob/main/tasks/creative-extension/mini-games.md) · **Design:** [Figma](https://www.figma.com/design/4MnLizE59gZI2DDxaSgZqi/MiniGames)
 
-## 🔗 Links
+> **Important:** MiniGames is a game **catalog**, not a platform for playing games. Profile statistics measure catalog interactions such as games explored, favorites added, and comments submitted. They do **not** represent gameplay scores, wins, or playtime.
 
-- [GitHub Repository](https://github.com/Gafursz/Minigames)
-- [Live Demo](https://gafursz.github.io/Minigames/)
-- [RS School MiniGames Assignment](https://github.com/rolling-scopes-school/qualifying-stage/tree/main/tasks/minigames)
-- [Figma Design](https://www.figma.com/design/4MnLizE59gZI2DDxaSgZqi/MiniGames)
+## Features
 
-## ✨ Features
+### Core application
 
-### Home
+- Responsive home page, featured games, carousel, and leaderboard
+- Games library with API-backed filtering, sorting, and pagination
+- Game details with statistics, comments, favorites, and comment likes
+- Single-page navigation with browser history and shareable URLs
+- Firebase email/password and Google sign-in, with protected account actions
 
-- Responsive navigation and mobile menu
-- Hero section
-- Interactive game carousel with autoplay and swipe support
-- Weekly leaderboard
-- Developer section
-- Responsive footer
+### Creative Extension — Player Profile & Achievements
 
-### Games Library
+- **Personal dashboard:** games explored, locally tracked favorites, comments posted, and achievements earned
+- **Six achievements:** milestones for exploration, favorites, commenting, and profile customization
+- **Recent activity:** up to 50 game views, favorite changes, and successful comments
+- **Profile customization:** six avatars, five colors, optional nickname, and short bio
+- **Preferences:** reduced motion and achievement notifications
+- **Persistent progress:** browser `localStorage`, separated by signed-in account
+- **Safe recovery:** saved-data validation, duplicate-view prevention, and confirmation before resetting local progress
 
-- SPA navigation
-- Responsive game cards
-- Game filtering and sorting
-- Pagination
-- Game Details dialog
-- Game statistics, records, and comments
+The achievement rules are:
 
-### Authentication
+| Achievement              | Unlock requirement                   |
+| ------------------------ | ------------------------------------ |
+| 🔎 First discovery       | Explore one distinct game            |
+| 🧭 Curious explorer      | Explore five distinct games          |
+| 💛 Game collector        | Have three locally tracked favorites |
+| 💬 Join the conversation | Submit one successful comment        |
+| 🏅 Trailblazer           | Explore ten distinct games           |
+| ✨ Make it yours         | Save a customized profile            |
 
-- Login and registration dialogs
-- Login/Register switching
-- Password visibility controls
-- Real-time field validation, accessible inline errors, and disabled invalid submissions
-- Form reset on Login/Register changes, including browser history
-- Backdrop and Escape-key dismissal
-- Responsive desktop and mobile layouts
+Achievements unlock only once and remain earned when a milestone's current value later changes.
 
-### Application Session Management
+## Tech stack
 
-MiniGames uses Firebase Authentication for user identity and maintains a separate client-side application session.
+**TypeScript · Sass/SCSS · Vite · Firebase Authentication · REST API · Vitest · ESLint · Prettier · GitHub Actions**
 
-**localStorage key:** `minigames:gafursz:app-session`
+The application uses native DOM APIs and a custom SPA router rather than a frontend UI framework.
 
-The application session stores:
+## Getting started
 
-- `displayName` — the authenticated user's display name.
-- `email` — the authenticated user's email address.
-- `avatarUrl` — optional profile-photo URL.
-- `authenticatedAt` — the timestamp when the application session was established, expressed in milliseconds since the Unix epoch.
+Use a Node.js version supported by [`package.json`](package.json).
 
-**Session lifetime:** 5 minutes (300,000 milliseconds) from the original `authenticatedAt` timestamp.
+```bash
+git clone --branch creative-extension https://github.com/Gafursz/Minigames.git
+cd Minigames
+npm ci
+```
 
-Refreshing the browser does not restart or extend the five-minute session. When the session expires, MiniGames returns to guest mode, clears the application session, and attempts Firebase provider sign-out.
+Create your local Firebase configuration from the provided template:
 
-Authenticated actions, including favorites, comment submission, and comment likes, require a valid application session.
+```bash
+cp .env.example .env.local
+```
 
-## 🛠️ Tech Stack
+Add the **Firebase web-app configuration** for your own project to `.env.local`, and enable the sign-in methods you intend to use in Firebase Authentication. The `.env.local` file is ignored by Git; never commit private keys, service-account credentials, or tokens.
 
-- TypeScript
-- Sass / SCSS
-- Vite
-- ESLint
-- Prettier
-- Husky
-- Commitlint
-- Vitest with V8 coverage and jsdom for DOM tests
-- Git & GitHub
+Start development:
 
-No JavaScript or CSS frameworks, or pre-built slider libraries are used.
+```bash
+npm run dev
+```
 
-## 📁 Project Structure
+Open the address printed by Vite, sign in, and choose **My profile**. The profile route is `/Minigames/profile` with this project's configured base path.
+
+Build for production:
+
+```bash
+npm run build
+npm run preview
+```
+
+## Testing and quality
+
+The most recent local verification of the completed source reported:
+
+- **345/345** Vitest tests passing (34 test files)
+- **6/6** focused profile smoke tests passing
+- **0** ESLint errors and a passing Prettier check
+- A successful TypeScript and Vite production build
+
+Run the checks yourself after cloning:
+
+```bash
+npm run lint
+npm run format:check
+npm run test:profile:smoke
+npm test
+npm run typecheck:tests
+npm run test:coverage
+npm run build
+```
+
+The separate test type-check and coverage commands are also part of the Creative Extension CI workflow; their results should be checked on the submitted branch.
+
+## Project structure
 
 ```text
 src/
-├── app/
-├── assets/
-├── components/
-├── data/
-├── features/
-│   ├── auth-dialog/
-│   ├── game-details/
-│   └── slider/
-├── pages/
-│   ├── home-page.ts
-│   └── library-page.ts
-├── styles/
-├── types/
-├── utils/
-└── main.ts
+├── app/app.ts                         # Routing, sessions, activity integration
+├── features/profile/player-progress.ts # Profile data and achievement rules
+├── pages/profile-page.ts              # Dashboard and settings UI
+├── components/header-profile.ts       # Profile display in the header
+└── styles/pages/_profile.scss         # Responsive profile styles
+
+tests/creative-extension/              # Profile unit and integration tests
+docs/creative-extension/README.md      # Feature architecture and technical guide
 ```
 
-## 🚀 Getting Started
+## Data and limitations
 
-Clone the repository:
+Profile data is saved **locally in the current browser**, using an account-specific storage key. It is not synced across devices, is not a server-verified achievement ledger, and does not automatically include earlier account activity. Browser data can be edited or cleared by the user. Resetting a profile clears its local progress only; it does not delete Firebase accounts or server-side favorites and comments.
 
-```bash
-git clone https://github.com/Gafursz/Minigames.git
-cd Minigames
-```
+For implementation details and manual test cases, see the **[Creative Extension technical guide](docs/creative-extension/README.md)**.
 
-Install dependencies:
+---
 
-```bash
-npm install
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## 📜 Scripts
-
-```bash
-npm run dev
-npm run build
-npm run preview
-npm run lint
-npm run format
-npm run format:check
-```
-
-## 📱 Responsive Design
-
-The application follows the provided Figma design and supports the required responsive layouts at:
-
-- **375px** — mobile
-- **768px** — tablet
-- **1920px** — desktop
-
-The interface also adapts fluidly between these breakpoints.
-
-## Unit tests and coverage
-
-`npm test` invokes the `test` script (`vitest run`). It runs every unit and DOM
-integration suite once and exits with a failing status if an assertion fails.
-Tests use mocked network responses and do not need Firebase credentials.
-
-```bash
-npm test
-```
-
-`npm run test:coverage` runs the same suites with V8 coverage. It prints the full
-source-file table and writes an HTML report to `coverage/index.html`. The command
-fails when aggregate statement coverage is below 80%. Generated reports are
-excluded from Git, ESLint, and Prettier; application logic is included in coverage.
-
-```bash
-npm run test:coverage
-```
-
-`npm run typecheck:tests` checks the application, TypeScript tests, and test
-configuration without emitting JavaScript files. `npm run test:watch` keeps Vitest
-running during development and reruns affected tests after edits.
-
-```bash
-npm run typecheck:tests
-npm run test:watch
-```
-
-Feature 1 baseline: **133 passing tests**, **87.42% statements**, **79.95% branches**,
-**92.12% functions**, and **90.42% lines** across all 46 non-declaration source
-TypeScript files. This is a measured snapshot; rerun coverage as features change.
-
-Read [Feature 1: what changed, how it works, and why](docs/story-4/01-test-foundation.md)
-for the migration details, coverage scope, commands, and remaining work.
-
-Feature 2 snapshot: **191 passing tests**, **89% statements**, **81.62% branches**,
-**93.15% functions**, and **91.97% lines** across all 48 non-declaration source
-TypeScript files. Coverage includes every application-logic file; the same 80%
-statement gate remains in place.
-
-Read [Feature 2: validation rules, UI behavior, and tests](docs/story-4/02-auth-validation.md)
-for the what/how/why guide and manual review steps. Feature 2 added validation;
-Feature 4 now connects valid forms to Firebase as described below.
-
-Read [Feature 3: Firebase setup and configuration](docs/story-4/03-firebase-foundation.md)
-to configure your personal Firebase Web app and enable Email/Password. Copy the
-provided `.env.example` to an ignored `.env.local` and fill your own project values.
-The SDK foundation is ready; personal Console/provider setup and live authentication
-verification remain required. The existing deploy workflow reads matching repository
-Actions variables. Nothing has been deployed by this feature.
-
-Read [Feature 4: Email/Password flow and the five-minute app session](docs/story-4/04-email-password-auth.md)
-for SDK calls, pending controls, retry/success behavior, header state, session expiry,
-logout, and the remaining manual checks. Its verification passed **230 tests**, with
-**89.70% statements** across all **54** source TypeScript files. Firebase Console
-configuration and a live sign-in check are still required; unit tests mock Firebase.
-Feature 5 adds Google OAuth. Feature 6 completes Auth dialog guards and game
-context recovery. Feature 7 adds server-driven favorites, and Feature 8 adds comment
-submission and avatars. Feature 9 adds server-confirmed comment likes.
-
-Read [Feature 5: Google sign-in](docs/story-4/05-google-auth.md) for the popup flow,
-cancellation/retry behavior, shared app session, and Firebase Google provider setup.
-Its snapshot passes **239 tests**, with **89.73% statements** across all **55** source
-TypeScript files. Google provider activation and real browser sign-in are still
-required; automated tests mock the provider boundary.
-
-## 🌿 Git Workflow
-
-Development follows the RS School story-based workflow:
-
-Create `story-4` from the completed `story-3` branch. Implement each task or small
-related group on a separate feature branch and merge its task PR into `story-4`.
-
-Feature 1 uses `feature/test-foundation` → `story-4`. The final Story 4 Cross-Check
-PR targets `story-3` and **must remain unmerged**. Keep the earlier Story 3
-Cross-Check PR unmerged too.
-
-Feature 2 uses `feature/auth-validation` → `story-4` and depends on Feature 1.
-Its delivery was built from Feature 1's exact tip because that prerequisite had
-not yet been integrated on GitHub. Integrate Feature 1 before Feature 2.
-
-Feature 3 uses `feature/firebase-auth`; Feature 4 uses `feature/email-password-auth`.
-These are dependent task branches built from the previous feature's exact tip.
-Integrate their task PRs into `story-4` in order. No push or PR merge is claimed by
-their delivery packages. Keep the final Cross-Check PR unmerged.
-
-Feature 5 uses `feature/google-auth` and depends on Feature 4's original tip.
-Import and integrate it after the preceding task PRs; preserve local edits through
-Git rather than overwriting your working folder with the complete source snapshot.
-
-Read [Feature 6: Auth guards and session recovery](docs/story-4/06-auth-guards.md)
-for URL/history rules, protected action hooks, and verification. Its branch
-`feature/auth-guards` depends on Feature 5; integrate the task PRs in order.
-
-Read [Feature 7: Favorites API](docs/story-4/07-favorites-api.md) for personalized
-state, request locking, failure recovery, and tests. `feature/favorites-api` depends
-on Feature 6 and targets `story-4`.
-
-Read [Feature 8: Comment submission and avatars](docs/story-4/08-comment-submission.md)
-for API submission, keyboard behavior, failure recovery, and stable avatar colors.
-`feature/comment-submission` depends on Feature 7 and targets `story-4`.
-
-Read [Feature 9: Comment likes](docs/story-4/09-comment-likes.md) for personalized
-state, per-comment request locks, failure reconciliation, and final manual checks.
-`feature/comment-likes` depends on Feature 8 and targets `story-4`.
-
-## 👨‍💻 Author
-
-**Gafur Sharipov**
-
-GitHub: [@Gafursz](https://github.com/Gafursz)
-
-## 📄 Assignment
-
-Developed for the **RS School Qualifying Stage — MiniGames Story 4**.
+**Author:** [@Gafursz](https://github.com/Gafursz)
+**Project:** RS School Qualifying Stage — MiniGames

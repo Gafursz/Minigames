@@ -1,3 +1,4 @@
+import { t } from '../../utils/text';
 import unableLoadGamesImage from '../../assets/images/unable_load_games.png';
 
 import { getFeaturedGames } from '../../api/minigames-api';
@@ -67,7 +68,7 @@ export class Slider {
         <button
           class="slider__control slider__control--previous"
           type="button"
-          aria-label="Previous games"
+          aria-label="${t('Previous games')}"
           disabled
         >
           <svg
@@ -89,7 +90,7 @@ export class Slider {
         <button
           class="slider__control slider__control--next"
           type="button"
-          aria-label="Next games"
+          aria-label="${t('Next games')}"
           disabled
         >
           <svg
@@ -180,7 +181,7 @@ export class Slider {
       isEmpty: hasNoItems,
       layout: 'slider',
       label: 'Featured games',
-      emptyMessage: 'No featured games to show right now. Check back later.',
+      emptyMessage: t('No featured games to show right now. Check back later.'),
       errorImageSrc: unableLoadGamesImage,
       render: (response) => {
         this.games = response.data;
@@ -216,7 +217,7 @@ export class Slider {
                 class="slider__title-accent"
                 aria-hidden="true"
               ></span>
-              New Games
+              ${t('New Games')}
             </h2>
 
             ${this.renderControls()}

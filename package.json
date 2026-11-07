@@ -23,6 +23,7 @@
     "test:library": "vitest run tests/library/",
     "typecheck:feedback": "tsc -p tsconfig.feedback.json",
     "test": "vitest run",
+    "test:profile:smoke": "node --experimental-transform-types --test tests/creative-extension/refactor-smoke.mjs",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck:tests": "tsc -p tsconfig.tests.json"

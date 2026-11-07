@@ -1,3 +1,4 @@
+import { t } from '../../utils/text';
 import { getGameDetails, toggleFavorite } from '../../api/minigames-api';
 import type { FavoriteState } from '../../api/minigames-api';
 import type { AuthProfile } from '../../auth/email-auth';
@@ -16,20 +17,23 @@ export class FavoriteControl {
   private state: FavoriteState = { isFavorited: false, likesCount: 0 };
   private isReady = false;
 
-  constructor(private readonly requireSession?: () => AuthProfile | undefined) {}
+  constructor(
+    private readonly requireSession?: () => AuthProfile | undefined,
+    private readonly onConfirmed?: (slug: string, isFavorited: boolean) => void,
+  ) {}
 
   private paint(): void {
     const button = this.dialog?.querySelector<HTMLButtonElement>('.game-details__favorite');
     if (!button) return;
     const isPending = Boolean(this.request);
-    let label = this.state.isFavorited ? 'Remove from Favorites' : 'Add to Favorites';
-    if (this.profile && !this.isReady) label = 'Retry favorite status';
-    if (isPending) label = 'Loading…';
+    let label = t(this.state.isFavorited ? 'Remove from Favorites' : 'Add to Favorites');
+    if (this.profile && !this.isReady) label = t('Retry favorite status');
+    if (isPending) label = t('Loading…');
     button.disabled = isPending || !this.requireSession;
     button.setAttribute('aria-busy', String(isPending));
     button.setAttribute('aria-pressed', String(this.state.isFavorited));
     button.setAttribute('aria-label', label);
-    button.title = this.profile ? label : 'Sign in to add favorites';
+    button.title = this.profile ? label : t('Sign in to add favorites');
     const text = button.querySelector('.game-details__favorite-label');
     if (text) text.textContent = label;
     const icon = button.querySelector('img');
@@ -59,9 +63,10 @@ export class FavoriteControl {
       if (!isCurrent()) return;
       this.state = state;
       this.isReady = true;
+      if (shouldToggle) this.onConfirmed?.(slug, state.isFavorited);
       if (shouldToggle)
         snackbar.show(
-          state.isFavorited ? 'Added to Favorites.' : 'Removed from Favorites.',
+          t(state.isFavorited ? 'Added to Favorites.' : 'Removed from Favorites.'),
           'success',
         );
     } catch {
@@ -69,9 +74,11 @@ export class FavoriteControl {
       // A failed POST may have reached the server. Reconcile with GET on explicit retry.
       this.isReady = false;
       snackbar.show(
-        shouldToggle
-          ? 'Favorite update could not be confirmed. Retry favorite status before trying again.'
-          : 'Favorite status could not be loaded. Use Retry favorite status.',
+        t(
+          shouldToggle
+            ? 'Favorite update could not be confirmed. Retry favorite status before trying again.'
+            : 'Favorite status could not be loaded. Use Retry favorite status.',
+        ),
         'error',
       );
     } finally {
@@ -112,7 +119,7 @@ export class FavoriteControl {
         if (this.request) return;
         const profile = this.requireSession?.();
         if (!profile) {
-          snackbar.show('Please sign in to use Favorites.', 'error');
+          snackbar.show(t('Please sign in to use Favorites.'), 'error');
           return;
         }
         if (this.profile?.email !== profile.email) {

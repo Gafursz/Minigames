@@ -1,3 +1,4 @@
+import { t } from '../../utils/text';
 import type { AuthMode } from './auth-form';
 
 export type AuthFieldName = 'email' | 'username' | 'password' | 'confirm-password';
@@ -17,31 +18,31 @@ const EMAIL_DOMAIN =
 
 function validateEmail(value: string): string {
   const email = value.trim();
-  if (!email) return 'Enter your email address.';
+  if (!email) return t('Enter your email address.');
   const parts = email.split('@');
   return parts.length !== 2 || !EMAIL_LOCAL.test(parts[0]) || !EMAIL_DOMAIN.test(parts[1])
-    ? 'Enter a valid email address, such as alex@example.com.'
+    ? t('Enter a valid email address, such as alex@example.com.')
     : '';
 }
 
 function validateUsername(value: string): string {
-  if (!value) return 'Enter a username.';
+  if (!value) return t('Enter a username.');
   if (value.length < AUTH_RULES.usernameMinLength || value.length > AUTH_RULES.usernameMaxLength) {
-    return 'Use 2–30 characters for your username.';
+    return t('Use 2–30 characters for your username.');
   }
-  if (!/^[A-Z]/.test(value)) return 'Start your username with an uppercase English letter.';
-  return /^[\dA-Za-z]+$/.test(value) ? '' : 'Use English letters and digits only.';
+  if (!/^[A-Z]/.test(value)) return t('Start your username with an uppercase English letter.');
+  return /^[\dA-Za-z]+$/.test(value) ? '' : t('Use English letters and digits only.');
 }
 
 function validatePassword(value: string, mode: AuthMode): string {
-  if (!value) return 'Enter your password.';
-  if (value.length < AUTH_RULES.passwordMinLength) return 'Use at least 6 characters.';
+  if (!value) return t('Enter your password.');
+  if (value.length < AUTH_RULES.passwordMinLength) return t('Use at least 6 characters.');
   if (mode === 'login') return '';
   // Visible ASCII punctuation counts as special; spaces and non-English letters do not.
-  if (!/^[!-~]+$/.test(value)) return 'Use English letters, digits, and symbols without spaces.';
-  if (!/[A-Z]/.test(value)) return 'Include an uppercase English letter.';
-  if (!/\d/.test(value)) return 'Include a digit.';
-  return /[^\dA-Za-z]/.test(value) ? '' : 'Include a special character, such as ! or @.';
+  if (!/^[!-~]+$/.test(value)) return t('Use English letters, digits, and symbols without spaces.');
+  if (!/[A-Z]/.test(value)) return t('Include an uppercase English letter.');
+  if (!/\d/.test(value)) return t('Include a digit.');
+  return /[^\dA-Za-z]/.test(value) ? '' : t('Include a special character, such as ! or @.');
 }
 
 export function validateAuthForm(mode: AuthMode, values: AuthValues): AuthErrors {
@@ -53,9 +54,9 @@ export function validateAuthForm(mode: AuthMode, values: AuthValues): AuthErrors
   };
   if (mode === 'register') {
     errors.username = validateUsername(values.username);
-    if (!values['confirm-password']) errors['confirm-password'] = 'Confirm your password.';
+    if (!values['confirm-password']) errors['confirm-password'] = t('Confirm your password.');
     else if (values['confirm-password'] !== values.password) {
-      errors['confirm-password'] = 'Passwords must match exactly.';
+      errors['confirm-password'] = t('Passwords must match exactly.');
     }
   }
   return errors;

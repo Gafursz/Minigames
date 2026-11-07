@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import type { AuthProfile } from './email-auth';
 
 export const APP_SESSION_KEY = 'minigames:gafursz:app-session';
@@ -13,7 +14,7 @@ type SessionResult =
 
 export class SessionStorageError extends Error {
   constructor() {
-    super('Browser storage is unavailable. Allow site storage and try signing in again.');
+    super(t('Browser storage is unavailable. Allow site storage and try signing in again.'));
     this.name = 'SessionStorageError';
   }
 }

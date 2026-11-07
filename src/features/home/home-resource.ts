@@ -1,3 +1,4 @@
+import { t, translateKnown } from '../../utils/text';
 import { ApiError } from '../../api/http-client';
 
 import { ContentFeedback } from '../../components/content-feedback';
@@ -40,7 +41,10 @@ export class HomeResource<T> {
       !this.destroyed && !controller.signal.aborted && this.requestController === controller;
     const { label } = this.options;
     this.options.onClear?.();
-    this.feedback.showLoading(this.options.layout, `Loading ${label.toLowerCase()}…`);
+    this.feedback.showLoading(
+      this.options.layout,
+      translateKnown(`Loading ${label.toLowerCase()}…`),
+    );
 
     try {
       const data = await this.options.request(controller.signal);
@@ -50,28 +54,28 @@ export class HomeResource<T> {
       if (!isCurrent()) return;
       if (this.options.isEmpty(data)) {
         this.feedback.showEmpty({
-          title: `No ${label.toLowerCase()} yet`,
+          title: translateKnown(`No ${label.toLowerCase()} yet`),
           message: this.options.emptyMessage,
         });
       } else {
         this.feedback.showContent(this.options.render(data));
         this.options.onReady?.();
       }
-      if (isRetry) snackbar.show(`${label} loaded successfully.`, 'success');
+      if (isRetry) snackbar.show(translateKnown(`${label} loaded successfully.`), 'success');
     } catch (error) {
       if (!isCurrent()) return;
       this.options.onClear?.();
       const message =
         error instanceof ApiError
           ? error.message
-          : 'The server returned unexpected data. Please try again.';
+          : t('The server returned unexpected data. Please try again.');
       this.feedback.showError({
-        title: `Unable to load ${label.toLowerCase()}`,
+        title: translateKnown(`Unable to load ${label.toLowerCase()}`),
         message,
         onRetry: () => this.load(true),
         imageSrc: this.options.errorImageSrc,
       });
-      snackbar.show(`${label} could not be loaded.`, 'error');
+      snackbar.show(translateKnown(`${label} could not be loaded.`), 'error');
     }
   }
 

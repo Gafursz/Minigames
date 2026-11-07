@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import developerIllustration from '../assets/images/developer/developer-illustration.png';
 
 import uploadIcon from '../assets/icons/upload-icon.svg';
@@ -22,13 +23,11 @@ export class DeveloperSection {
             class="developer-section__title"
             id="developer-section-title"
           >
-            Are You a Game Developer?
+            ${t('Are You a Game Developer?')}
           </h2>
 
           <p class="developer-section__description">
-  Want to see your game on MiniGames? We're always looking for fun,
-  engaging mini games to add to our platform. Submit your game
-  and reach thousands of players!
+  ${t("Want to see your game on MiniGames? We're always looking for fun, engaging mini games to add to our platform. Submit your game and reach thousands of players!")}
 </p>
 
           <a
@@ -41,11 +40,11 @@ export class DeveloperSection {
     alt=""
     aria-hidden="true"
   />
-  Submit Form
+  ${t('Submit Form')}
 </a>
 
 <p class="developer-section__contact">
-  or contact us at
+  ${t('or contact us at')}
   <a
     class="developer-section__email"
     href="mailto:hello@minigames.com"

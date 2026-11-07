@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 export type SnackbarVariant = 'success' | 'error';
 
 export const SNACKBAR_DURATION = 6000;
@@ -26,7 +27,7 @@ export class Snackbar {
     const close = document.createElement('button');
     close.className = 'snackbar__close';
     close.type = 'button';
-    close.setAttribute('aria-label', 'Dismiss notification');
+    close.setAttribute('aria-label', t('Dismiss notification'));
     close.textContent = '×';
     close.addEventListener('click', () => this.dismiss());
 
@@ -65,6 +66,9 @@ export class Snackbar {
     element.className = `snackbar snackbar--${variant}`;
     element.setAttribute('role', variant === 'error' ? 'alert' : 'status');
     element.setAttribute('aria-live', variant === 'error' ? 'assertive' : 'polite');
+    element
+      .querySelector('.snackbar__close')
+      ?.setAttribute('aria-label', t('Dismiss notification'));
     const symbol = element.querySelector('.snackbar__symbol');
     const text = element.querySelector('.snackbar__message');
     if (symbol) symbol.textContent = variant === 'error' ? '!' : '✓';

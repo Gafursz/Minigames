@@ -1,6 +1,6 @@
 import type { GameSort } from '../types/api.ts';
 
-export type RoutePage = 'home' | 'library' | 'not-found';
+export type RoutePage = 'home' | 'library' | 'profile' | 'not-found';
 export type RouteDialog =
   { kind: 'game'; slug: string } | { kind: 'auth'; mode: 'login' | 'register' };
 
@@ -22,6 +22,8 @@ const pages = new Map<string, RoutePage>([
   ['/home/', 'home'],
   ['/library', 'library'],
   ['/library/', 'library'],
+  ['/profile', 'profile'],
+  ['/profile/', 'profile'],
 ]);
 
 export function normalizeBase(base: string): string {
@@ -39,8 +41,8 @@ export function getAppPath(url: URL, base: string): string | undefined {
     : undefined;
 }
 
-export function pageHref(page: 'home' | 'library', base: string): string {
-  return `${normalizeBase(base)}${page === 'library' ? 'library' : ''}`;
+export function pageHref(page: Exclude<RoutePage, 'not-found'>, base: string): string {
+  return `${normalizeBase(base)}${page === 'home' ? '' : page}`;
 }
 
 function readPage(value: string | undefined): number {

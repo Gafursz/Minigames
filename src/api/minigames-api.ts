@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import type {
   CategoriesResponse,
   FeaturedGamesResponse,
@@ -109,10 +110,10 @@ export async function submitGameComment(
   signal?: AbortSignal,
 ): Promise<void> {
   if (userEmail.trim().length === 0 || authorName.length < 2 || authorName.length > 30)
-    throw new TypeError('Your profile needs a name of 2–30 characters before posting.');
+    throw new TypeError(t('Your profile needs a name of 2–30 characters before posting.'));
   const trimmed = text.trim();
   if (trimmed.length === 0 || trimmed.length > 500)
-    throw new TypeError('Write a comment of 1–500 characters.');
+    throw new TypeError(t('Write a comment of 1–500 characters.'));
   await postJson<unknown>(
     `${getGamePath(slug)}/comments`,
     {

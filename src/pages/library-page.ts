@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
 import { LibraryFilters } from '../components/library-filters';
@@ -94,11 +95,11 @@ export class LibraryPage {
 
       <main class="library">
         <section class="library__intro" aria-labelledby="library-title">
-          <h1 class="library__title" id="library-title">Game Library</h1>
-          <p class="library__description">Browse our collection of casual mini-games</p>
+          <h1 class="library__title" id="library-title">${t('Game Library')}</h1>
+          <p class="library__description">${t('Browse our collection of casual mini-games')}</p>
         </section>
         ${this.filters.render()}
-        <section class="library__cards" aria-label="Games" aria-busy="true"></section>
+        <section class="library__cards" aria-label="${t('Games')}" aria-busy="true"></section>
         ${this.pagination.render()}
       </main>
 

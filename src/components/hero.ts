@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import { appHref } from '../router/links';
 export class Hero {
   public render(): string {
@@ -6,21 +7,20 @@ export class Hero {
         <div class="hero__container">
           <div class="hero__content">
             <h1 class="hero__title" id="hero-title">
-              Take a Short Break<br />
-              & Have Fun
+              ${t('Take a Short Break')}<br />
+              ${t('& Have Fun')}
             </h1>
 
             <p class="hero__description hero__description--desktop">
-              Discover hundreds of curated casual mini-games. Play instantly in your browser — puzzle,
-              match 3, farm, and board classics.
+              ${t('Discover hundreds of curated casual mini-games. Play instantly in your browser — puzzle, match 3, farm, and board classics.')}
             </p>
 
             <p class="hero__description hero__description--mobile">
-              Discover hundreds of curated casual mini-games right in your browser.
+              ${t('Discover hundreds of curated casual mini-games right in your browser.')}
             </p>
 
             <a class="hero__button" href="${appHref('library')}" data-router-link>
-              Browse Library
+              ${t('Browse Library')}
             </a>
           </div>
         </div>

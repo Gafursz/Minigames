@@ -1,3 +1,4 @@
+import { t, translateKnown } from '../utils/text';
 import checkIcon from '../assets/icons/sort-check.svg';
 import dividerIcon from '../assets/icons/sort-divider.svg';
 import type { GameSort } from '../types/api';
@@ -18,16 +19,16 @@ export class LibrarySort {
       <div class="library-sort">
         <button class="library-sort__trigger" type="button" aria-haspopup="listbox"
           aria-controls="library-sort-options" aria-expanded="false">
-          Sort by: <span class="library-sort__label">${options[this.selectedIndex].label}</span>
+          ${t('Sort by:')} <span class="library-sort__label">${translateKnown(options[this.selectedIndex].label)}</span>
         </button>
-        <ul class="library-sort__options" id="library-sort-options" role="listbox" aria-label="Sort games" hidden>
+        <ul class="library-sort__options" id="library-sort-options" role="listbox" aria-label="${t('Sort games')}" hidden>
           ${options
             .map(
               (option, index) => `
             <li class="library-sort__option" role="option" tabindex="-1"
               data-sort-index="${index}" aria-selected="${index === this.selectedIndex}">
               <img class="library-sort__check" src="${checkIcon}" alt="" />
-              <span>${option.label}</span>
+              <span>${translateKnown(option.label)}</span>
               ${index < options.length - 1 ? `<img class="library-sort__divider" src="${dividerIcon}" alt="" />` : ''}
             </li>
           `,
@@ -43,7 +44,7 @@ export class LibrarySort {
     if (index === -1) return;
     this.selectedIndex = index;
     const label = this.root?.querySelector('.library-sort__label');
-    if (label) label.textContent = options[index].label;
+    if (label) label.textContent = translateKnown(options[index].label);
     const items = this.root?.querySelectorAll<HTMLElement>('[data-sort-index]') ?? [];
     for (const item of items) {
       item.setAttribute('aria-selected', String(Number(item.dataset.sortIndex) === index));
@@ -145,7 +146,7 @@ export class LibrarySort {
             next = (index - 1 + items.length) % items.length;
             break;
           }
-          case 'Home': {
+          case t('Home'): {
             next = 0;
             break;
           }

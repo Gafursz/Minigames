@@ -1,3 +1,4 @@
+import { t, getLocale } from './text';
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
@@ -8,12 +9,12 @@ const YEAR = 365 * DAY;
 
 export function formatRelativeTime(timestamp: string, now = Date.now()): string {
   const created = Date.parse(timestamp);
-  if (!Number.isFinite(created)) return 'Unknown time';
+  if (!Number.isFinite(created)) return t('Unknown time');
   const elapsed = Math.max(0, now - created);
-  if (elapsed < MINUTE) return 'just now';
-  if (elapsed < HOUR) return `${Math.floor(elapsed / MINUTE)} min ago`;
+  if (elapsed < MINUTE) return t('just now');
+  if (elapsed < HOUR) return t('{count} min ago', { count: Math.floor(elapsed / MINUTE) });
   let value: number;
-  let unit: string;
+  let unit: Intl.RelativeTimeFormatUnit;
   if (elapsed < DAY) {
     value = Math.floor(elapsed / HOUR);
     unit = 'hour';
@@ -30,5 +31,5 @@ export function formatRelativeTime(timestamp: string, now = Date.now()): string 
     value = Math.floor(elapsed / YEAR);
     unit = 'year';
   }
-  return `${value} ${unit}${value === 1 ? '' : 's'} ago`;
+  return new Intl.RelativeTimeFormat(getLocale(), { numeric: 'always' }).format(-value, unit);
 }

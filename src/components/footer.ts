@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import { appHref } from '../router/links';
 import chatIcon from '../assets/icons/footer-chat.svg';
 import rssIcon from '../assets/icons/footer-rss.svg';
@@ -15,7 +16,7 @@ export class Footer {
             <a
               class="footer__logo"
               href="${appHref('home')}" data-router-link
-              aria-label="MiniGames home"
+              aria-label="${t('MiniGames home')}"
             >
               <img
                 class="footer__logo-icon"
@@ -29,42 +30,41 @@ export class Footer {
             </a>
 
             <p class="footer__description">
-              Take a short break and have fun. Hundreds of curated casual mini-games
-              right in your web browser. No download required.
+              ${t('Take a short break and have fun. Hundreds of curated casual mini-games right in your web browser. No download required.')}
             </p>
           </div>
 
           <nav
             class="footer__navigation"
-            aria-label="Footer navigation"
+            aria-label="${t('Footer navigation')}"
           >
             <div class="footer__nav-column">
               <h3 class="footer__nav-title">
-                Explore
+                ${t('Explore')}
               </h3>
 
               <ul class="footer__nav-list">
                 <li>
                   <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
-                    Home
+                    ${t('Home')}
                   </a>
                 </li>
 
                 <li>
                   <a class="footer__nav-link" href="${appHref('library')}" data-router-link>
-                    Library
+                    ${t('Library')}
                   </a>
                 </li>
 
                 <li>
                   <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
-                    Categories
+                    ${t('Categories')}
                   </a>
                 </li>
 
                 <li>
                   <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
-                    Tournaments
+                    ${t('Tournaments')}
                   </a>
                 </li>
               </ul>
@@ -72,31 +72,31 @@ export class Footer {
 
             <div class="footer__nav-column">
               <h3 class="footer__nav-title">
-                Company
+                ${t('Company')}
               </h3>
 
               <ul class="footer__nav-list">
                 <li>
                   <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
-                    About Us
+                    ${t('About Us')}
                   </a>
                 </li>
 
                 <li>
                   <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
-                    Contact
+                    ${t('Contact')}
                   </a>
                 </li>
 
                 <li>
                   <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
-                    Privacy Policy
+                    ${t('Privacy Policy')}
                   </a>
                 </li>
 
                 <li>
                   <a class="footer__nav-link" href="${appHref('home')}" data-router-link>
-                    Terms of Service
+                    ${t('Terms of Service')}
                   </a>
                 </li>
               </ul>
@@ -104,14 +104,14 @@ export class Footer {
 
             <div class="footer__community">
               <h3 class="footer__nav-title">
-                Community
+                ${t('Community')}
               </h3>
 
               <div class="footer__socials">
                 <a
                   class="footer__social-link"
                   href="${appHref('home')}" data-router-link
-                  aria-label="Share MiniGames"
+                  aria-label="${t('Share MiniGames')}"
                 >
                   <img
                     class="footer__social-icon"
@@ -123,7 +123,7 @@ export class Footer {
                 <a
                   class="footer__social-link"
                   href="${appHref('home')}" data-router-link
-                  aria-label="MiniGames community"
+                  aria-label="${t('MiniGames community')}"
                 >
                   <img
                     class="footer__social-icon"
@@ -135,7 +135,7 @@ export class Footer {
                 <a
                   class="footer__social-link"
                   href="${appHref('home')}" data-router-link
-                  aria-label="MiniGames RSS feed"
+                  aria-label="${t('MiniGames RSS feed')}"
                 >
                   <img
                     class="footer__social-icon"
@@ -150,7 +150,7 @@ export class Footer {
 
         <div class="footer__bottom">
           <p class="footer__copyright">
-            © 2026 MiniGames. All rights reserved.
+            ${t('© 2026 MiniGames. All rights reserved.')}
           </p>
 
           <a
@@ -179,7 +179,7 @@ export class Footer {
           </a>
 
           <span class="footer__designed">
-            Designed with love
+            ${t('Designed with love')}
           </span>
         </div>
       </footer>

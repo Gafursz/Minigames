@@ -1,3 +1,4 @@
+import { t, formatNumber, getLocale } from '../utils/text';
 import { getLeaderboard } from '../api/minigames-api';
 
 import unableLoadPlayersImage from '../assets/images/unable_load_players.png';
@@ -12,7 +13,7 @@ export class Leaderboard {
   private resource: HomeResource<LeaderboardData> | undefined;
 
   private formatScore(score: number): string {
-    return score.toLocaleString('en-US');
+    return formatNumber(score);
   }
 
   private getInitials(playerName: string): string {
@@ -68,7 +69,7 @@ export class Leaderboard {
           </span>
 
           <span>
-            ${escapeHtml(String(player.streakDays))} days
+            ${t('{count} days', { count: formatNumber(player.streakDays) })}
           </span>
         </td>
 
@@ -86,27 +87,27 @@ export class Leaderboard {
       <thead>
         <tr class="leaderboard__header">
           <th scope="col">
-            Rank
+            ${t('Rank')}
           </th>
 
           <th scope="col">
-            Player
+            ${t('Player')}
           </th>
 
           <th scope="col">
-            Games Played
+            ${t('Games Played')}
           </th>
 
           <th scope="col">
-            Total Score
+            ${t('Total Score')}
           </th>
 
           <th scope="col">
-            Streak
+            ${t('Streak')}
           </th>
 
           <th scope="col">
-            Favorite Game
+            ${t('Favorite Game')}
           </th>
         </tr>
       </thead>
@@ -122,12 +123,16 @@ export class Leaderboard {
       isEmpty: hasNoItems,
       layout: 'leaderboard',
       label: 'Top players',
-      emptyMessage: 'No players have reached the leaderboard yet. Check back later.',
+      emptyMessage: t('No players have reached the leaderboard yet. Check back later.'),
       errorImageSrc: unableLoadPlayersImage,
 
       render: (response) => {
         const title = document.querySelector('.leaderboard-section__title-desktop');
-        if (title) title.textContent = response.meta.description || 'Top Players This Week';
+        if (title)
+          title.textContent =
+            getLocale() === 'en'
+              ? response.meta.description || t('Top Players This Week')
+              : t('Top Players This Week');
         return `<table class="leaderboard" aria-labelledby="leaderboard-title">
           ${this.renderTableHeader()}
           <tbody class="leaderboard__body">
@@ -159,11 +164,11 @@ export class Leaderboard {
 
           <h2 class="leaderboard-section__title" id="leaderboard-title">
   <span class="leaderboard-section__title-desktop">
-    Top Players This Week
+    ${t('Top Players This Week')}
   </span>
 
   <span class="leaderboard-section__title-mobile">
-    Top Players
+    ${t('Top Players')}
   </span>
 </h2>
         </div>

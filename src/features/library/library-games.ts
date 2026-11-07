@@ -1,3 +1,4 @@
+import { t } from '../../utils/text';
 import libraryDataNotFoundImage from '../../assets/images/library-data-not-found.png';
 import unableLoadGamesImage from '../../assets/images/unable_load_games.png';
 import { ApiError } from '../../api/http-client';
@@ -73,7 +74,7 @@ export class LibraryGames {
   public showLoading(): void {
     if (this.isDestroyed) return;
     this.requestController?.abort();
-    this.feedback.showLoading('cards', 'Loading games…');
+    this.feedback.showLoading('cards', t('Loading games…'));
     this.onState({ kind: 'loading' });
   }
 
@@ -97,7 +98,7 @@ export class LibraryGames {
     const isCurrent = (): boolean =>
       !this.isDestroyed && !controller.signal.aborted && this.requestController === controller;
 
-    this.feedback.showLoading('cards', 'Loading games…');
+    this.feedback.showLoading('cards', t('Loading games…'));
     this.onState({ kind: 'loading' });
 
     try {
@@ -107,29 +108,29 @@ export class LibraryGames {
       const meta = readMetadata(response);
       if (games.length === 0) {
         this.feedback.showEmpty({
-          title: 'Data Not Found',
-          message: 'No games are available for this selection.',
+          title: t('Data Not Found'),
+          message: t('No games are available for this selection.'),
           imageSrc: libraryDataNotFoundImage,
         });
       } else {
         this.feedback.showContent(games.map((game) => new LibraryCard(game).render()).join(''));
       }
       this.onState({ kind: 'ready', meta, isEmpty: games.length === 0 });
-      if (isRetry && isCurrent()) snackbar.show('Game library loaded successfully.', 'success');
+      if (isRetry && isCurrent()) snackbar.show(t('Game library loaded successfully.'), 'success');
     } catch (error) {
       if (!isCurrent()) return;
       const message =
         error instanceof ApiError
           ? error.message
-          : 'The server returned unexpected game data. Please try again.';
+          : t('The server returned unexpected game data. Please try again.');
       this.feedback.showError({
-        title: 'Unable to load games',
+        title: t('Unable to load games'),
         message,
         imageSrc: unableLoadGamesImage,
         onRetry: () => this.load(attemptedQuery, true),
       });
       this.onState({ kind: 'error' });
-      snackbar.show('Games could not be loaded. Use Retry to try again.', 'error');
+      snackbar.show(t('Games could not be loaded. Use Retry to try again.'), 'error');
     }
   }
 

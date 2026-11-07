@@ -1,3 +1,4 @@
+import { t } from '../../utils/text';
 import type { AuthProfile } from '../../auth/email-auth';
 import { FavoriteControl } from './favorite-control';
 import closeIcon from '../../assets/icons/close.svg';
@@ -11,6 +12,7 @@ import { ApiError } from '../../api/http-client';
 import { getApiGameHeroImage } from '../../utils/game-hero';
 import { escapeHtml } from '../../utils/html';
 import { readGameDetails } from './game-data';
+import type { ActivityInput } from '../profile/player-progress';
 
 export class GameDetails {
   private readonly info = new GameInfo();
@@ -29,14 +31,24 @@ export class GameDetails {
   private isClosing = false;
   private shouldRestoreFocus = true;
   private slug: string | undefined;
+  private gameName = '';
 
   constructor(
     private readonly onOpenChange: (isOpen: boolean) => void,
     private readonly onCloseRequest?: () => void,
     private readonly requireSession?: () => AuthProfile | undefined,
+    private readonly onActivity?: (activity: ActivityInput) => void,
   ) {
-    this.comments = new GameComments(requireSession);
-    this.favorite = new FavoriteControl(requireSession);
+    this.comments = new GameComments(requireSession, (slug) =>
+      this.onActivity?.({ kind: 'comment', slug, name: this.gameName }),
+    );
+    this.favorite = new FavoriteControl(requireSession, (slug, isFavorited) =>
+      this.onActivity?.({
+        kind: isFavorited ? 'favorite' : 'unfavorite',
+        slug,
+        name: this.gameName,
+      }),
+    );
   }
 
   private setTitle(text: string): void {
@@ -45,10 +57,10 @@ export class GameDetails {
   }
 
   private showNotFound(): void {
-    this.setTitle('Game Not Found');
+    this.setTitle(t('Game Not Found'));
     this.feedback?.showEmpty({
-      title: 'Game Not Found',
-      message: 'This game does not exist or is no longer available.',
+      title: t('Game Not Found'),
+      message: t('This game does not exist or is no longer available.'),
     });
   }
 
@@ -61,8 +73,8 @@ export class GameDetails {
     const request = new AbortController();
     this.request = request;
     const isCurrent = (): boolean => this.request === request && !request.signal.aborted;
-    this.setTitle('Loading game details');
-    this.feedback.showLoading('details', 'Loading game details…');
+    this.setTitle(t('Loading game details'));
+    this.feedback.showLoading('details', t('Loading game details…'));
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
       this.showNotFound();
       return;
@@ -77,10 +89,13 @@ export class GameDetails {
         return;
       }
       const hero = getApiGameHeroImage(game.heroImage);
+      this.gameName = game.name;
+      if (requestedEmail && requestedEmail === this.profile?.email)
+        this.onActivity?.({ kind: 'view', slug, name: game.name });
       this.setTitle(game.name);
       this.feedback.showContent(`
           <div class="game-details__hero">
-            ${hero ? `<img class="game-details__cover" src="${escapeHtml(hero)}" alt="${escapeHtml(game.name)}" />` : '<div class="game-details__cover game-details__cover--placeholder" role="img" aria-label="Game image unavailable"></div>'}
+            ${hero ? `<img class="game-details__cover" src="${escapeHtml(hero)}" alt="${escapeHtml(game.name)}" />` : `<div class="game-details__cover game-details__cover--placeholder" role="img" aria-label="${t('Game image unavailable')}"></div>`}
           </div>
           <div class="game-details__body">
             ${this.info.render(game, Boolean(this.requireSession))}
@@ -98,24 +113,24 @@ export class GameDetails {
         },
         requestedEmail,
       );
-      if (isRetry) snackbar.show('Game details loaded successfully.', 'success');
+      if (isRetry) snackbar.show(t('Game details loaded successfully.'), 'success');
     } catch (error) {
       if (!isCurrent()) return;
       if (error instanceof ApiError && error.status === 404) {
         this.showNotFound();
-        snackbar.show('This game could not be found.', 'error');
+        snackbar.show(t('This game could not be found.'), 'error');
         return;
       }
-      this.setTitle('Unable to load game');
+      this.setTitle(t('Unable to load game'));
       this.feedback.showError({
-        title: 'Unable to load game',
+        title: t('Unable to load game'),
         message:
           error instanceof ApiError
             ? error.message
-            : 'The server returned unexpected game data. Please try again.',
+            : t('The server returned unexpected game data. Please try again.'),
         onRetry: () => this.load(true),
       });
-      snackbar.show('Game details could not be loaded. Use Retry to try again.', 'error');
+      snackbar.show(t('Game details could not be loaded. Use Retry to try again.'), 'error');
     }
   }
 
@@ -143,9 +158,9 @@ export class GameDetails {
 
   public render(): string {
     return `<dialog class="game-details" id="game-details" aria-labelledby="game-details-title">
-      <span class="visually-hidden" id="game-details-title">Game details</span>
+      <span class="visually-hidden" id="game-details-title">${t('Game details')}</span>
       <div class="game-details__content"></div>
-      <button class="game-details__close" type="button" aria-label="Close game details" autofocus>
+      <button class="game-details__close" type="button" aria-label="${t('Close game details')}" autofocus>
         <img src="${closeIcon}" alt="" />
       </button>
     </dialog>`;

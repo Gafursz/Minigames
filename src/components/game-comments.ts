@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import type { AuthProfile } from '../auth/email-auth';
 import sendIcon from '../assets/icons/send-comment.svg';
 import heartIcon from '../assets/icons/comment-heart.svg';
@@ -23,7 +24,10 @@ export class GameComments {
   private readonly likeRequests = new Map<string, AbortController>();
   private readonly avatarColors = new Map<string, number>();
 
-  constructor(private readonly requireSession?: () => AuthProfile | undefined) {}
+  constructor(
+    private readonly requireSession?: () => AuthProfile | undefined,
+    private readonly onPosted?: (slug: string) => void,
+  ) {}
 
   private renderComment(comment: GameComment): string {
     const name = comment.authorName.trim();
@@ -41,7 +45,7 @@ export class GameComments {
         <time class="game-comment__date" datetime="${escapeHtml(comment.createdAt)}">${formatRelativeTime(comment.createdAt)}</time>
       </header>
       <p class="game-comment__text"></p>
-      <button class="game-comment__like" data-comment-id="${escapeHtml(comment.commentId)}" data-likes-count="${comment.likesCount}" aria-pressed="${Boolean(this.profile) && comment.isLikedByCurrentUser}" type="button" ${this.requireSession ? '' : 'disabled'} title="Sign in to like comments" aria-label="${comment.likesCount} likes">
+      <button class="game-comment__like" data-comment-id="${escapeHtml(comment.commentId)}" data-likes-count="${comment.likesCount}" aria-pressed="${Boolean(this.profile) && comment.isLikedByCurrentUser}" type="button" ${this.requireSession ? '' : 'disabled'} title="${t('Sign in to like comments')}" aria-label="${t('{count} likes', { count: comment.likesCount })}">
         <img src="${this.profile && comment.isLikedByCurrentUser ? activeHeartIcon : heartIcon}" alt="" /><span>${comment.likesCount}</span>
       </button>
     </article></li>`;
@@ -54,18 +58,19 @@ export class GameComments {
     const request = new AbortController();
     this.request = request;
     const isCurrent = (): boolean => this.request === request && !request.signal.aborted;
-    this.feedback.showLoading('comments', 'Loading latest comments…');
-    if (this.heading) this.heading.textContent = 'Comments';
+    this.feedback.showLoading('comments', t('Loading latest comments…'));
+    if (this.heading) this.heading.textContent = t('Comments');
     try {
       const response = readGameComments(
         await getGameComments(this.slug, request.signal, this.profile?.email),
       );
       if (!isCurrent()) return;
-      if (this.heading) this.heading.textContent = `Comments (${response.totalComments})`;
+      if (this.heading)
+        this.heading.textContent = t('Comments ({count})', { count: response.totalComments });
       if (response.data.length === 0) {
         this.feedback.showEmpty({
-          title: 'No comments yet',
-          message: 'This game has no comments to display.',
+          title: t('No comments yet'),
+          message: t('This game has no comments to display.'),
         });
       } else {
         this.feedback.showContent(
@@ -76,18 +81,18 @@ export class GameComments {
       for (const [index, element] of texts.entries())
         element.textContent = response.data[index]?.text ?? '';
       this.paintForm();
-      if (isRetry) snackbar.show('Comments loaded successfully.', 'success');
+      if (isRetry) snackbar.show(t('Comments loaded successfully.'), 'success');
     } catch (error) {
       if (!isCurrent()) return;
       this.feedback.showError({
-        title: 'Unable to load comments',
+        title: t('Unable to load comments'),
         message:
           error instanceof ApiError
             ? error.message
-            : 'The server returned unexpected comments. Please try again.',
+            : t('The server returned unexpected comments. Please try again.'),
         onRetry: () => this.load(true),
       });
-      snackbar.show('Comments could not be loaded. Use Retry to try again.', 'error');
+      snackbar.show(t('Comments could not be loaded. Use Retry to try again.'), 'error');
     }
   }
 
@@ -107,13 +112,13 @@ export class GameComments {
     const isPending = Boolean(this.submission);
     const input = this.dialog?.querySelector<HTMLTextAreaElement>('.game-comments__input');
     if (input) {
-      input.placeholder = isAuthenticated ? 'Write a comment' : 'Sign in to post a comment';
+      input.placeholder = t(isAuthenticated ? 'Write a comment' : 'Sign in to post a comment');
       input.disabled = !isAuthenticated || isPending;
     }
     const button = this.dialog?.querySelector<HTMLButtonElement>('.game-comments__submit');
     if (button) {
       button.disabled = !isAuthenticated || isPending;
-      button.setAttribute('aria-label', isPending ? 'Sending comment…' : 'Submit a comment');
+      button.setAttribute('aria-label', t(isPending ? 'Sending comment…' : 'Submit a comment'));
     }
     this.dialog
       ?.querySelector('.game-comments__form')
@@ -123,10 +128,12 @@ export class GameComments {
       avatar.textContent = ([...(this.profile?.displayName.trim() ?? '')][0] ?? '?').toUpperCase();
     const hint = this.dialog?.querySelector('.game-comments__hint');
     if (hint) {
-      hint.textContent = isAuthenticated
-        ? 'Enter to send. Shift+Enter for a new line. Maximum 500 characters.'
-        : 'Sign in to post or like comments.';
-      if (isPending) hint.textContent = 'Sending comment…';
+      hint.textContent = t(
+        isAuthenticated
+          ? 'Enter to send. Shift+Enter for a new line. Maximum 500 characters.'
+          : 'Sign in to post or like comments.',
+      );
+      if (isPending) hint.textContent = t('Sending comment…');
     }
     const likes = this.dialog?.querySelectorAll<HTMLButtonElement>('.game-comment__like') ?? [];
     for (const like of likes) this.paintLike(like);
@@ -141,14 +148,14 @@ export class GameComments {
     const isPending = this.likeRequests.has(button.dataset.commentId ?? '');
     const isLiked = Boolean(this.profile) && button.getAttribute('aria-pressed') === 'true';
     const count = button.dataset.likesCount ?? '0';
-    let action = isLiked ? 'Unlike comment' : 'Like comment';
-    if (!this.profile) action = 'Sign in to like comments';
-    if (button.dataset.retryLike) action = 'Retry comment like status';
-    if (isPending) action = 'Updating comment like…';
+    let action = t(isLiked ? 'Unlike comment' : 'Like comment');
+    if (!this.profile) action = t('Sign in to like comments');
+    if (button.dataset.retryLike) action = t('Retry comment like status');
+    if (isPending) action = t('Updating comment like…');
     button.disabled = isPending || !this.requireSession;
     button.setAttribute('aria-busy', String(isPending));
     button.setAttribute('aria-pressed', String(isLiked));
-    button.setAttribute('aria-label', `${action}. ${count} likes`);
+    button.setAttribute('aria-label', `${action}. ${t('{count} likes', { count })}`);
     button.title = action;
     const icon = button.querySelector('img');
     if (icon) icon.src = isLiked ? activeHeartIcon : heartIcon;
@@ -161,7 +168,7 @@ export class GameComments {
     if (!id || this.likeRequests.has(id)) return;
     const profile = this.requireSession?.();
     if (!profile) {
-      snackbar.show('Please sign in to like comments.', 'error');
+      snackbar.show(t('Please sign in to like comments.'), 'error');
       return;
     }
     if (button.dataset.retryLike) {
@@ -182,14 +189,16 @@ export class GameComments {
       button.dataset.likesCount = String(state.likesCount);
       button.setAttribute('aria-pressed', String(state.isLikedByCurrentUser));
       snackbar.show(
-        state.isLikedByCurrentUser ? 'Comment liked.' : 'Comment like removed.',
+        t(state.isLikedByCurrentUser ? 'Comment liked.' : 'Comment like removed.'),
         'success',
       );
     } catch {
       if (!isCurrent()) return;
       button.dataset.retryLike = 'true';
       snackbar.show(
-        'Comment like could not be confirmed. Click again to reload its status before trying another toggle.',
+        t(
+          'Comment like could not be confirmed. Click again to reload its status before trying another toggle.',
+        ),
         'error',
       );
     } finally {
@@ -204,7 +213,7 @@ export class GameComments {
     if (this.submission || !this.slug || !this.dialog) return;
     const profile = this.requireSession?.();
     if (!profile) {
-      snackbar.show('Sign in to post a comment.', 'error');
+      snackbar.show(t('Sign in to post a comment.'), 'error');
       return;
     }
     const input = this.dialog.querySelector<HTMLTextAreaElement>('.game-comments__input');
@@ -212,11 +221,11 @@ export class GameComments {
     const text = input.value.trim();
     if (!text || text.length > 500) {
       input.setAttribute('aria-invalid', 'true');
-      snackbar.show('Write a comment of 1–500 characters.', 'error');
+      snackbar.show(t('Write a comment of 1–500 characters.'), 'error');
       return;
     }
     if (profile.displayName.length < 2 || profile.displayName.length > 30) {
-      snackbar.show('Your profile needs a name of 2–30 characters before posting.', 'error');
+      snackbar.show(t('Your profile needs a name of 2–30 characters before posting.'), 'error');
       return;
     }
     const request = new AbortController();
@@ -230,9 +239,10 @@ export class GameComments {
       await submitGameComment(this.slug, profile.email, profile.displayName, text, request.signal);
       if (!isCurrent()) return;
       input.value = '';
+      this.onPosted?.(this.slug);
       input.style.height = '';
       input.removeAttribute('aria-invalid');
-      snackbar.show('Comment posted successfully.', 'success');
+      snackbar.show(t('Comment posted successfully.'), 'success');
       await this.load();
     } catch (error) {
       if (!isCurrent()) return;
@@ -244,9 +254,11 @@ export class GameComments {
         error.status < 500 &&
         error.status !== 408;
       snackbar.show(
-        isRejected
-          ? 'Comment was rejected. Your text is saved here; check it and try again.'
-          : 'Comment result is unknown. Your text is saved here; check the latest comments before sending again.',
+        t(
+          isRejected
+            ? 'Comment was rejected. Your text is saved here; check it and try again.'
+            : 'Comment result is unknown. Your text is saved here; check the latest comments before sending again.',
+        ),
         'error',
       );
     } finally {
@@ -259,14 +271,14 @@ export class GameComments {
 
   public render(): string {
     return `<section class="game-comments" aria-labelledby="game-comments-title">
-      <h3 class="game-comments__title" id="game-comments-title">Comments</h3>
+      <h3 class="game-comments__title" id="game-comments-title">${t('Comments')}</h3>
       <form class="game-comments__form">
         <span class="game-comments__avatar" aria-hidden="true">U</span>
-        <label class="visually-hidden" for="game-comment">Write a comment</label>
-        <textarea class="game-comments__input" id="game-comment" name="comment" rows="1" maxlength="500" disabled placeholder="Sign in to post a comment" aria-describedby="game-comment-hint"></textarea>
-        <button class="game-comments__submit" type="submit" disabled aria-label="Submit a comment"><img src="${sendIcon}" alt="" /></button>
+        <label class="visually-hidden" for="game-comment">${t('Write a comment')}</label>
+        <textarea class="game-comments__input" id="game-comment" name="comment" rows="1" maxlength="500" disabled placeholder="${t('Sign in to post a comment')}" aria-describedby="game-comment-hint"></textarea>
+        <button class="game-comments__submit" type="submit" disabled aria-label="${t('Submit a comment')}"><img src="${sendIcon}" alt="" /></button>
       </form>
-      <p class="game-comments__hint" id="game-comment-hint">Sign in to post or like comments.</p>
+      <p class="game-comments__hint" id="game-comment-hint">${t('Sign in to post or like comments.')}</p>
       <div class="game-comments__content" aria-busy="true"></div>
     </section>`;
   }

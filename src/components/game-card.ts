@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import { renderGameStats } from './game-stats';
 import type { ApiGame } from '../types/api';
 import { escapeHtml, getApiGameCardImage } from '../utils/game';
@@ -24,7 +25,7 @@ export class GameCard {
 
   ${renderGameStats(this.game)}
 </div>
-      <button class="game-card__trigger" type="button" data-game-details="${escapeHtml(this.game.slug)}" aria-label="Details for ${escapeHtml(this.game.name)}"></button>
+      <button class="game-card__trigger" type="button" data-game-details="${escapeHtml(this.game.slug)}" aria-label="${escapeHtml(t('Details for {name}', { name: this.game.name }))}"></button>
     </article>
   `;
   }

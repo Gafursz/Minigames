@@ -1,3 +1,4 @@
+import { t, translateKnown } from '../utils/text';
 import { getCategories } from '../api/minigames-api';
 import { ApiError } from '../api/http-client';
 import { enableHorizontalDrag } from '../utils/horizontal-drag';
@@ -67,7 +68,7 @@ export class LibraryFilters {
       !this.lifetime?.aborted &&
       !controller.signal.aborted &&
       this.requestController === controller;
-    this.feedback.showLoading('categories', 'Loading game categories…');
+    this.feedback.showLoading('categories', t('Loading game categories…'));
     this.events.onState({ kind: 'loading' });
     try {
       const response = await getCategories(controller.signal);
@@ -75,8 +76,8 @@ export class LibraryFilters {
       const categories = readCategories(response);
       if (categories.length === 0) {
         this.feedback.showEmpty({
-          title: 'Data Not Found',
-          message: 'No game categories are available yet.',
+          title: t('Data Not Found'),
+          message: t('No game categories are available yet.'),
         });
         this.events.onState({ kind: 'empty' });
       } else {
@@ -85,7 +86,7 @@ export class LibraryFilters {
             .map(
               (category) => `
           <button class="library-filters__chip" type="button"
-            data-category="${escapeHtml(category.slug)}" aria-pressed="false">${escapeHtml(category.label)}</button>
+            data-category="${escapeHtml(category.slug)}" aria-pressed="false">${escapeHtml(translateKnown(category.label))}</button>
         `,
             )
             .join(''),
@@ -95,19 +96,19 @@ export class LibraryFilters {
         this.paintCategory();
         this.events.onState({ kind: 'ready', defaultCategory: defaultCategory.slug });
       }
-      if (isRetry) snackbar.show('Game categories loaded successfully.', 'success');
+      if (isRetry) snackbar.show(t('Game categories loaded successfully.'), 'success');
     } catch (error) {
       if (!isCurrent()) return;
       this.feedback.showError({
-        title: 'Unable to load categories',
+        title: t('Unable to load categories'),
         message:
           error instanceof ApiError
             ? error.message
-            : 'The server returned unexpected category data. Please try again.',
+            : t('The server returned unexpected category data. Please try again.'),
         onRetry: () => this.loadCategories(true),
       });
       this.events.onState({ kind: 'error' });
-      snackbar.show('Categories could not be loaded. Use Retry to try again.', 'error');
+      snackbar.show(t('Categories could not be loaded. Use Retry to try again.'), 'error');
     }
   }
 
@@ -129,7 +130,7 @@ export class LibraryFilters {
   public render(): string {
     return `
       <div class="library-filters">
-        <div class="library-filters__categories" role="group" aria-label="Game categories" aria-busy="true"></div>
+        <div class="library-filters__categories" role="group" aria-label="${t('Game categories')}" aria-busy="true"></div>
         ${this.sort.render()}
       </div>
     `;

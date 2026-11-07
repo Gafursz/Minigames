@@ -1,3 +1,4 @@
+import { t } from '../../utils/text';
 import googleIcon from './assets/google.svg';
 import { renderAuthPanel } from './auth-form';
 import type { AuthMode } from './auth-form';
@@ -63,7 +64,7 @@ export class AuthDialog {
       return;
     const status = dialog.querySelector<HTMLElement>('.auth-dialog__status');
     if (!this.authenticate) {
-      if (status) status.textContent = 'Account sign-in will be available in a later update.';
+      if (status) status.textContent = t('Account sign-in will be available in a later update.');
       return;
     }
     const values = validation.getValues();
@@ -71,8 +72,8 @@ export class AuthDialog {
     const authenticate = this.authenticate;
     await this.runAuthentication(
       () => authenticate(mode, values),
-      mode === 'login' ? 'Signing in…' : 'Creating account…',
-      mode === 'login' ? 'You are signed in.' : 'Your account is ready. You are signed in.',
+      t(mode === 'login' ? 'Signing in…' : 'Creating account…'),
+      t(mode === 'login' ? 'You are signed in.' : 'Your account is ready. You are signed in.'),
     );
   }
 
@@ -144,7 +145,7 @@ export class AuthDialog {
     if (password) password.type = 'password';
     const visibility = this.element.querySelector('.auth-dialog__visibility');
     visibility?.setAttribute('aria-pressed', 'false');
-    visibility?.setAttribute('aria-label', 'Show password');
+    visibility?.setAttribute('aria-label', t('Show password'));
   }
 
   private finishClose(shouldRestoreFocus = this.shouldRestoreFocus): void {
@@ -189,7 +190,7 @@ export class AuthDialog {
       const isVisible = password.type === 'password';
       password.type = isVisible ? 'text' : 'password';
       visibility.setAttribute('aria-pressed', String(isVisible));
-      visibility.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+      visibility.setAttribute('aria-label', t(isVisible ? 'Hide password' : 'Show password'));
       return;
     }
     if (target.closest('[data-auth-google]')) {
@@ -197,8 +198,8 @@ export class AuthDialog {
       if (this.authenticateGoogle)
         void this.runAuthentication(
           this.authenticateGoogle,
-          'Connecting to Google…',
-          'You are signed in with Google.',
+          t('Connecting to Google…'),
+          t('You are signed in with Google.'),
         );
       return;
     }
@@ -226,9 +227,9 @@ export class AuthDialog {
   public render(): string {
     return `
       <dialog class="auth-dialog" id="auth-dialog" aria-labelledby="auth-login-title" data-mode="login">
-        <div class="auth-dialog__tabs" role="tablist" aria-label="Account access">
-          <button class="auth-dialog__tab" id="auth-login-tab" type="button" role="tab" aria-selected="true" aria-controls="auth-login-panel" data-auth-switch="login">Login</button>
-          <button class="auth-dialog__tab" id="auth-register-tab" type="button" role="tab" aria-selected="false" aria-controls="auth-register-panel" tabindex="-1" data-auth-switch="register">Register</button>
+        <div class="auth-dialog__tabs" role="tablist" aria-label="${t('Account access')}">
+          <button class="auth-dialog__tab" id="auth-login-tab" type="button" role="tab" aria-selected="true" aria-controls="auth-login-panel" data-auth-switch="login">${t('Login')}</button>
+          <button class="auth-dialog__tab" id="auth-register-tab" type="button" role="tab" aria-selected="false" aria-controls="auth-register-panel" tabindex="-1" data-auth-switch="register">${t('Register')}</button>
         </div>
         ${renderAuthPanel('login', googleIcon)}
         ${renderAuthPanel('register', googleIcon)}
@@ -287,12 +288,12 @@ export class AuthDialog {
         }
         if (
           !(event instanceof KeyboardEvent) ||
-          !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)
+          !['ArrowLeft', 'ArrowRight', t('Home'), 'End'].includes(event.key)
         )
           return;
         event.preventDefault();
         let nextMode: AuthMode;
-        if (event.key === 'Home') nextMode = 'login';
+        if (event.key === t('Home')) nextMode = 'login';
         else if (event.key === 'End') nextMode = 'register';
         else nextMode = this.mode === 'login' ? 'register' : 'login';
         this.requestMode(nextMode);

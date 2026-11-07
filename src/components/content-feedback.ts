@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import { escapeHtml } from '../utils/html.ts';
 
 export type SkeletonLayout =
@@ -77,7 +78,7 @@ export class ContentFeedback {
     if (button.disabled) return;
 
     button.disabled = true;
-    button.textContent = 'Retrying…';
+    button.textContent = t('Retrying…');
 
     try {
       await onRetry();
@@ -86,17 +87,17 @@ export class ContentFeedback {
         text.textContent =
           error instanceof Error && error.message
             ? error.message
-            : 'The request still could not be completed. Please try again.';
+            : t('The request still could not be completed. Please try again.');
       }
     } finally {
       if (!signal.aborted) {
         button.disabled = false;
-        button.textContent = 'Retry';
+        button.textContent = t('Retry');
       }
     }
   }
 
-  public showLoading(layout: SkeletonLayout, label = 'Loading content…'): void {
+  public showLoading(layout: SkeletonLayout, label = t('Loading content…')): void {
     this.replace(
       `<span class="visually-hidden" role="status">${escapeHtml(label)}</span>
        ${renderSkeleton(layout)}`,
@@ -107,7 +108,7 @@ export class ContentFeedback {
   public showError({
     message,
     onRetry,
-    title = 'Unable to load this section',
+    title = t('Unable to load this section'),
     imageSrc,
   }: ErrorFeedback): void {
     this.replace(
@@ -126,7 +127,7 @@ export class ContentFeedback {
       <h3 class="content-feedback__title">${escapeHtml(title)}</h3>
       <p class="content-feedback__message">${escapeHtml(message)}</p>
     </div>
-    <button class="content-feedback__retry" type="button">Retry</button>
+    <button class="content-feedback__retry" type="button">${t('Retry')}</button>
   </div>`,
       'error',
     );

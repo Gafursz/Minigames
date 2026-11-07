@@ -1,3 +1,4 @@
+import { t, translateKnown } from '../utils/text';
 import { FirebaseConfigError } from './firebase-config';
 import { RegistrationProfileError } from './email-auth';
 import { SessionStorageError } from './app-session';
@@ -27,14 +28,16 @@ const messages: Record<string, string> = {
 
 export function getAuthErrorMessage(error: unknown): string {
   if (error instanceof FirebaseConfigError)
-    return 'Sign-in is unavailable right now. Please try again later.';
-  if (error instanceof SessionStorageError) return error.message;
+    return t('Sign-in is unavailable right now. Please try again later.');
+  if (error instanceof SessionStorageError) return translateKnown(error.message);
   if (error instanceof RegistrationProfileError)
-    return 'Your account was created, but its profile could not be saved. Please try logging in.';
+    return t(
+      'Your account was created, but its profile could not be saved. Please try logging in.',
+    );
   return typeof error === 'object' &&
     error !== null &&
     'code' in error &&
     typeof error.code === 'string'
-    ? (messages[error.code] ?? 'Unable to sign in. Please try again.')
-    : 'Unable to sign in. Please try again.';
+    ? translateKnown(messages[error.code] ?? t('Unable to sign in. Please try again.'))
+    : t('Unable to sign in. Please try again.');
 }

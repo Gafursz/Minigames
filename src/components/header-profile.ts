@@ -1,7 +1,10 @@
+import { t } from '../utils/text';
 import type { AuthProfile } from '../auth/email-auth';
+import { AVATARS } from '../features/profile/player-progress';
+import type { ProfileSettings } from '../features/profile/player-progress';
 
 export function getProfileName(profile: AuthProfile): string {
-  return profile.displayName.trim() || profile.email.split('@', 1)[0]?.trim() || 'Player';
+  return profile.displayName.trim() || profile.email.split('@', 1)[0]?.trim() || t('Player');
 }
 
 export function getProfileInitials(name: string): string {
@@ -27,11 +30,15 @@ export function renderHeaderProfile(): string {
       <span data-profile-initials aria-hidden="true"></span>
       <img data-profile-photo alt="" hidden />
     </span>
-    <button class="header__logout" type="button" data-auth-logout>Log out</button>
+    <button class="header__logout" type="button" data-auth-logout>${t('Log out')}</button>
   </div>`;
 }
 
-export function updateHeaderProfile(root: HTMLElement, profile: AuthProfile | undefined): void {
+export function updateHeaderProfile(
+  root: HTMLElement,
+  profile: AuthProfile | undefined,
+  settings?: ProfileSettings,
+): void {
   for (const control of root.querySelectorAll<HTMLElement>(':scope .header [data-auth-open]'))
     control.hidden = Boolean(profile);
   for (const element of root.querySelectorAll<HTMLElement>('[data-header-profile]')) {
@@ -41,12 +48,20 @@ export function updateHeaderProfile(root: HTMLElement, profile: AuthProfile | un
     const photo = element.querySelector<HTMLImageElement>('[data-profile-photo]');
     if (!name || !initials || !photo) continue;
     name.textContent = profile ? getProfileName(profile) : '';
-    initials.textContent = profile ? getProfileInitials(name.textContent) : '';
+    const customSettings = settings?.customAvatar ? settings : undefined;
+    initials.textContent = '';
+    if (profile)
+      initials.textContent = customSettings
+        ? AVATARS[customSettings.avatar]
+        : getProfileInitials(name.textContent);
+    const avatar = initials.closest('.header__avatar');
+    if (avatar)
+      avatar.className = `header__avatar${customSettings ? ` avatar--${customSettings.color}` : ''}`;
 
     initials.hidden = false;
     photo.hidden = true;
 
-    const avatarUrl = profile?.avatarUrl?.trim();
+    const avatarUrl = customSettings ? undefined : profile?.avatarUrl?.trim();
 
     if (avatarUrl) {
       photo.src = avatarUrl;

@@ -1,3 +1,4 @@
+import { t, translateKnown } from '../../utils/text';
 import { AUTH_RULES } from './auth-validation';
 import type { AuthFieldName } from './auth-validation';
 
@@ -79,16 +80,16 @@ function renderField(field: Field, mode: AuthMode): string {
   const hasVisibilityToggle = mode === 'login' && field.type === 'password';
   return `
     <div class="auth-dialog__field">
-      <label class="auth-dialog__label" for="${id}">${field.label}</label>
+      <label class="auth-dialog__label" for="${id}">${translateKnown(field.label)}</label>
       <div class="auth-dialog__control">
         <span class="auth-dialog__symbol" aria-hidden="true">${field.icon}</span>
         <input class="auth-dialog__input" id="${id}" name="${field.name}" type="${field.type}"
-          placeholder="${field.placeholder}" autocomplete="${field.autocomplete}"
+          placeholder="${translateKnown(field.placeholder)}" autocomplete="${field.autocomplete}"
           aria-describedby="${field.hint ? `${id}-hint ` : ''}${id}-error" aria-invalid="false"
           ${field.minLength ? `minlength="${field.minLength}"` : ''} required />
-        ${hasVisibilityToggle ? `<button class="auth-dialog__visibility" type="button" aria-label="Show password" aria-pressed="false" aria-controls="${id}"><span class="auth-dialog__symbol" aria-hidden="true">visibility</span></button>` : ''}
+        ${hasVisibilityToggle ? `<button class="auth-dialog__visibility" type="button" aria-label="${t('Show password')}" aria-pressed="false" aria-controls="${id}"><span class="auth-dialog__symbol" aria-hidden="true">visibility</span></button>` : ''}
       </div>
-      ${field.hint ? `<p class="auth-dialog__hint" id="${id}-hint">${field.hint}</p>` : ''}
+      ${field.hint ? `<p class="auth-dialog__hint" id="${id}-hint">${translateKnown(field.hint)}</p>` : ''}
       <p class="auth-dialog__error" id="${id}-error" aria-live="polite" aria-atomic="true"></p>
     </div>
   `;
@@ -101,26 +102,26 @@ export function renderAuthPanel(mode: AuthMode, googleIcon: string): string {
     <section class="auth-dialog__panel" id="auth-${mode}-panel" role="tabpanel"
       aria-labelledby="auth-${mode}-tab" ${isLogin ? '' : 'hidden'}>
       <header class="auth-dialog__heading">
-        <h2 class="auth-dialog__title" id="auth-${mode}-title">${isLogin ? 'Welcome Back!' : 'Create Account'}</h2>
-        <p class="auth-dialog__description">${isLogin ? 'Sign in to resume your games and progress.' : 'Join MiniGames to track your score &amp; streak.'}</p>
+        <h2 class="auth-dialog__title" id="auth-${mode}-title">${t(isLogin ? 'Welcome Back!' : 'Create Account')}</h2>
+        <p class="auth-dialog__description">${t(isLogin ? 'Sign in to resume your games and progress.' : 'Join MiniGames to track your score &amp; streak.')}</p>
       </header>
       <form class="auth-dialog__form" aria-labelledby="auth-${mode}-title" novalidate>
         <div class="auth-dialog__fields">
           ${fields.map((field) => renderField(field, mode)).join('')}
-          ${isLogin ? '<div class="auth-dialog__forgot"><button class="auth-dialog__link" type="button" data-auth-placeholder="Password recovery will be available in a later update.">Forgot Password?</button></div>' : ''}
+          ${isLogin ? `<div class="auth-dialog__forgot"><button class="auth-dialog__link" type="button" data-auth-placeholder="${t('Password recovery will be available in a later update.')}">${t('Forgot Password?')}</button></div>` : ''}
         </div>
         <div class="auth-dialog__actions">
-          <button class="auth-dialog__submit" type="submit" disabled>${isLogin ? 'Login' : 'Create Account'}</button>
-          <div class="auth-dialog__divider" aria-hidden="true"><span>OR</span></div>
+          <button class="auth-dialog__submit" type="submit" disabled>${t(isLogin ? 'Login' : 'Create Account')}</button>
+          <div class="auth-dialog__divider" aria-hidden="true"><span>${t('OR')}</span></div>
           <button class="auth-dialog__google" type="button" data-auth-google>
             <span class="auth-dialog__google-icon"><img src="${googleIcon}" alt="" /></span>
-            <span>${isLogin ? 'Continue with Google' : 'Sign up with Google'}</span>
+            <span>${t(isLogin ? 'Continue with Google' : 'Sign up with Google')}</span>
           </button>
         </div>
       </form>
       <p class="auth-dialog__footer">
-        ${isLogin ? "Don't have an account?" : 'Already have an account?'}
-        <a class="auth-dialog__link" href="#auth-${isLogin ? 'register' : 'login'}-panel" data-auth-switch="${isLogin ? 'register' : 'login'}">${isLogin ? 'Register' : 'Login'}</a>
+        ${t(isLogin ? "Don't have an account?" : 'Already have an account?')}
+        <a class="auth-dialog__link" href="#auth-${isLogin ? 'register' : 'login'}-panel" data-auth-switch="${isLogin ? 'register' : 'login'}">${t(isLogin ? 'Register' : 'Login')}</a>
       </p>
     </section>
   `;

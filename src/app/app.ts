@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import { HomePage } from '../pages/home-page';
 import { LibraryPage } from '../pages/library-page';
 import type { Page } from '../types/page';
@@ -16,6 +17,9 @@ import { AppSession, APP_SESSION_KEY } from '../auth/app-session';
 import type { AuthMode } from '../features/auth-dialog/auth-form';
 import type { AuthValues } from '../features/auth-dialog/auth-validation';
 import { updateHeaderProfile } from '../components/header-profile';
+import { ProfilePage } from '../pages/profile-page';
+import { PlayerProgress } from '../features/profile/player-progress';
+import type { ActivityInput, Achievement } from '../features/profile/player-progress';
 
 export class App {
   private readonly root: HTMLElement;
@@ -27,12 +31,15 @@ export class App {
   private dialogKey: string | undefined;
   private readonly session: AppSession;
   private pendingAuthUrl: string | undefined;
+  private progress: PlayerProgress | undefined;
+  private profileEmail: string | undefined;
   private readonly gameDetails = new GameDetails(
     () => this.updateDialogPause(),
     () => {
       this.router.updateQuery({ game: undefined });
     },
     () => this.requireSession(),
+    (activity) => this.recordActivity(activity),
   );
   private readonly authDialog = new AuthDialog(
     () => this.updateDialogPause(),
@@ -61,19 +68,35 @@ export class App {
       () => root.ownerDocument.defaultView?.localStorage,
       () => this.auth.logout(),
       (profile) => {
-        updateHeaderProfile(this.root, profile);
+        const isChanged = this.profileEmail !== profile?.email;
+        if (isChanged) {
+          this.profileEmail = profile?.email;
+          this.progress = profile
+            ? new PlayerProgress(profile.email, this.getStorage())
+            : undefined;
+        }
+        this.updateProfileAppearance(profile);
         this.gameDetails.setAuthenticated(profile);
+        if (isChanged && this.page instanceof ProfilePage) {
+          // A successful sign-in will navigate when its dialog closes. Do not
+          // destroy that dialog while its authentication promise is still pending.
+          this.pageKey = undefined;
+          queueMicrotask(() => {
+            if (this.controller.signal.aborted || this.authDialog.isPending) return;
+            this.renderRoute(this.router.current, 'initial');
+          });
+        }
         if (profile) this.queueAuthGuard();
       },
       () =>
         queueMicrotask(() => {
           if (!this.controller.signal.aborted)
-            snackbar.show('Your session expired. Please sign in again.', 'error');
+            snackbar.show(t('Your session expired. Please sign in again.'), 'error');
         }),
       () => {
         if (!this.controller.signal.aborted)
           snackbar.show(
-            'You are signed out locally, but provider sign-out failed. Please try again later.',
+            t('You are signed out locally, but provider sign-out failed. Please try again later.'),
             'error',
           );
       },
@@ -96,7 +119,7 @@ export class App {
         }
         if (event.target instanceof Element && event.target.closest('[data-auth-logout]')) {
           this.session.logout();
-          snackbar.show('You are signed out.');
+          snackbar.show(t('You are signed out.'));
           return;
         }
         const link =
@@ -143,6 +166,22 @@ export class App {
       'storage',
       (event) => {
         if (event.key === APP_SESSION_KEY || event.key === null) this.session.check();
+        if (!(
+          this.profileEmail &&
+          this.progress &&
+          (event.key === this.progressKey() || event.key === null)
+        )) {
+          return;
+        }
+
+        this.progress = new PlayerProgress(this.profileEmail, this.getStorage());
+        this.updateProfileAppearance(this.session.current);
+        if (!(this.page instanceof ProfilePage)) {
+          return;
+        }
+
+        this.pageKey = undefined;
+        this.renderRoute(this.router.current, 'initial');
       },
       { signal: this.controller.signal },
     );
@@ -153,6 +192,50 @@ export class App {
       },
       { signal: this.controller.signal },
     );
+  }
+
+  private getStorage(): Storage | undefined {
+    try {
+      return this.root.ownerDocument.defaultView?.localStorage;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private progressKey(): string {
+    return `minigames:gafursz:profile:${encodeURIComponent(this.profileEmail?.trim().toLowerCase() ?? '')}`;
+  }
+
+  private updateProfileAppearance(profile: AuthProfile | undefined): void {
+    const settings = this.progress?.data.settings;
+    updateHeaderProfile(
+      this.root,
+      profile ? { ...profile, displayName: settings?.nickname || profile.displayName } : undefined,
+      settings,
+    );
+    this.root.ownerDocument.documentElement.classList.toggle(
+      'reduce-motion',
+      Boolean(settings?.reducedMotion),
+    );
+    this.updateDialogPause();
+  }
+
+  private announce(unlocked: Achievement[]): void {
+    if (unlocked.length > 0 && this.progress?.data.settings.achievementNotifications)
+      queueMicrotask(() => {
+        if (this.controller.signal.aborted) return;
+        snackbar.show(
+          t('Achievement unlocked: {name}', {
+            name: unlocked.map((badge) => t(badge.name)).join(', '),
+          }),
+        );
+      });
+  }
+
+  private recordActivity(activity: ActivityInput): void {
+    if (!this.session.check() || !this.progress) return;
+    this.announce(this.progress.record(activity));
+    if (this.page instanceof ProfilePage) this.page.refresh();
   }
 
   private queueAuthGuard(): void {
@@ -172,7 +255,7 @@ export class App {
     if (!session || this.authDialog.isPending || !url.searchParams.has('auth')) return undefined;
     url.searchParams.delete('auth');
     queueMicrotask(() => {
-      if (!this.controller.signal.aborted) snackbar.show('You are already signed in.');
+      if (!this.controller.signal.aborted) snackbar.show(t('You are already signed in.'));
     });
     return url;
   }
@@ -207,7 +290,10 @@ export class App {
   }
 
   private updateDialogPause(): void {
-    this.page?.setDialogOpen?.(Boolean(this.root.querySelector('dialog[open]')));
+    this.page?.setDialogOpen?.(
+      Boolean(this.root.querySelector('dialog[open]')) ||
+        Boolean(this.progress?.data.settings.reducedMotion),
+    );
   }
 
   private syncDialogs(route: RouteState): void {
@@ -273,19 +359,42 @@ export class App {
     switch (route.page) {
       case 'home': {
         this.page = new HomePage();
-        document.title = 'MiniGames — Home';
+        document.title = `MiniGames — ${t('Home')}`;
         break;
       }
       case 'library': {
         this.page = new LibraryPage((changes, shouldReplace) => {
           this.router.updateQuery(changes, shouldReplace);
         });
-        document.title = 'MiniGames — Library';
+        document.title = `MiniGames — ${t('Library')}`;
+        break;
+      }
+      case 'profile': {
+        this.page = new ProfilePage(
+          () => this.session.current,
+          () => this.progress,
+          (settings) => {
+            if (!this.requireSession() || !this.progress) return;
+            const unlocked = this.progress.updateSettings(settings);
+            this.updateProfileAppearance(this.session.current);
+            snackbar.show(t('Settings saved.'));
+            this.announce(unlocked);
+          },
+          () => {
+            if (!this.requireSession() || !this.progress) return;
+            this.progress.reset();
+            this.updateProfileAppearance(this.session.current);
+            this.pageKey = undefined;
+            this.renderRoute(this.router.current, 'initial');
+            snackbar.show(t('Local progress cleared.'));
+          },
+        );
+        document.title = `MiniGames — ${t('My profile')}`;
         break;
       }
       default: {
         this.page = new NotFoundPage();
-        document.title = 'MiniGames — Page not found';
+        document.title = `MiniGames — ${t('Page not found')}`;
       }
     }
 
@@ -294,7 +403,7 @@ export class App {
     this.gameDetails.bindEvents();
     this.gameDetails.setAuthenticated(this.session.current);
     this.authDialog.bindEvents();
-    updateHeaderProfile(this.root, this.session.current);
+    this.updateProfileAppearance(this.session.current);
     this.page.updateRoute?.(route);
     this.syncDialogs(route);
 

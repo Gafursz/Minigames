@@ -1,3 +1,4 @@
+import { t, formatNumber } from '../utils/text';
 import type { GameRecord } from '../types/api';
 import { formatRelativeTime } from '../utils/relative-time';
 import { escapeHtml } from '../utils/game';
@@ -8,8 +9,8 @@ export class GameRecords {
   public render(records: GameRecord[]): string {
     return `
       <section class="game-records" aria-labelledby="game-records-title">
-        <h3 class="game-records__title" id="game-records-title"><span aria-hidden="true">🏆</span> Top Records</h3>
-        ${records.length === 0 ? '<p class="content-feedback content-feedback--empty" role="status">No records yet.</p>' : ''}
+        <h3 class="game-records__title" id="game-records-title"><span aria-hidden="true">🏆</span> ${t('Top Records')}</h3>
+        ${records.length === 0 ? `<p class="content-feedback content-feedback--empty" role="status">${t('No records yet.')}</p>` : ''}
         <ol class="game-records__list">
           ${records
             .map(
@@ -20,7 +21,7 @@ export class GameRecords {
                 <strong>${escapeHtml(record.playerName)}</strong>
               </span>
               <span class="game-records__result">
-                <strong>${record.score.toLocaleString('en-US')} pts</strong>
+                <strong>${t('{count} pts', { count: formatNumber(record.score) })}</strong>
                 <span class="game-records__date">${formatRelativeTime(record.achievedAt)}</span>
               </span>
             </li>

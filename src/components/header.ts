@@ -1,10 +1,13 @@
+import { t } from '../utils/text';
 import { appHref } from '../router/links';
 import logoIcon from '../assets/icons/logo-icon.svg';
 import { renderHeaderProfile } from './header-profile';
 export class Header {
   private controller: AbortController | undefined;
 
-  public constructor(private readonly activePage: 'home' | 'library' | 'not-found' = 'home') {}
+  public constructor(
+    private readonly activePage: 'home' | 'library' | 'profile' | 'not-found' = 'home',
+  ) {}
 
   public render(): string {
     const isHome = this.activePage === 'home';
@@ -13,8 +16,8 @@ export class Header {
     return `
         
       <header class="header">
-        <nav class="header__nav" aria-label="Main navigation">
-          <a class="header__logo" href="${appHref('home')}" data-router-link aria-label="MiniGames home">
+        <nav class="header__nav" aria-label="${t('Main navigation')}">
+          <a class="header__logo" href="${appHref('home')}" data-router-link aria-label="${t('MiniGames home')}">
           <span class="header__logo-icon-wrapper">
           <img class="header__logo-icon" src="${logoIcon}" alt=""/>
           </span>
@@ -24,33 +27,34 @@ export class Header {
           </a>
           <div class="header__nav-actions">
             <ul class="header__menu">
+            <li class="header__menu-item"><a class="header__link${this.activePage === 'profile' ? ' header__link--active' : ''}" href="${appHref('profile')}" data-router-link${this.activePage === 'profile' ? ' aria-current="page"' : ''}>${t('My profile')}</a></li>
             <li class="header__menu-item">
-              <a class="header__link${isHome ? ' header__link--active' : ''}" href="${appHref('home')}" data-router-link${isHome ? ' aria-current="page"' : ''}>Home</a>
+              <a class="header__link${isHome ? ' header__link--active' : ''}" href="${appHref('home')}" data-router-link${isHome ? ' aria-current="page"' : ''}>${t('Home')}</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link${isLibrary ? ' header__link--active' : ''}" href="${appHref('library')}" data-router-link${isLibrary ? ' aria-current="page"' : ''}>Library</a>
+              <a class="header__link${isLibrary ? ' header__link--active' : ''}" href="${appHref('library')}" data-router-link${isLibrary ? ' aria-current="page"' : ''}>${t('Library')}</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link" href="${appHref('home')}" data-router-link>Tournaments</a>
+              <a class="header__link" href="${appHref('home')}" data-router-link>${t('Tournaments')}</a>
             </li>
             <li class="header__menu-item">
-              <a class="header__link" href="${appHref('home')}" data-router-link>Community</a>
+              <a class="header__link" href="${appHref('home')}" data-router-link>${t('Community')}</a>
             </li>
           </ul>
           <div class="header__actions">
   ${renderHeaderProfile()}
   <button class="header__login" type="button" data-auth-open="login">
-    Login
+    ${t('Login')}
   </button>
 
   <button class="header__signup" type="button" data-auth-open="register">
-    Sign Up
+    ${t('Sign Up')}
   </button>
 
 <button
   class="header__burger"
   type="button"
-  aria-label="Open navigation menu"
+  aria-label="${t('Open navigation menu')}"
   aria-expanded="false"
   aria-controls="mobile-navigation"
 >
@@ -71,7 +75,7 @@ export class Header {
     class="header__mobile-logo"
     href="${appHref('home')}"
     data-router-link
-    aria-label="MiniGames home"
+    aria-label="${t('MiniGames home')}"
   >
     MiniGames
   </a>
@@ -79,33 +83,34 @@ export class Header {
   <button
     class="header__mobile-close"
     type="button"
-    aria-label="Close navigation menu"
+    aria-label="${t('Close navigation menu')}"
   >
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <ul class="header__mobile-links">
+  <li><a class="header__mobile-link${this.activePage === 'profile' ? ' header__mobile-link--active' : ''}" href="${appHref('profile')}" data-router-link${this.activePage === 'profile' ? ' aria-current="page"' : ''}>${t('My profile')}</a></li>
   <li>
-    <a class="header__mobile-link${isHome ? ' header__mobile-link--active' : ''}" href="${appHref('home')}" data-router-link${isHome ? ' aria-current="page"' : ''}>Home</a>
+    <a class="header__mobile-link${isHome ? ' header__mobile-link--active' : ''}" href="${appHref('home')}" data-router-link${isHome ? ' aria-current="page"' : ''}>${t('Home')}</a>
   </li>
   <li>
-    <a class="header__mobile-link${isLibrary ? ' header__mobile-link--active' : ''}" href="${appHref('library')}" data-router-link${isLibrary ? ' aria-current="page"' : ''}>Library</a>
+    <a class="header__mobile-link${isLibrary ? ' header__mobile-link--active' : ''}" href="${appHref('library')}" data-router-link${isLibrary ? ' aria-current="page"' : ''}>${t('Library')}</a>
   </li>
   <li>
-    <a class="header__mobile-link" href="${appHref('home')}" data-router-link>Tournaments</a>
+    <a class="header__mobile-link" href="${appHref('home')}" data-router-link>${t('Tournaments')}</a>
   </li>
   <li>
-    <a class="header__mobile-link" href="${appHref('home')}" data-router-link>Community</a>
+    <a class="header__mobile-link" href="${appHref('home')}" data-router-link>${t('Community')}</a>
   </li>
 </ul>
 <div class="header__mobile-actions">
   ${renderHeaderProfile()}
   <button class="header__mobile-login" type="button" data-auth-open="login">
-    Log in
+    ${t('Log in')}
   </button>
 
   <button class="header__mobile-signup" type="button" data-auth-open="register">
-    Sign Up
+    ${t('Sign Up')}
   </button>
 </div>
 </div>

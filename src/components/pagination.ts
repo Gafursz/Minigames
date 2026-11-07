@@ -1,3 +1,4 @@
+import { t } from '../utils/text';
 import { getPageWindow } from '../utils/pagination';
 import type { PaginationMetadata } from '../types/api';
 
@@ -25,22 +26,22 @@ export class Pagination {
   private renderControls(): string {
     return `
       <button class="pagination__button" type="button" data-page="${this.currentPage - 1}"
-        data-direction="previous" aria-label="Previous page" ${this.isDisabled || this.currentPage === 1 ? 'disabled' : ''}>
+        data-direction="previous" aria-label="${t('Previous page')}" ${this.isDisabled || this.currentPage === 1 ? 'disabled' : ''}>
         <span class="pagination__arrow" aria-hidden="true">‹</span>
       </button>
       ${getPageWindow(this.currentPage, this.totalPages, this.visibleCount)
         .map(
           (page) => `
         <button class="pagination__button${page === this.currentPage ? ' pagination__button--active' : ''}"
-          type="button" data-page="${page}" aria-label="Page ${page}" ${this.isDisabled ? 'disabled' : ''} ${page === this.currentPage ? 'aria-current="page"' : ''}>${page}</button>
+          type="button" data-page="${page}" aria-label="${t('Page {page}', { page })}" ${this.isDisabled ? 'disabled' : ''} ${page === this.currentPage ? 'aria-current="page"' : ''}>${page}</button>
       `,
         )
         .join('')}
       <button class="pagination__button" type="button" data-page="${this.currentPage + 1}"
-        data-direction="next" aria-label="Next page" ${this.isDisabled || this.currentPage === this.totalPages ? 'disabled' : ''}>
+        data-direction="next" aria-label="${t('Next page')}" ${this.isDisabled || this.currentPage === this.totalPages ? 'disabled' : ''}>
         <span class="pagination__arrow" aria-hidden="true">›</span>
       </button>
-      <span class="visually-hidden" aria-live="polite" aria-atomic="true">Page ${this.currentPage} of ${this.totalPages}</span>
+      <span class="visually-hidden" aria-live="polite" aria-atomic="true">${t('Page {page} of {total}', { page: this.currentPage, total: this.totalPages })}</span>
     `;
   }
 
@@ -67,7 +68,7 @@ export class Pagination {
   }
 
   public render(): string {
-    return `<nav class="pagination" aria-label="Game pages" aria-busy="${this.isLoading}" tabindex="-1">${this.renderControls()}</nav>`;
+    return `<nav class="pagination" aria-label="${t('Game pages')}" aria-busy="${this.isLoading}" tabindex="-1">${this.renderControls()}</nav>`;
   }
 
   public bindEvents(signal: AbortSignal): void {
@@ -107,7 +108,7 @@ export class Pagination {
             page = this.currentPage + 1;
             break;
           }
-          case 'Home': {
+          case t('Home'): {
             page = 1;
             break;
           }
