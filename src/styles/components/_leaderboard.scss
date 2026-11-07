@@ -1,0 +1,421 @@
+@use '../tokens';
+@use '../breakpoints';
+
+//  Leaderboard Section — Desktop
+
+.leaderboard-section {
+  display: flex;
+  width: 100%;
+  min-height: tokens.$home-leaderboard-height-desktop;
+  flex-direction: column;
+  gap: tokens.$size-5;
+  padding: tokens.$size-5 0;
+  background-color: tokens.$color-background;
+}
+
+.leaderboard-section__container {
+  display: flex;
+  width: 100%;
+  max-width: tokens.$container-max-width;
+  height: 100%;
+  flex-direction: column;
+  gap: tokens.$size-5;
+  margin-inline: auto;
+  padding-inline: tokens.$size-5;
+}
+
+.leaderboard-section__header {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: tokens.$size-1;
+}
+
+.leaderboard-section__accent {
+  width: tokens.$size-1;
+  height: tokens.$size-4;
+  flex-shrink: 0;
+  background-color: tokens.$color-primary;
+  border: tokens.$border-width-thin solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-sm;
+}
+
+.leaderboard-section__title {
+  margin: 0;
+  color: tokens.$color-on-primary;
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-xl;
+  font-weight: tokens.$font-weight-bold;
+  line-height: 100%;
+}
+
+.leaderboard-section__title-mobile {
+  display: none;
+}
+
+//  Leaderboard Table — Desktop
+
+.leaderboard {
+  width: 100%;
+  overflow: hidden;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-card solid tokens.$color-on-primary;
+  border-spacing: 0;
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-leaderboard-desktop;
+  table-layout: fixed;
+}
+
+.leaderboard__header {
+  height: tokens.$size-5;
+  color: tokens.$color-white;
+  background-color: tokens.$color-tertiary;
+  font-size: tokens.$font-size-body-small;
+  font-weight: tokens.$font-weight-extra-bold;
+  line-height: 100%;
+  text-transform: uppercase;
+}
+
+.leaderboard__header th {
+  padding: 0 tokens.$size-3;
+  font-weight: tokens.$font-weight-extra-bold;
+  text-align: left;
+}
+
+//  Desktop column proportions
+
+.leaderboard__header th:first-child {
+  width: 7%;
+}
+
+.leaderboard__header th:nth-child(2) {
+  width: 18%;
+}
+
+.leaderboard__header th:nth-child(3) {
+  width: 18%;
+}
+
+.leaderboard__header th:nth-child(4) {
+  width: 18%;
+}
+
+.leaderboard__header th:nth-child(5) {
+  width: 17%;
+}
+
+.leaderboard__header th:nth-child(6) {
+  width: 22%;
+}
+
+//  Leaderboard Rows
+
+.leaderboard__row {
+  height: tokens.$size-9;
+  color: tokens.$color-on-primary;
+  font-size: tokens.$font-size-body-small;
+  font-weight: tokens.$font-weight-semibold;
+  line-height: 100%;
+}
+
+.leaderboard__row td {
+  padding: tokens.$size-2 tokens.$size-3;
+  border-bottom: tokens.$border-width-small solid tokens.$color-outline;
+  vertical-align: middle;
+}
+
+.leaderboard__row:nth-child(odd) {
+  background-color: tokens.$color-background;
+}
+
+.leaderboard__row:nth-child(even) {
+  background-color: tokens.$color-white;
+}
+
+.leaderboard__row:last-child td {
+  border-bottom: 0;
+}
+
+//  Rank
+
+.leaderboard__rank {
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-label-large;
+  font-weight: tokens.$font-weight-bold;
+  line-height: 100%;
+  white-space: nowrap;
+}
+
+.leaderboard__rank--first {
+  color: tokens.$color-primary;
+}
+
+//  Player
+
+.leaderboard__player {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.leaderboard__avatar {
+  display: inline-flex;
+  width: tokens.$size-3;
+  height: tokens.$size-3;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-right: tokens.$size-1;
+  border: tokens.$border-width-small solid tokens.$color-on-primary;
+  border-radius: 50%;
+  font-size: tokens.$font-size-body-small;
+  font-weight: tokens.$font-weight-bold;
+  line-height: 1;
+}
+
+.leaderboard__avatar--rank-1 {
+  background-color: tokens.$yellow;
+}
+
+.leaderboard__avatar--rank-2 {
+  background-color: tokens.$mint;
+}
+
+.leaderboard__avatar--rank-3 {
+  background-color: tokens.$light-blue;
+}
+
+.leaderboard__avatar--rank-4 {
+  background-color: tokens.$pink;
+}
+
+.leaderboard__avatar--rank-5 {
+  background-color: tokens.$lavender;
+}
+
+.leaderboard__player-name {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  font-weight: tokens.$font-weight-bold;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+//  Games / Score
+
+.leaderboard__cell {
+  font-weight: tokens.$font-weight-semibold;
+}
+
+//  Streak
+
+.leaderboard__streak {
+  font-weight: tokens.$font-weight-semibold;
+  white-space: nowrap;
+}
+
+.leaderboard__fire {
+  margin-right: tokens.$size-05;
+  line-height: 1;
+}
+
+//  Favorite Game
+
+.leaderboard__favorite {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.leaderboard__favorite-badge {
+  display: inline-block;
+  max-width: 100%;
+  padding: tokens.$size-05 tokens.$size-1;
+  overflow: hidden;
+  color: tokens.$color-on-primary;
+  border: tokens.$border-width-small solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-lg;
+  font-size: tokens.$font-size-body-small;
+  font-weight: tokens.$font-weight-bold;
+  line-height: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 
+  Intermediate — 769px to 1440px
+  All returned players remain visible.
+  Favorite Game is removed.
+    */
+
+@media (min-width: breakpoints.$breakpoint-tablet) and (max-width: breakpoints.$breakpoint-wide) {
+  .leaderboard-section {
+    height: auto;
+    min-height: tokens.$home-leaderboard-height-tablet;
+    gap: tokens.$size-5;
+    padding: tokens.$size-5 0;
+  }
+
+  .leaderboard-section__container {
+    max-width: none;
+    gap: tokens.$size-3;
+    padding-inline: tokens.$size-5;
+  }
+
+  .leaderboard {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    box-shadow: tokens.$shadow-leaderboard-responsive;
+  }
+
+  .leaderboard__header {
+    height: tokens.$size-6;
+  }
+
+  .leaderboard__header th {
+    padding: 0 tokens.$size-2;
+  }
+
+  .leaderboard__row {
+    height: tokens.$size-6;
+  }
+
+  .leaderboard__row td {
+    padding: tokens.$size-1 tokens.$size-2;
+  }
+
+  .leaderboard__header th:nth-child(6),
+  .leaderboard__row td:nth-child(6) {
+    display: none;
+  }
+
+  .leaderboard__header th:first-child {
+    width: 10%;
+  }
+
+  .leaderboard__header th:nth-child(2) {
+    width: 25%;
+  }
+
+  .leaderboard__header th:nth-child(3) {
+    width: 20%;
+  }
+
+  .leaderboard__header th:nth-child(4) {
+    width: 23%;
+  }
+
+  .leaderboard__header th:nth-child(5) {
+    width: 22%;
+  }
+}
+
+//  Tablet / Mobile — 768px and below
+
+@media (max-width: breakpoints.$breakpoint-tablet) {
+  .leaderboard-section {
+    min-height: tokens.$home-leaderboard-height-mobile;
+    gap: tokens.$size-2;
+    padding-block: tokens.$size-2;
+  }
+
+  .leaderboard-section__container {
+    max-width: none;
+    gap: tokens.$size-2;
+    padding-inline: tokens.$size-2;
+  }
+
+  .leaderboard-section__header {
+    width: 100%;
+    gap: tokens.$size-1;
+  }
+
+  .leaderboard-section__title {
+    font-size: tokens.$font-size-lg;
+  }
+
+  .leaderboard-section__title-desktop {
+    display: none;
+  }
+
+  .leaderboard-section__title-mobile {
+    display: inline;
+  }
+
+  .leaderboard-section__accent {
+    width: tokens.$size-1;
+    height: tokens.$size-3;
+  }
+
+  .leaderboard {
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    border-width: tokens.$border-width-card;
+    border-radius: tokens.$radius-lg;
+    table-layout: fixed;
+    box-shadow: tokens.$shadow-leaderboard-responsive;
+  }
+
+  .leaderboard__header {
+    height: tokens.$size-6;
+    font-size: tokens.$font-size-body-small;
+  }
+
+  .leaderboard__row {
+    height: tokens.$size-6;
+    font-size: tokens.$font-size-body-small;
+  }
+
+  .leaderboard__header th,
+  .leaderboard__row td {
+    padding: tokens.$size-1;
+  }
+
+  // Mobile/tablet layout:
+  // Rank | Player | Score | Streak
+  // Games Played and Favorite Game are hidden.
+
+  .leaderboard__header th:nth-child(3),
+  .leaderboard__row td:nth-child(3),
+  .leaderboard__header th:nth-child(6),
+  .leaderboard__row td:nth-child(6) {
+    display: none;
+  }
+
+  .leaderboard__header th:first-child {
+    width: 16%;
+  }
+
+  .leaderboard__header th:nth-child(2) {
+    width: 35%;
+  }
+
+  .leaderboard__header th:nth-child(4) {
+    width: 23%;
+  }
+
+  .leaderboard__header th:nth-child(5) {
+    width: 26%;
+  }
+
+  .leaderboard__avatar {
+    width: tokens.$size-3;
+    height: tokens.$size-3;
+    margin-right: tokens.$size-1;
+    font-size: tokens.$font-size-body-small;
+  }
+
+  .leaderboard__player-name {
+    max-width: 100%;
+  }
+}
+
+.leaderboard-section__content {
+  min-width: 0;
+}
+
+.leaderboard__player-name {
+  max-width: calc(100% - #{tokens.$size-3 + tokens.$size-2});
+}

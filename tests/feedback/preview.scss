@@ -1,0 +1,74 @@
+@use '../../src/styles/tokens';
+
+.feedback-preview {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: tokens.$size-3;
+
+  h1,
+  h2 {
+    color: tokens.$color-on-primary;
+  }
+
+  h1 {
+    font-size: tokens.$font-size-display-small;
+  }
+
+  h2 {
+    font-size: tokens.$font-size-headline-small;
+  }
+
+  section {
+    margin-block: tokens.$size-4;
+  }
+
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: tokens.$size-1;
+    margin-block: tokens.$size-2;
+  }
+
+  button {
+    min-height: tokens.$touch-target;
+    padding: tokens.$size-1 tokens.$size-2;
+    color: tokens.$color-on-primary;
+    background: tokens.$color-primary;
+    border: tokens.$border-width-medium solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-md;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  &__loaded {
+    padding: tokens.$size-3;
+    background: tokens.$color-secondary;
+    border-radius: tokens.$radius-lg;
+  }
+
+  &__frame-wrap {
+    overflow: auto;
+  }
+
+  iframe {
+    display: block;
+    border: 0;
+    background: tokens.$color-background;
+  }
+
+  &--frame {
+    padding: tokens.$size-2;
+  }
+
+  &__dialog {
+    width: min(tokens.$dialog-width, calc(100% - #{tokens.$size-4}));
+    padding: tokens.$size-3;
+    border: tokens.$border-width-medium solid tokens.$color-on-primary;
+    border-radius: tokens.$radius-lg;
+    background: tokens.$color-surface-low;
+
+    &::backdrop {
+      background: tokens.$color-backdrop;
+    }
+  }
+}

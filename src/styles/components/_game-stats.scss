@@ -1,0 +1,32 @@
+@use '../tokens';
+
+.game-stats {
+  display: flex;
+  align-items: center;
+  gap: tokens.$size-2;
+  min-height: tokens.$size-3;
+  font-size: tokens.$font-size-label-medium;
+  font-weight: tokens.$font-weight-bold;
+  white-space: nowrap;
+}
+
+.game-stats__rating,
+.game-stats__likes {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$size-05;
+}
+
+.game-stats__meta-icon {
+  width: tokens.$size-3;
+  height: tokens.$size-3;
+  flex-shrink: 0;
+}
+
+.game-stats__rating .game-stats__meta-icon {
+  color: tokens.$color-primary;
+}
+
+.game-stats__likes .game-stats__meta-icon {
+  color: tokens.$color-like;
+}

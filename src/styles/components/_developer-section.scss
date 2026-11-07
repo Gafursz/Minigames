@@ -1,0 +1,247 @@
+@use '../tokens';
+@use '../breakpoints';
+
+//  Desktop
+
+.developer-section {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: tokens.$home-developer-height-desktop;
+  gap: tokens.$size-5;
+  padding: tokens.$size-5 tokens.$size-15;
+  background-color: tokens.$color-background;
+  border-bottom: tokens.$border-width-small solid tokens.$color-outline;
+}
+
+.developer-section__illustration {
+  flex: 0 0 tokens.$developer-illustration-width;
+  height: tokens.$developer-illustration-height;
+  overflow: hidden;
+  border-radius: tokens.$size-3;
+}
+
+.developer-section__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.developer-section__card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: tokens.$size-3;
+  padding: tokens.$size-5;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$size-3;
+  box-shadow: tokens.$shadow-developer-card;
+}
+
+.developer-section__title {
+  width: 100%;
+  margin: 0;
+  color: tokens.$color-on-primary;
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-xl;
+  font-weight: tokens.$font-weight-bold;
+  line-height: 120%;
+  letter-spacing: 0;
+}
+
+.developer-section__description {
+  width: 100%;
+  margin: 0;
+  color: tokens.$color-text;
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-body-large;
+  font-weight: tokens.$font-weight-regular;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.developer-section__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: tokens.$size-1;
+  min-width: tokens.$developer-button-min-width;
+  min-height: tokens.$developer-button-min-height;
+  padding: tokens.$btn-large-y tokens.$btn-large-x;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-primary;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-medium;
+  font-family: tokens.$font-family-base;
+  font-weight: tokens.$font-weight-bold;
+  text-decoration: none;
+  box-shadow: tokens.$shadow-developer-button;
+}
+
+.developer-section__button-icon {
+  display: block;
+  width: tokens.$developer-icon-size;
+  height: tokens.$developer-icon-size;
+  flex-shrink: 0;
+}
+
+.developer-section__contact {
+  margin: 0;
+  color: tokens.$color-text;
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-body-small;
+  font-weight: tokens.$font-weight-regular;
+  line-height: 150%;
+}
+
+.developer-section__email {
+  color: tokens.$color-tertiary;
+  font-weight: tokens.$font-weight-bold;
+  text-decoration: underline;
+}
+
+//  Intermediate layout: 769px–1535px
+//  Keeps the Developer section stacked between
+//  the tablet and full desktop layouts.
+
+@media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and (max-width: calc(breakpoints.$breakpoint-developer-desktop - 1px)) {
+  .developer-section {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    gap: tokens.$size-5;
+    padding: tokens.$size-5 clamp(40px, 5.21vw, 80px);
+  }
+
+  .developer-section__illustration {
+    flex: none;
+    width: 100%;
+    height: clamp(300px, 37.5vw, 480px);
+  }
+
+  .developer-section__card {
+    flex: none;
+    width: 100%;
+  }
+}
+
+//  Desktop container spacing: 1441px–1535px
+//  Developer remains stacked, but horizontal
+//  padding matches New Games and Top Players.
+
+@media (min-width: calc(breakpoints.$breakpoint-wide + 1px)) and (max-width: calc(breakpoints.$breakpoint-developer-desktop - 1px)) {
+  .developer-section {
+    padding: tokens.$size-5 tokens.$size-15;
+  }
+}
+
+//  Fluid mobile → tablet: 481px–768px
+//  Starts close to the mobile composition and
+//  grows smoothly toward the 768px Figma frame.
+
+@media (min-width: calc(breakpoints.$breakpoint-mobile + 1px)) and (max-width: breakpoints.$breakpoint-tablet) {
+  .developer-section {
+    flex-direction: column;
+    align-items: stretch;
+
+    height: auto;
+
+    gap: clamp(tokens.$size-2, calc(2.62px + 2.79vw), tokens.$size-3);
+
+    padding: clamp(tokens.$size-2, calc(2.62px + 2.79vw), tokens.$size-3)
+      clamp(tokens.$size-2, calc(-24.11px + 8.35vw), tokens.$size-5);
+  }
+
+  .developer-section__illustration {
+    flex: none;
+    width: 100%;
+
+    height: clamp(227px, calc(105px + 25.36vw), 300px);
+  }
+
+  .developer-section__card {
+    flex: none;
+    width: 100%;
+    height: auto;
+
+    gap: clamp(tokens.$size-2, calc(2.62px + 2.79vw), tokens.$size-3);
+
+    padding: clamp(tokens.$size-3, calc(10.62px + 2.79vw), tokens.$size-4);
+  }
+
+  .developer-section__title {
+    font-size: clamp(tokens.$font-size-display-small, calc(10.62px + 2.79vw), tokens.$font-size-xl);
+  }
+
+  .developer-section__description {
+    font-size: clamp(
+      tokens.$font-size-label-large,
+      calc(7.31px + 1.39vw),
+      tokens.$font-size-body-large
+    );
+  }
+}
+
+//  Mobile: 480px and below
+//  Figma frame: 375px
+
+@media (max-width: breakpoints.$breakpoint-mobile) {
+  .developer-section {
+    flex-direction: column;
+    align-items: stretch;
+    height: tokens.$home-developer-height-mobile;
+    gap: tokens.$size-2;
+    padding: tokens.$size-2;
+  }
+
+  .developer-section__illustration {
+    flex: none;
+    width: 100%;
+    height: tokens.$developer-illustration-height-mobile;
+    overflow: hidden;
+    border-radius: tokens.$size-3;
+  }
+
+  .developer-section__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .developer-section__card {
+    flex: none;
+    width: 100%;
+    height: tokens.$developer-card-height-mobile;
+    gap: tokens.$size-2;
+    padding: tokens.$size-3;
+    border-width: tokens.$border-width-medium;
+    border-radius: tokens.$size-3;
+  }
+
+  .developer-section__title {
+    font-size: tokens.$font-size-display-small;
+    line-height: 120%;
+  }
+
+  .developer-section__description {
+    font-size: tokens.$font-size-label-large;
+    line-height: 150%;
+  }
+
+  .developer-section__button {
+    min-width: 0;
+    min-height: 0;
+    padding: tokens.$size-1 tokens.$size-2;
+    font-size: tokens.$font-size-label-large;
+    line-height: 100%;
+  }
+
+  .developer-section__contact {
+    font-size: tokens.$font-size-label-large;
+    line-height: 100%;
+  }
+}

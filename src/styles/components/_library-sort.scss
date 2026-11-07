@@ -1,0 +1,93 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.library-sort {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  flex-shrink: 0;
+  color: tokens.$color-on-primary;
+  font-size: tokens.$font-size-label-large;
+}
+
+.library-sort__trigger {
+  width: 100%;
+  min-height: tokens.$size-5;
+  padding: tokens.$btn-medium-y tokens.$btn-medium-x;
+  color: inherit;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-pill;
+  font: inherit;
+  font-weight: tokens.$font-weight-bold;
+  text-align: left;
+  cursor: pointer;
+}
+
+.library-sort__trigger[aria-expanded='true'] {
+  background-color: tokens.$color-surface;
+}
+
+.library-sort__options {
+  position: absolute;
+  top: calc(100% + tokens.$size-05);
+  right: 0;
+  width: 100%;
+  min-width: tokens.$sort-menu-width;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-medium;
+  box-shadow: tokens.$shadow-dropdown;
+}
+
+.library-sort__option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: tokens.$size-1;
+  padding: tokens.$size-2;
+  font-weight: tokens.$font-weight-medium;
+  cursor: pointer;
+}
+
+.library-sort__check {
+  visibility: hidden;
+  flex-shrink: 0;
+}
+
+.library-sort__divider {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.library-sort__option[aria-selected='true'] {
+  background-color: tokens.$color-primary-low;
+  font-weight: tokens.$font-weight-extra-bold;
+}
+
+.library-sort__option[aria-selected='true'] .library-sort__check {
+  visibility: visible;
+}
+
+.library-sort__option:focus-visible {
+  outline-offset: calc(-1 * tokens.$size-05);
+  background-color: tokens.$color-surface;
+}
+
+@media (hover: hover) {
+  .library-sort__trigger:hover,
+  .library-sort__option:hover {
+    background-color: tokens.$color-surface;
+  }
+}
+
+@include breakpoints.tablet {
+  .library-sort {
+    width: auto;
+  }
+}

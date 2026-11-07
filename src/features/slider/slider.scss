@@ -1,0 +1,425 @@
+@use '../../styles/tokens';
+@use '../../styles/breakpoints';
+
+// New Games Section
+
+.slider {
+  width: 100%;
+  min-height: tokens.$home-games-height-desktop;
+  padding: tokens.$size-5 0;
+  overflow: hidden;
+}
+
+/*
+ * Desktop container strategy:
+ *
+ * Maximum outer container width = 1760px.
+ *
+ * At 1920px:
+ * (1920 - 1760) / 2 = 80px margin on each side.
+ *
+ * 1760px container
+ * - 40px left padding
+ * - 40px right padding
+ * = 1680px usable content.
+ *
+ * Above 1920px the container remains 1760px wide
+ * and the automatic margins continue growing.
+ */
+
+.slider__container {
+  display: flex;
+  width: 100%;
+  max-width: tokens.$container-max-width;
+  height: 100%;
+  flex-direction: column;
+  gap: tokens.$size-5;
+  margin-inline: auto;
+  padding: 0 tokens.$size-5;
+}
+
+.slider__error-image {
+  display: block;
+  width: min(100%, tokens.$slider-error-image-max-width);
+  height: auto;
+  max-height: tokens.$slider-error-image-max-height;
+  margin: tokens.$size-3 auto 0;
+  object-fit: contain;
+}
+
+// Header
+
+.slider__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: tokens.$slider-control-size;
+}
+
+.slider__title {
+  display: flex;
+  align-items: center;
+  gap: tokens.$size-2;
+  margin: 0;
+  color: tokens.$color-on-primary;
+  font-size: tokens.$font-size-xl;
+  font-weight: tokens.$font-weight-bold;
+  line-height: 1;
+}
+
+.slider__title-accent {
+  width: tokens.$size-1;
+  height: tokens.$size-4;
+  flex-shrink: 0;
+  background-color: tokens.$color-primary;
+  border: tokens.$border-width-thin solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-sm;
+}
+
+// Controls
+
+.slider__controls {
+  display: flex;
+  align-items: center;
+  gap: tokens.$size-2;
+}
+
+.slider__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: tokens.$slider-control-size;
+  height: tokens.$slider-control-size;
+  padding: 0;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-white;
+  border: tokens.$border-width-medium solid tokens.$color-on-primary;
+  border-radius: 50%;
+  font: inherit;
+  cursor: pointer;
+}
+
+.slider__control-icon {
+  width: tokens.$size-3;
+  height: tokens.$size-3;
+}
+
+@media (hover: hover) {
+  .slider__control:hover {
+    background-color: tokens.$color-surface;
+  }
+}
+
+.slider__control--next {
+  background-color: tokens.$color-primary;
+}
+
+/* CAROUSEL TRACK — DESKTOP
+
+   Figma @ 1920px:
+   Track: 1680 × 388
+   Track padding: 0 8px
+
+   Cards:
+   120 | 288 | 816 | 288 | 120
+
+   Card height: 384px  */
+
+.slider__track {
+  --visible-slides: 5;
+  --slide-inset: #{tokens.$size-1};
+  --slide-gap: #{tokens.$size-1};
+  --slide-space: calc(100% - 2 * var(--slide-inset) - 4 * var(--slide-gap));
+  --slide-center: calc(var(--slide-space) * 0.5);
+  --slide-neighbor: calc(var(--slide-space) * 0.1764705882);
+  --slide-edge: calc(var(--slide-space) * 0.0735294118);
+  --slide-start: calc((100% - var(--slide-center)) / 2);
+  position: relative;
+  width: 100%;
+  height: tokens.$slider-track-height-desktop;
+  overflow: hidden;
+}
+
+.slider__item {
+  position: absolute;
+  top: 0;
+  left: var(--slide-start);
+  width: var(--slide-center);
+  height: tokens.$slider-card-height-desktop;
+  min-width: 0;
+  transition:
+    left tokens.$duration-slider ease,
+    width tokens.$duration-slider ease;
+}
+
+.slider__item[data-slot='-1'] {
+  left: calc(var(--slide-start) - var(--slide-gap) - var(--slide-neighbor));
+  width: var(--slide-neighbor);
+}
+
+.slider__item[data-slot='1'] {
+  left: calc(var(--slide-start) + var(--slide-center) + var(--slide-gap));
+  width: var(--slide-neighbor);
+}
+
+.slider__item[data-slot='-2'] {
+  left: calc(var(--slide-start) - 2 * var(--slide-gap) - var(--slide-neighbor) - var(--slide-edge));
+  width: var(--slide-edge);
+}
+
+.slider__item[data-slot='2'] {
+  left: calc(
+    var(--slide-start) + var(--slide-center) + 2 * var(--slide-gap) + var(--slide-neighbor)
+  );
+  width: var(--slide-edge);
+}
+
+.slider__item[data-slot='-3'],
+.slider__item[data-slot='-4'] {
+  left: calc(-1 * var(--slide-edge) - var(--slide-gap));
+  width: var(--slide-edge);
+  visibility: hidden;
+}
+
+.slider__item[data-slot='3'],
+.slider__item[data-slot='4'] {
+  left: calc(100% + var(--slide-gap));
+  width: var(--slide-edge);
+  visibility: hidden;
+}
+
+// Game Card
+
+.game-card {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: tokens.$border-width-card solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-extra-large;
+  box-shadow: tokens.$shadow-game-card;
+}
+
+.game-card__image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-card__info {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: tokens.$size-1;
+  padding: tokens.$size-2;
+  color: tokens.$color-white;
+  background: linear-gradient(to top, rgb(0 0 0 / 85%) 0%, rgb(0 0 0 / 40%) 40%, transparent 85%);
+}
+
+.game-card__title {
+  margin: 0;
+  overflow: hidden;
+  font-size: tokens.$font-size-title-xxx-small;
+  font-weight: tokens.$font-weight-bold;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-card .game-stats {
+  justify-content: space-between;
+  font-size: tokens.$font-size-md;
+}
+
+//  CARD CONTAINER QUERIES
+
+// Container queries measure the content box; the requirement measures the card
+// including both borders. Subtract them so a 288px card shows its information.
+
+.game-card__info {
+  display: none;
+}
+
+@container (min-width: #{tokens.$slider-info-min-width - 2 * tokens.$border-width-card}) {
+  .game-card__info {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slider__item {
+    transition: none;
+  }
+}
+
+// TABLET AND MOBILE
+// up to 768px
+
+@media (max-width: breakpoints.$breakpoint-tablet) {
+  .slider {
+    min-height: clamp(
+      tokens.$home-games-height-mobile,
+      calc(171.36px + 29.77vw),
+      tokens.$home-games-height-tablet
+    );
+
+    padding-block: clamp(tokens.$size-2, calc(8.37px + 2.04vw), tokens.$size-3);
+  }
+
+  .slider__container {
+    max-width: none;
+    gap: clamp(tokens.$size-2, calc(8.37px + 2.04vw), tokens.$size-3);
+    padding-inline: clamp(tokens.$size-2, calc(-6.9px + 6.11vw), tokens.$size-5);
+  }
+
+  .slider__header {
+    min-height: clamp(35px, calc(22.6px + 3.31vw), 48px);
+  }
+
+  .slider__title {
+    gap: clamp(tokens.$size-1, calc(0.37px + 2.04vw), tokens.$size-2);
+
+    font-size: clamp(tokens.$font-size-lg, calc(8.55px + 3.05vw), tokens.$font-size-xl);
+  }
+
+  .slider__title-accent {
+    width: clamp(6px, calc(4.09px + 0.51vw), tokens.$size-1);
+
+    height: clamp(tokens.$size-3, calc(16.37px + 2.04vw), tokens.$size-4);
+  }
+
+  .slider__controls {
+    gap: clamp(tokens.$size-1, calc(0.37px + 2.04vw), tokens.$size-2);
+  }
+
+  .slider__control {
+    width: clamp(32px, calc(16.73px + 4.07vw), 48px);
+    height: clamp(32px, calc(16.73px + 4.07vw), 48px);
+  }
+
+  .slider__control-icon {
+    width: clamp(18px, calc(12.28px + 1.53vw), tokens.$size-3);
+    height: clamp(18px, calc(12.28px + 1.53vw), tokens.$size-3);
+  }
+
+  .slider__track {
+    height: clamp(206px, calc(127.76px + 20.87vw), tokens.$slider-track-height-tablet);
+
+    padding-inline: clamp(tokens.$size-05, calc(0.18px + 1.02vw), tokens.$size-1);
+  }
+
+  .slider__item {
+    height: clamp(200px, calc(123.66px + 20.36vw), tokens.$slider-card-height-tablet);
+  }
+
+  .game-card {
+    border-radius: tokens.$radius-lg;
+  }
+}
+
+// TABLET → LAPTOP
+// 769px–1440px
+
+@media (min-width: calc(breakpoints.$breakpoint-tablet + 1px)) and (max-width: breakpoints.$breakpoint-wide) {
+  .slider {
+    min-height: tokens.$home-games-height-tablet;
+    padding-block: tokens.$size-3;
+  }
+
+  .slider__container {
+    max-width: none;
+    gap: tokens.$size-3;
+    padding-inline: tokens.$size-5;
+  }
+
+  .slider__track {
+    height: tokens.$slider-track-height-tablet;
+    padding-inline: tokens.$size-1;
+  }
+
+  .slider__item {
+    height: tokens.$slider-card-height-tablet;
+  }
+}
+
+@media (max-width: breakpoints.$breakpoint-wide) {
+  .slider__track {
+    --visible-slides: 3;
+    --slide-inset: clamp(#{tokens.$size-05}, calc(0.18px + 1.02vw), #{tokens.$size-1});
+    --slide-gap: clamp(2.5px, calc(-2.74px + 1.4vw), #{tokens.$size-1});
+    --slide-space: calc(100% - 2 * var(--slide-inset) - 2 * var(--slide-gap));
+    --slide-center: calc(var(--slide-space) * 0.68);
+    --slide-neighbor: calc(var(--slide-space) * 0.16);
+    --slide-edge: var(--slide-neighbor);
+  }
+
+  .slider__item[data-slot='-2'],
+  .slider__item[data-slot='2'] {
+    visibility: hidden;
+  }
+}
+
+.game-card__trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.game-card__trigger:focus-visible {
+  outline-offset: calc(-1 * tokens.$size-1);
+  outline-color: tokens.$color-primary;
+}
+
+.slider__track {
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.slider__track.is-dragging .game-card__trigger {
+  cursor: grabbing;
+}
+
+// API feedback must fit naturally, including long error text at narrow widths.
+.slider__content {
+  min-width: 0;
+}
+
+.slider__content .feedback-skeleton--slider {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.slider__control:disabled {
+  color: tokens.$color-text-muted;
+  background-color: tokens.$color-outline;
+  cursor: default;
+}
+
+// The backend may return more than the original nine seeded games.
+.slider__item[aria-hidden='true'] {
+  visibility: hidden;
+}
+
+.game-card__placeholder {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: tokens.$color-on-primary;
+  background-color: tokens.$color-surface-low;
+  font-size: tokens.$font-size-xl;
+}

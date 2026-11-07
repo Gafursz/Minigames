@@ -1,0 +1,489 @@
+@use '../tokens';
+@use '../breakpoints';
+
+.profile {
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: clamp(1rem, 4vw, 3.5rem);
+  color: tokens.$color-on-primary;
+
+  h1,
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+  h1 {
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    line-height: 1.12;
+    letter-spacing: -0.04em;
+  }
+  h2 {
+    font-size: 1.35rem;
+    margin-bottom: 0.5rem;
+  }
+  h3 {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+  p {
+    line-height: 1.65;
+  }
+  a {
+    color: inherit;
+  }
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+  input,
+  textarea,
+  select {
+    min-width: 0;
+    max-width: 100%;
+  }
+  :where(input, textarea, select, summary):focus-visible {
+    outline: 3px solid tokens.$color-tertiary;
+    outline-offset: 3px;
+  }
+}
+.profile__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+}
+.profile-hero {
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  border: 2px solid tokens.$color-on-primary;
+  border-radius: tokens.$radius-extra-large;
+  background: tokens.$color-secondary;
+  box-shadow: tokens.$shadow-card;
+  .profile__button {
+    background: tokens.$color-on-primary;
+    color: tokens.$color-white;
+  }
+}
+.profile-hero__copy {
+  align-self: center;
+  max-width: 40rem;
+}
+.profile-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+  gap: 0.7rem;
+}
+.profile-identity strong {
+  font-size: 1.5rem;
+  overflow-wrap: anywhere;
+}
+.profile-identity p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  max-width: 24rem;
+}
+.profile-identity__tag {
+  padding: 0.35rem 0.8rem;
+  border-radius: tokens.$radius-pill;
+  background: tokens.$color-white;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  height: 7rem;
+  border: 2px solid tokens.$color-on-primary;
+  border-radius: 2rem;
+  font-size: 3.5rem;
+  box-shadow: tokens.$shadow-card;
+}
+// One source of truth for avatar swatches in the dashboard and header.
+
+@each $name,
+  $color
+    in (
+      'yellow': tokens.$color-primary,
+      'mint': tokens.$mint,
+      'lavender': tokens.$lavender,
+      'pink': tokens.$pink,
+      'blue': tokens.$light-blue
+    )
+{
+  :is(.profile-avatar, .header__avatar, .color-choice).avatar--#{$name} {
+    background: $color;
+  }
+}
+
+.profile__scope {
+  color: tokens.$color-text;
+  font-size: 0.8rem;
+  margin: 1.5rem 0;
+  max-width: 60rem;
+}
+.profile__storage {
+  padding: 1rem;
+  border: 2px solid tokens.$color-error;
+  border-radius: 0.75rem;
+}
+.profile-statistics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+.profile-stat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 2px solid tokens.$color-on-primary;
+  border-radius: 1rem;
+  background: tokens.$color-surface-low;
+}
+.profile-stat dd {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.profile-stat dt {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.profile__columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.profile__main {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+}
+.profile-panel {
+  padding: 1.5rem;
+  border: 2px solid tokens.$color-on-primary;
+  border-radius: 1.25rem;
+  background: tokens.$color-white;
+}
+.profile-panel__heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+.profile-panel__heading p {
+  color: tokens.$color-text;
+  font-size: 0.85rem;
+  margin: 0;
+}
+.profile-panel__heading > span {
+  font-size: 1.5rem;
+}
+.achievements,
+.profile-history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.achievement {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1.25rem;
+  border-top: 1px solid tokens.$color-outline;
+}
+.achievement__icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  background: tokens.$color-secondary;
+  border-radius: 1rem;
+  font-size: 1.5rem;
+  filter: grayscale(1);
+}
+.achievement--unlocked .achievement__icon {
+  filter: none;
+  background: tokens.$color-surface;
+}
+.achievement p {
+  color: tokens.$color-text;
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
+.achievement__progress {
+  grid-column: 2;
+  display: grid;
+  gap: 0.5rem;
+  color: tokens.$color-text;
+  font-size: 0.75rem;
+}
+.achievement__progress progress {
+  width: 100%;
+  height: 0.5rem;
+  accent-color: tokens.$color-tertiary;
+}
+.achievement--unlocked progress {
+  accent-color: tokens.$color-price-free;
+}
+.profile-history__item {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
+  padding-block: 1rem;
+  border-top: 1px solid tokens.$color-outline;
+}
+.profile-history__symbol {
+  display: grid;
+  place-items: center;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: tokens.$color-surface;
+  font-size: 1.3rem;
+}
+.profile-history__item div {
+  display: grid;
+  gap: 0.25rem;
+}
+.profile-history__item div > span {
+  color: tokens.$color-text;
+  font-size: 0.8rem;
+}
+.profile-history__item a {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  text-underline-offset: 0.2em;
+}
+.profile-history__item time {
+  grid-column: 2;
+  color: tokens.$color-text;
+  font-size: 0.75rem;
+}
+.profile-settings {
+  display: grid;
+  gap: 0.75rem;
+}
+.profile-settings > label,
+.profile-settings legend {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.profile-settings > input,
+.profile-settings textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid tokens.$color-outline-variant;
+  border-radius: 0.6rem;
+  background: tokens.$color-surface-low;
+  color: inherit;
+}
+.profile-settings textarea {
+  resize: vertical;
+}
+.profile-settings fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem 0;
+  border: 0;
+}
+.profile-settings__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.avatar-choice,
+.color-choice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  cursor: pointer;
+  border: 2px solid tokens.$color-outline;
+  border-radius: 0.75rem;
+}
+.avatar-choice {
+  background: tokens.$color-surface-low;
+  font-size: 1.3rem;
+}
+.avatar-choice input,
+.color-choice input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.avatar-choice:has(:checked),
+.color-choice:has(:checked) {
+  border-color: tokens.$color-on-primary;
+  box-shadow:
+    0 0 0 2px tokens.$color-white,
+    0 0 0 4px tokens.$color-tertiary;
+}
+.avatar-choice:has(:focus-visible),
+.color-choice:has(:focus-visible) {
+  outline: 3px solid tokens.$color-tertiary;
+  outline-offset: 4px;
+}
+.color-choice {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+}
+.profile-settings__check {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  line-height: 1.5;
+  min-height: 2.75rem;
+}
+.profile-settings__check input {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: tokens.$color-tertiary;
+  flex-shrink: 0;
+}
+.profile__hint {
+  color: tokens.$color-text;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.profile-settings__error {
+  margin: 0;
+  color: tokens.$color-error;
+  font-size: 0.85rem;
+}
+.profile__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 0.8rem 1.1rem;
+  min-height: 2.75rem;
+  border: 2px solid tokens.$color-on-primary;
+  border-radius: 0.7rem;
+  background: tokens.$color-primary;
+  color: tokens.$color-on-primary;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.profile__button:hover {
+  background: tokens.$color-primary-high;
+  color: tokens.$color-on-primary;
+}
+.profile__button--quiet {
+  background: tokens.$color-white;
+}
+.profile-reset {
+  padding-top: 1rem;
+  border-top: 1px solid tokens.$color-outline;
+  font-size: 0.8rem;
+}
+.profile-reset summary {
+  cursor: pointer;
+  min-height: 2.75rem;
+}
+.profile-guest {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 4rem 1rem;
+  max-width: 45rem;
+  margin: auto;
+}
+.profile-guest h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+.profile-guest__icon {
+  font-size: 4rem;
+}
+.profile-guest .profile__eyebrow,
+.profile-guest p {
+  margin-bottom: 0;
+}
+.profile__empty {
+  text-align: center;
+  padding-block: 2rem;
+}
+.profile__empty > span {
+  font-size: 2.5rem;
+}
+.profile-confirm {
+  max-width: min(30rem, calc(100% - 2rem));
+  padding: 2rem;
+  border: 2px solid tokens.$color-on-primary;
+  border-radius: 1rem;
+  background: tokens.$color-surface-low;
+  color: tokens.$color-on-primary;
+}
+.profile-confirm::backdrop {
+  background: tokens.$color-backdrop;
+}
+.profile-confirm form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 1rem;
+}
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+@media (max-width: breakpoints.$breakpoint-desktop) {
+  .profile__columns {
+    grid-template-columns: 1fr;
+  }
+  .profile-hero {
+    gap: 1rem;
+  }
+  .profile-stat {
+    padding: 1rem;
+  }
+}
+@media (max-width: breakpoints.$breakpoint-dialog) {
+  .profile-hero {
+    grid-template-columns: 1fr;
+  }
+  .profile-identity {
+    padding-top: 1rem;
+  }
+  .profile-statistics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .profile-panel {
+    padding: 1rem;
+  }
+  .profile .profile__columns {
+    gap: 1rem;
+  }
+  .profile-stat dd {
+    font-size: 2rem;
+  }
+  .profile-guest {
+    padding-block: 2rem;
+  }
+}
